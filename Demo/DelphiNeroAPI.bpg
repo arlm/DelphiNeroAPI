@@ -9,7 +9,7 @@ MAKE = $(ROOT)\bin\make.exe -$(MAKEFLAGS) -f$**
 DCC = $(ROOT)\bin\dcc32.exe $**
 BRCC = $(ROOT)\bin\brcc32.exe $**
 #------------------------------------------------------------------------------
-PROJECTS = DemoApp.exe DelphiNeroAPI.bpl
+PROJECTS = DemoApp.exe DelphiNeroAPI.bpl SampleApp.exe
 #------------------------------------------------------------------------------
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
@@ -18,6 +18,9 @@ DemoApp.exe: DemoApp.dpr
   $(DCC)
 
 DelphiNeroAPI.bpl: ..\API\DelphiNeroAPI.dpk
+  $(DCC)
+
+SampleApp.exe: ..\SampleApplication\SampleApp.dpr
   $(DCC)
 
 
