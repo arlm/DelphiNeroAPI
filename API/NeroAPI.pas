@@ -60,6 +60,9 @@
 |* 2004-07-23: Modified
 |*    Andreas Hausladen
 |*    NeroAPI SDK v1.05
+|* 2005-03-19: Modified
+|*    Andreas Hausladen
+|*    Added missing import of NeroImportDataTrack
 |*
 ******************************************************************************}
 
@@ -1927,6 +1930,8 @@ begin
   NeroUnregisterDriveStatusCallback := GetNeroProc('NeroUnregisterDriveStatusCallback');
   NeroRegisterDriveChangeCallback   := GetNeroProc('NeroRegisterDriveChangeCallback');
   NeroUnregisterDriveChangeCallback := GetNeroProc('NeroUnregisterDriveChangeCallback');
+
+  NeroImportDataTrack            := GetNeroProc('NeroImportDataTrack');
   {$ENDIF NERO_6}
 end;
 
