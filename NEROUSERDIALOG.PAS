@@ -19,314 +19,183 @@ uses
 {$ENDIF}
 
 
-{=> D:\Projects\delphi\headconv\Source\NeroSDK-v1.02\NeroAPI\Include\NEROUSERDIALOG.H <=}
-
-{+//***************************************************************************** }
-{-|* THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF }
-{-|* ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO }
-{-|* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A }
-{-|* PARTICULAR PURPOSE. }
-{-|* }
-{-|* Copyright 1995-2003 Ahead Software AG. All Rights Reserved. }
-{-|*----------------------------------------------------------------------------- }
-{-|* NeroSDK / NeroAPI }
-{-|* }
-{-|* PROGRAM: NeroUserDialog.h }
-{-|* }
-{-|* PURPOSE: Ask how to proceed by offering the user some choices }
-{=***************************************************************************** }
-
-
 {$IFNDEF __NEROUSERDIALOG__}
 {$DEFINE __NEROUSERDIALOG__}
 
 {/// Take care to use 2^n as values for constants: }
 const
   AUP_NO_PROBLEM = 0; {// No problems found}
-const
   AUP_FIRST_TR_PAUSE = 1; {// First track must have 2-3 secs pause!}
-const
   AUP_PAUSE_SETTINGS = 2; {// Problem with audio pause settings (tracks > 1)}
-const
   AUP_INDEX_SETTINGS = 4; {// Problem with audio index settings}
-const
   AUP_ISRC_SETTINGS = 8; {// Problem with ISRC settings}
-const
   AUP_COPYPROT_SETTINGS = 16; {// Problem with copyright settings}
-const
   AUP_NOTRACK_FOUND = 32; {// Problem because we don´t have any track}
-const
   AUP_MEGA_FATAL = $FFFFFFF; {// Megafatal internal problem that can´t be fixed!}
 
 type
   NeroUserDlgInOutEnum = (
-    DLG_RETURN_EXIT {= 0}, 
-    DLG_RETURN_FALSE {= 0}, 
-    DLG_RETURN_TRUE {= 1}, 
-    DLG_DISCONNECT, 
-    DLG_RETURN_ON_RESTART, 
-    DLG_RETURN_RESTART, 
-    DLG_RETURN_CONTINUE, 
-    LG_DISCONNECT_RESTART, 
-    DLG_AUTO_INSERT, 
-    DLG_RETURN_INSTALL_DRIVER, 
-    DLG_RETURN_OFF_RESTART, 
-    DLG_RESTART, 
-    DLG_AU, 
-    NeroUserDlgInOut;, 
-    typedef enum {, 
-    RUMT_ERROR, 
-    RUMT_WARNING, 
-    RUMT_QUESTION, 
-    RUMT_HINT  );
+    DLG_RETURN_EXIT {= 0},
+    DLG_RETURN_FALSE {= 0},
+    DLG_RETURN_TRUE {= 1},
+    DLG_DISCONNECT,
+    DLG_RETURN_ON_RESTART,
+    DLG_RETURN_RESTART,
+    DLG_RETURN_CONTINUE,
+    DLG_DISCONNECT_RESTART,
+    DLG_AUTO_INSERT,
+    DLG_RETURN_INSTALL_DRIVER,
+    DLG_RETURN_OFF_RESTART,
+    DLG_RESTART,
+    DLG_AUTO_INSERT_RESTART,
+    DLG_SETTINGS_RESTART,
+    DLG_OVERBURN,
+    DLG_AUDIO_PROBLEMS,
+    DLG_WAITCD,
+    DLG_WAITCD_REMINDER,
+    DLG_WAITCD_DONE,
+    DLG_COPY_QUALITY_LOSS,
+    DLG_COPY_FULLRISK,
+    DLG_FILESEL_IMAGE,
+    DLG_BURNIMAGE_CANCEL,
+    DLG_NON_EMPTY_CDRW,
+    DLG_COMP_REC_CONFLICT,
+    DLG_WRONG_MEDIUM,
+    DLG_ROBO_MOVECD,
+    DLG_ROBO_MOVECD_DONE,
+    DLG_ROBO_USERMESSAGE,
+    DLG_WAITCD_MEDIA_INFO,
+    DLG_MAX);
+    NeroUserDlgInOut= NeroUserDlgInOutEnum;
 
-type
+    ROBOUSERMESSAGETYPE = (
+    RUMT_ERROR,
+    RUMT_WARNING,
+    RUMT_QUESTION,
+    RUMT_HINT);
+
   ROBOUSERMESSAGE = record
     message_type: ROBOUSERMESSAGETYPE;
-    message: PCONST CHAR;
-  end {ROBOUSERMESSAGE};
+    message: PCHAR;
+  end;
 
-type
-  ROBOMOVEMESSAGE = (
-    RMN_INPUT, 
-    RMN_RECORDER, 
-    RMN_OUTPUT, 
-    RMN_PRINTER, 
-    RMN_WASTEBIN  );
+  ROBOMOVENODE = (
+    RMN_INPUT,
+    RMN_RECORDER,
+    RMN_OUTPUT,
+    RMN_PRINTER,
+    RMN_WASTEBIN);
 
-type
   ROBOMOVEMESSAGE = record
     id: Integer;
-{- In future versions, we may have more than one Robo moving }
-{-* at a time. So this ID identifies the movement action }
-{=* and will be used to remove it with DLG_ROBO_MOVECD_DONE }
     source: ROBOMOVENODE;
     destination: ROBOMOVENODE;
-  end {ROBOMOVEMESSAGE};
+  end;
 
-
-{+// }
-{/// This function gets a requester type and shall return a suitable response to it. }
-{/// Depending on the "type", "data" might contain additional information. }
-{/// }
-{/// Argument passing is in standard C order (on the stack, right to left), }
-{/// aka MS Visual++ __cdecl. }
-{= }
-
-{+// Define __cdecl for non-Microsoft compilers*/ }
-
-{$IFDEF ( !defined(_MSC_VER) && !defined(__cdecl) )}
 {$DEFINE __cdecl}
-{$ENDIF}
 
-const
-  NERO_CALLBACK_ATTR = __cdecl;
-type
-  = NEROUSERDLGINOUT (NERO_CALLBACK_ATTR*NERO_USER_DIALOG) (VOID*PUSERDATA, NEROUSERDLGINOUT TYPE, VOID*DATA);
+ NERO_USER_DIALOG =  function (PUSERDATA: Pointer; dlgTYPE: NEROUSERDLGINOUTEnum; DATA: Pointer): NeroUserDlgInOut; cdecl;
+ PNeroUserDialog = ^NERO_USER_DIALOG;
 
-{+// }
-{/// see below for a description of the enumeration values }
-{= }
-type
-  static = (
-    NERO_WAITCD_WRITE, 
-    NERO_WAITCD_SIMULATION, 
-    NERO_WAITCD_AUTOEJECTLOAD, 
-    NERO_WAITCD_REINSERT, 
-    NERO_WAITCD_NEXTCD, 
-    NERO_WAITCD_ORIGINAL, 
-    NERO_WAITCD_WRITEPROTECTED, 
-    NERO_WAITCD_NOTENOUGHSPACE, 
-    NERO_WAITCD_NEWORIGINAL, 
-    NERO_WAITCD_EMPTYCD, 
-    NERO_WAITCD_WRITE_, 
-    NERO_WAITCD_TYPE;, 
-    {$ENDIF /* __NEROUSERDIALOG__*/ );
+  NERO_WAITCD_TYPE = (
+    NERO_WAITCD_WRITE,
+    NERO_WAITCD_SIMULATION,
+    NERO_WAITCD_AUTOEJECTLOAD,
+    NERO_WAITCD_REINSERT,
+    NERO_WAITCD_NEXTCD,
+    NERO_WAITCD_ORIGINAL,
+    NERO_WAITCD_WRITEPROTECTED,
+    NERO_WAITCD_NOTENOUGHSPACE,
+    NERO_WAITCD_NEWORIGINAL,
+    NERO_WAITCD_EMPTYCD,
+    NERO_WAITCD_WRITE_EMPTY,
+    NERO_WAITCD_SIMULATION_EMPTY,
+    NERO_WAITCD_WRITEWAVE,
+    NERO_WAITCD_MULTISESSION,
+    NERO_WAITCD_MULTISESSION_SIM,
+    NERO_WAITCD_MULTI_REINSERT,
+	NERO_WAITCD_DISCINFOS_FAILED,
+	NERO_WAITCD_MEDIUM_UNSUPPORTED,
+	NERO_WAITCD_AUTOEJECTLOAD_VER,
+	NERO_WAITCD_REINSERT_VER,
+	NERO_WAITCD_NOFORMAT,
+	NERO_WAITCD_WRONG_MEDIUM,		// NeroAPI>=5.5.5.6
+	NERO_WAITCD_MAX);
 
-
-
-{$IFDEF NERO_WAITCD_TEXTS /* define this in exactly one source file before including NeroUserDialog.h there.*/}
-
-{$INCLUDE <assert.h>}
-
-{$IFNDEF NERO_WAITCD_TEXTS_DEFINED}
-{$DEFINE NERO_WAITCD_TEXTS_DEFINED}
-
-
-{+// If NeroAPI>=5.5.9.10 is present, it is recommanded to use NeroGetLocalizedWaitCDTexts instead since it }
-{=returns a localized string }
-var
-  NeroGetWaitCDTexts: function(type: NERO_WAITCD_TYPE): PCONST CHAR cdecl  {$IFDEF WIN32} stdcall {$ENDIF}; 
-type
-  static = record
-    type: NERO_WAITCD_TYPE;
-    text: PCONST CHAR;
-  end {static};
-{
-var
-  simulation...\n\n: function(}: NOTHING WILL BE WRITTEN ON THE CD.)"; 
-                              )
-
-                              )
-
-                              _4: NERO_WAITCD_AUTOEJECTLOAD; 
-                              }: "PLEASE DO NOT REMOVE THE CD!\N\NYOUR RECORDER REQUIRES THIS EJECT BETWEEN SIMULATION AND BURNING. THE CD WILL BE RELOADED AUTOMATICALLY BEFORE CONTINUING WITH BURNING..."; 
-                              )
-
-                              )
-
-                              _8: NERO_WAITCD_REINSERT; 
-                              }: "PLEASE DO NOT REMOVE THE CD!\N\NYOUR RECORDER REQUIRES THIS EJECT BETWEEN SIMULATION AND BURNING. PLEASE REINSERT THE CD..."; 
-                              )
-
-                              )
-
-                              _12: NERO_WAITCD_NEXTCD; 
-                              }: "PLEASE REMOVE THE CD AND INSERT THE NEXT CD-RECORDABLE TO WRITE TO... "; 
-                              )
-
-                              )
-
-                              _16: NERO_WAITCD_ORIGINAL; 
-                              }: "PLEASE INSERT THE ORIGINAL CD."; 
-                              )
-
-                              )
-
-                              _20: NERO_WAITCD_WRITEPROTECTED; 
-                              }: "THIS CD IS NOT WRITABLE.\N\NPLEASE INSERT A WRITABLE CD..."; 
-                              )
-
-                              )
-
-                              _24: NERO_WAITCD_NOTENOUGHSPACE; 
-                              }: "THERE IS NOT ENOUGH SPACE TO BURN THIS COMPILATION ONTO THIS CD.\N\NPLEASE INSERT ANOTHER CD THAT PROVIDES MORE SPACE..."; 
-                              )
-
-                              )
-
-                              _28: NERO_WAITCD_NEWORIGINAL; 
-                              blank: "THE CD IS; 
-                              }: INVALID\NOR A MULTISESSION CD.\N\NPLEASE INSERT ORIGINAL CD ..."; 
-                              )
-
-                              )
-
-                              _33: NERO_WAITCD_EMPTYCD; 
-                              }: "THE CD IS NOT EMPTY.\N\NPLEASE INSERT AN EMPTY CD."; 
-                              )
-
-                              )
-
-                              _37: NERO_WAITCD_WRITE_EMPTY; 
-                              }: "PLEASE INSERT AN EMPTY CD TO WRITE TO..."; 
-                              )
-
-                              )
-
-                              _41: NERO_WAITCD_SIMULATION_EMPTY; 
-                              }: "PLEASE INSERT AN EMPTY CD TO USE DURING SIMULATION...\N\N(NOTHING WILL BE WRITTEN ON THE CD.)"; 
-                              )
-
-                              )
-
-                              _45: NERO_WAITCD_WRITEWAVE; 
-                              }: "THE CD IS BLANK.\N\NPLEASE INSERT ORIGINAL CD..."; 
-                              )
-
-                              )
-
-                              _49: NERO_WAITCD_MULTISESSION; 
-                              CD: "NERO IS CHECKING FOR THE; 
-                              var CD: LEASE WAIT ...\N\NTO BURN THIS MULTISESSION COMPILATION YOU NEED THE; 
-                              }: THAT CONTAINS THE PREVIOUS BACKUP SESSIONS. PLEASE INSERT THIS CD IF YOU HAVEN'T DONE IT BEFORE."; 
-                              )
-
-                              )
-
-                              _55: NERO_WAITCD_MULTISESSION_SIM; 
-                              CD: "TO SIMULATE THIS MULTISESSION COMPILATION YOU NEED THE; 
-                              }: THAT CONTAINS THE PREVIOUS BACKUP SESSIONS. PLEASE INSERT THIS CD. (NOTHING WILL BE WRITTEN ON CD)."; 
-                              )
-
-                              )
-
-                              _60: NERO_WAITCD_MULTI_REINSERT; 
-                              }: "PLEASE DO NOT REMOVE THE CD!\N\NYOUR RECORDER REQUIRES THIS EJECT BETWEEN SIMULATION AND BURNING. PLEASE REINSERT THE\N SAME MULTISESSION CD..."; 
-                              )
-
-                              )
-
-                              reason."}: NERO_WAITCD_DISCINFOS_FAILED, "DISC ANALYSIS FAILED. THE ERROR LOG\NCONTAINS MORE INFORMATION ABOUT THE): NERO_WAITCD_SIMULATION "PLEASE INSERT A CD TO USE cdecl  {$IFDEF WIN32} stdcall {$ENDIF}; 
-
-var
-  for: function(0;: I =; 
-                var NERO_WAITCD_MAX;: MAPPING[I].TYPE != TYPE & MAPPING[I].TYPE !=; 
-                _3: I++): Integer cdecl  {$IFDEF WIN32} stdcall {$ENDIF}; 
-var
-  assert: function(NERO_WAITCD_MAX: MAPPING[I].TYPE !=): Integer cdecl  {$IFDEF WIN32} stdcall {$ENDIF}; 
-{$ENDIF}
-
-{$ENDIF}
-
-var
-  DLLLoaded: Boolean { is DLL (dynamically) loaded already? }
-    {$IFDEF WIN32} = False; {$ENDIF}
+{$ENDIF /* __NEROUSERDIALOG__*/ }
 
 implementation
 
-var
-  SaveExit: pointer;
-  DLLHandle: THandle;
-{$IFNDEF MSDOS}
-  ErrorMode: Integer;
-{$ENDIF}
+{$ifdef NERO_WAITCD_TEXTS}
 
-  procedure NewExit; far;
-  begin
-    ExitProc := SaveExit;
-    FreeLibrary(DLLHandle)
-  end {NewExit};
+  {$ifndef NERO_WAITCD_TEXTS_DEFINED}
+    {$define NERO_WAITCD_TEXTS_DEFINED}
+    function  NeroGetWaitCDTexts(dlgType: NERO_WAITCD_TYPE): PCHAR cdecl  {$IFDEF WIN32} stdcall {$ENDIF};
+    type
+      MappingType = record
+        mapType: NERO_WAITCD_TYPE;
+        text: PChar;
+      end;
+    var
+      mapping: array [1.. 23] of MappingType;
+      i: Integer;
+    begin
 
-procedure LoadDLL;
-begin
-  if DLLLoaded then Exit;
-{$IFNDEF MSDOS}
-  ErrorMode := SetErrorMode($8000{SEM_NoOpenFileErrorBox});
-{$ENDIF}
-  DLLHandle := LoadLibrary('NEROUSERDIALOG.DLL');
-  if DLLHandle >= 32 then
-  begin
-    DLLLoaded := True;
-    SaveExit := ExitProc;
-    ExitProc := @NewExit;
-    @NeroGetWaitCDTexts := GetProcAddress(DLLHandle,'NeroGetWaitCDTexts');
-  {$IFDEF WIN32}
-    Assert(@NeroGetWaitCDTexts <> nil);
-  {$ENDIF}
-    @simulation...\n\n := GetProcAddress(DLLHandle,'simulation...\n\n');
-  {$IFDEF WIN32}
-    Assert(@simulation...\n\n <> nil);
-  {$ENDIF}
-    @for := GetProcAddress(DLLHandle,'for');
-  {$IFDEF WIN32}
-    Assert(@for <> nil);
-  {$ENDIF}
-    @assert := GetProcAddress(DLLHandle,'assert');
-  {$IFDEF WIN32}
-    Assert(@assert <> nil);
-  {$ENDIF}
-  end
-  else
-  begin
-    DLLLoaded := False;
-    { Error: NEROUSERDIALOG.DLL could not be loaded !! }
-  end;
-{$IFNDEF MSDOS}
-  SetErrorMode(ErrorMode)
-{$ENDIF}
-end {LoadDLL};
+      mapping[1].mapType := NERO_WAITCD_WRITE;
+      mapping[1].text := 'Please insert the CD to write to...';
+      mapping[2].mapType := NERO_WAITCD_SIMULATION;
+      mapping[2].text := 'Please insert a CD to use during simulation...\n\n(Nothing will be written on the CD.)';
+      mapping[3].mapType := NERO_WAITCD_AUTOEJECTLOAD;
+      mapping[3].text := 'Please do not remove the CD!\n\nYour recorder requires this eject between simulation and burning. The CD will be reloaded automatically before continuing with burning...';
+      mapping[4].mapType := NERO_WAITCD_REINSERT;
+      mapping[4].text := 'Please do not remove the CD!\n\nYour recorder requires this eject between simulation and burning. Please reinsert the CD...';
+      mapping[5].mapType := NERO_WAITCD_NEXTCD;
+      mapping[5].text := 'Please remove the CD and  insert the next CD-Recordable to write to... ';
+      mapping[6].mapType := NERO_WAITCD_ORIGINAL;
+      mapping[6].text := 'Please insert the original CD.';
+      mapping[7].mapType := NERO_WAITCD_WRITEPROTECTED;
+      mapping[7].text := 'This CD is not writable.\n\nPlease insert a writable CD...';
+      mapping[8].mapType := NERO_WAITCD_NOTENOUGHSPACE;
+      mapping[8].text := 'There is not enough space to burn this compilation onto this CD.\n\nPlease insert another CD that provides more space...';
+      mapping[9].mapType := NERO_WAITCD_NEWORIGINAL;
+      mapping[9].text := 'The CD is blank, invalid\nor a multisession CD.\n\nPlease insert original CD ...';
+      mapping[10].mapType := NERO_WAITCD_EMPTYCD;
+      mapping[10].text := 'The CD is not empty.\n\nPlease insert an empty CD.';
+      mapping[11].mapType := NERO_WAITCD_WRITE_EMPTY;
+      mapping[11].text := 'Please insert an empty CD to write to...';
+      mapping[12].mapType := NERO_WAITCD_SIMULATION_EMPTY;
+      mapping[12].text := 'Please insert an empty CD to use during simulation...\n\n(Nothing will be written on the CD.)';
+      mapping[13].mapType := NERO_WAITCD_WRITEWAVE;
+      mapping[13].text := 'The CD is blank.\n\nPlease insert original CD...';
+      mapping[14].mapType := NERO_WAITCD_MULTISESSION;
+      mapping[14].text := 'Nero is checking for the CD, please wait ...\n\nTo burn this multisession compilation you need the CD, that  contains the previous backup sessions. Please insert this CD if you haven`t done it before.';
+      mapping[15].mapType := NERO_WAITCD_MULTISESSION_SIM;
+      mapping[15].text := 'To simulate this multisession compilation you need the CD, that contains the previous backup sessions. Please insert this CD. (Nothing will be written on CD).';
+      mapping[16].mapType := NERO_WAITCD_MULTI_REINSERT;
+      mapping[16].text := 'Please do not remove the CD!\n\nYour recorder requires this eject between simulation and burning. Please reinsert the\n same Multisession CD...';
+      mapping[17].mapType := NERO_WAITCD_DISCINFOS_FAILED;
+      mapping[17].text := 'Disc analysis failed. The error log\ncontains more information about the reason.';
+      mapping[18].mapType := NERO_WAITCD_MEDIUM_UNSUPPORTED;
+      mapping[18].text := 'The recorder does not support this type of media!\n\nPlease insert a correct CD to write to...';
+      mapping[19].mapType := NERO_WAITCD_AUTOEJECTLOAD_VER;
+      mapping[19].text := 'Please do not remove the CD!\n\nYour recorder requires that the  CD be ejected between burning and verification. The CD will be reloaded automatically when burning is to continue...';
+      mapping[20].mapType := NERO_WAITCD_REINSERT_VER;
+      mapping[20].text := 'Please do not remove the CD!\n\nYour recorder requires that the  CD be ejected between burning and verification.  Please reinsert the CD....';
+      mapping[21].mapType := NERO_WAITCD_NOFORMAT;
+      mapping[21].text := 'Medium is not formatted. Please insert a formatted medium.';
+      mapping[22].mapType := NERO_WAITCD_WRONG_MEDIUM;
+      mapping[22].text := 'Sorry, your compilation cannot be written on this kind of medium. Please insert a medium of the correct type or modify the settings of your compilation to make them compatible with the current medium.';
+      mapping[23].mapType := NERO_WAITCD_MAX;
+      mapping[23].text := 'unknown NERO_WAITCD_TYPE';
 
-begin
-  LoadDLL;
+      i := 0;
+      repeat
+        i := i + 1;
+      until ((mapping[i].mapType <> dlgtype) and (mapping[i].mapType <> NERO_WAITCD_MAX));
+        ;
+      assert(mapping[i].mapType <> NERO_WAITCD_MAX);
+      Result :=  mapping[i].text;
+    end;
+  {$ENDIF}
+{$ENDIF}
 end.
