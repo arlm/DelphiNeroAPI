@@ -62,6 +62,11 @@
 |*    PCM Audio files importing routines now are gracefully closing the files
 |*    added version reporting on About PageSheet
 |*    added supported file formats list on About PageSheet
+|* 22/08/2004: Modified
+|*    Alexandre Rocha Lima e Marcondes
+|*    Corrected ReaAllocMem and ZeroMemory bugs (Thanks to Miglinszki Péter for realizing the solution)
+|*    Corrected File drop Access Violation (Thanks to thanu)
+|*    Corrected NeroIsoTrack memory deallocation bug
 |*
 ******************************************************************************}
 
@@ -188,6 +193,7 @@ type
   protected
     procedure WMDropFiles(var msg : TWMDropFiles); message WM_DROPFILES;
     procedure FreeIsoItem(var item: PNeroIsoItem);
+    procedure FreeIsoTrack(var IsoTrack: CNeroIsoTrack);
     procedure AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
 
 
@@ -893,7 +899,7 @@ begin
     ReallocMem(NeroSettings, 0);
 
   if Assigned(NeroIsoTrack) then
-    NeroFreeIsoTrack(NeroIsoTrack);
+    FreeIsoTrack(NeroIsoTrack);
 
   if Assigned(RootIsoItem) then
     FreeIsoItem(RootIsoItem);
@@ -1364,7 +1370,7 @@ begin
       0:
       begin
         if Assigned(NeroWriteImage) then
-          ZeroMemory(NeroWriteImage, SizeOf(NeroWriteImage))
+          ZeroMemory(NeroWriteImage, SizeOf(NERO_WRITE_IMAGE))
         else
           NeroWriteImage := PNeroWriteImage(AllocMem(SizeOf(NERO_WRITE_IMAGE)));
 
@@ -1378,7 +1384,7 @@ begin
           ReallocMem(NeroWriteVideoCD, 0);
 
         if Assigned(NeroIsoTrack) then
-          NeroFreeIsoTrack(NeroIsoTrack);
+          FreeIsoTrack(NeroIsoTrack);
 
         if Assigned(RootIsoItem) then
           FreeIsoItem(RootIsoItem);
@@ -1386,7 +1392,7 @@ begin
       1:
       begin
         if Assigned(NeroWriteCD) then
-          ZeroMemory(NeroWriteCD, SizeOf(NeroWriteCD))
+          ZeroMemory(NeroWriteCD, SizeOf(NERO_WRITE_CD))
         else
           NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NERO_WRITE_CD)));
 
@@ -1400,7 +1406,7 @@ begin
           ReallocMem(NeroWriteImage, 0);
 
         if Assigned(NeroIsoTrack) then
-          NeroFreeIsoTrack(NeroIsoTrack);
+          FreeIsoTrack(NeroIsoTrack);
 
         if Assigned(RootIsoItem) then
           FreeIsoItem(RootIsoItem);
@@ -1411,7 +1417,7 @@ begin
       3:
       begin
         if Assigned(NeroWriteCD) then
-          ZeroMemory(NeroWriteCD, SizeOf(NeroWriteCD))
+          ZeroMemory(NeroWriteCD, SizeOf(NERO_WRITE_CD))
         else
           NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NERO_WRITE_CD)));
 
@@ -1425,7 +1431,7 @@ begin
           ReallocMem(NeroWriteImage, 0);
 
         if Assigned(NeroIsoTrack) then
-          NeroFreeIsoTrack(NeroIsoTrack);
+          FreeIsoTrack(NeroIsoTrack);
 
         if Assigned(RootIsoItem) then
           FreeIsoItem(RootIsoItem);
@@ -1441,7 +1447,7 @@ begin
       4:
       begin
         if Assigned(NeroWriteVideoCD) then
-          ZeroMemory(NeroWriteVideoCD, SizeOf(NeroWriteVideoCD))
+          ZeroMemory(NeroWriteVideoCD, SizeOf(NERO_WRITE_VIDEO_CD))
         else
           NeroWriteVideoCD := PNeroWriteVideoCD(AllocMem(SizeOf(NERO_WRITE_VIDEO_CD)));
 
@@ -1455,7 +1461,7 @@ begin
           ReallocMem(NeroWriteImage, 0);
 
         if Assigned(NeroIsoTrack) then
-          NeroFreeIsoTrack(NeroIsoTrack);
+          FreeIsoTrack(NeroIsoTrack);
 
         if Assigned(RootIsoItem) then
           FreeIsoItem(RootIsoItem);
@@ -1588,7 +1594,7 @@ begin
     ReallocMem(NeroWriteCD, 0);
 
   if Assigned(NeroIsoTrack) then
-    NeroFreeIsoTrack(NeroIsoTrack);
+    FreeIsoTrack(NeroIsoTrack);
 
   if Assigned(RootIsoItem) then
     FreeIsoItem(RootIsoItem);
@@ -1729,7 +1735,7 @@ begin
     ReallocMem(NeroWriteCD, 0);
 
   if Assigned(NeroIsoTrack) then
-    NeroFreeIsoTrack(NeroIsoTrack);
+    FreeIsoTrack(NeroIsoTrack);
 
   if Assigned(RootIsoItem) then
     FreeIsoItem(RootIsoItem);
@@ -1888,7 +1894,7 @@ begin
     ReallocMem(NeroWriteVideoCD, 0);
 
   if Assigned(NeroIsoTrack) then
-    NeroFreeIsoTrack(NeroIsoTrack);
+    FreeIsoTrack(NeroIsoTrack);
 
   if Assigned(RootIsoItem) then
     FreeIsoItem(RootIsoItem);
@@ -1903,6 +1909,12 @@ begin
   rgType.ItemIndex := 0;
 
   pcWrite.TabIndex := pcWrite.PageCount - 1;
+end;
+
+procedure TFMainForm.FreeIsoTrack(var IsoTrack: CNeroIsoTrack);
+begin
+  NeroFreeIsoTrack(IsoTrack);
+  IsoTrack := nil;
 end;
 
 end.
