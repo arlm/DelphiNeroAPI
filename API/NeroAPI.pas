@@ -42,6 +42,9 @@
 |* 27/06/2003: Modifyied
 |*    Alexandre Rocha Lima e Marcondes
 |*    Identation
+|* 29/01/2004: Modifyied
+|*    Alexandre Rocha Lima e Marcondes
+|*    corrected NERO_STATUS_CALLBACK calling convention (now it is cdecl)
 |*
 ******************************************************************************}
 
