@@ -35,10 +35,10 @@
 |* NeroSDK / NeroAPI
 |*
 |* PURPOSE: DelphiNeroAPI Visual Component Classes
-******************************************************************************}unit dnapiComponents;
+******************************************************************************}
+unit dnapiComponents;
 
 interface
-
 uses
  Windows, SysUtils, Classes, Forms, Controls, StdCtrls, NeroAPI, NeroUserDialog;
 
@@ -232,7 +232,6 @@ type
     property Items; { Must be published after OnMeasureItem }
   public
     constructor Create(AOwner: TComponent); override;
-    destructor Destroy; override;
 
     property Speed: Extended read GetSpeed;
     property SpeedKBs: DWORD read GetSpeedKBs;
@@ -298,7 +297,7 @@ procedure Register;
 
 implementation
 
-uses Registry;
+uses Registry, Dialogs;
 
 var
   OnIdleCallback: TIdleCallback;
@@ -337,9 +336,12 @@ procedure TdnapiDevicesComboBox.Change;
 begin
   if Assigned(FDeviceSpeeds) then
   begin
-    if FDeviceSpeeds.Active then
-      FDeviceSpeeds.SetActive(False);
-    FDeviceSpeeds.SetActive(True);
+    if Items.Count > 0 then
+    begin
+      if FDeviceSpeeds.Active then
+        FDeviceSpeeds.SetActive(False);
+      FDeviceSpeeds.SetActive(True);
+    end;
   end;
 
   inherited Change;
@@ -347,7 +349,8 @@ end;
 
 procedure TdnapiDevicesComboBox.CloseUp;
 begin
-  GetSelectedDevice;
+  if Items.Count > 0 then
+    GetSelectedDevice;
 
   inherited CloseUp;
 end;
@@ -376,10 +379,10 @@ begin
   if Assigned(Settings) then
     if Settings.Active then
     begin
-      FNeroDeviceInfos := PNeroSCSIDeviceInfos(NeroGetAvailableDrivesEx(MEDIA_CD, nil));
+      FNeroDeviceInfos := NeroGetAvailableDrivesEx(MEDIA_CD, nil);
+
       if not Assigned(FNeroDeviceInfos) then
         Settings.SetMessage('NeroGetAvailableDrives() error');
-
 
       Clear;
       for DeviceCount := 0 to NeroDeviceInfos.nsdisNumDevInfos - 1 do
@@ -472,6 +475,9 @@ begin
       end;
 
       GetDeviceInfo;
+
+      if Assigned(FDeviceSpeeds) then
+        FDeviceSpeeds.SetActive(True);
     end
     else
     begin
@@ -660,6 +666,9 @@ begin
         begin
           FActive := True;
 
+          if Assigned(FDevices) then
+            FDevices.SetActive(True);
+
           if Assigned(FOnActivate) then
             FOnActivate(Self);
         end;
@@ -667,6 +676,9 @@ begin
         begin
           FActive := True;
           FMessage := 'NeroInit() : already initialized';
+
+          if Assigned(FDevices) then
+            FDevices.SetActive(True);
 
           if Assigned(FOnActivate) then
             FOnActivate(Self);
@@ -718,8 +730,6 @@ begin
       end;
 
       NeroClearErrors;
-      NeroDone;
-
       NeroAPIGlueDone;
 
       FVersion := 'NeroAPI not active';
@@ -823,12 +833,6 @@ begin
   FDevice := nil;
   Style := csDropDownList;
   FKind := skWrite;
-end;
-
-destructor TdnapiDeviceSpeedComboBox.Destroy;
-begin
-
-  inherited Destroy;
 end;
 
 function TdnapiDeviceSpeedComboBox.GetBaseSpeedKBs: DWORD;

@@ -14,13 +14,13 @@ PROJECTS = DemoApp.exe SampleApp.exe DelphiNeroAPI.bpl
 default: $(PROJECTS)
 #------------------------------------------------------------------------------
 
-DemoApp.exe: DemoApp.dpr
+DemoApp.exe: .\Demo\DemoApp.dpr
   $(DCC)
 
-DelphiNeroAPI.bpl: ..\API\DelphiNeroAPI.dpk
+DelphiNeroAPI.bpl: .\API\DelphiNeroAPI.dpk
   $(DCC)
 
-SampleApp.exe: ..\SampleApplication\SampleApp.dpr
+SampleApp.exe: .\SampleApplication\SampleApp.dpr
   $(DCC)
 
 

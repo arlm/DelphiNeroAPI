@@ -747,8 +747,6 @@ begin
 
   if Assigned(RootIsoItem) then
     FreeIsoItem(RootIsoItem);
-
-  dnapiSettings.Active := False;
 end;
 
 procedure TFMainForm.ApplicationEventsShowHint(var HintStr: String;

@@ -3,6 +3,7 @@ object FMainForm: TFMainForm
   Top = 277
   Width = 555
   Height = 452
+  BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Delphi Nero API 1.02'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
