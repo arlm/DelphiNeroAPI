@@ -34,11 +34,14 @@
 |* CREATOR: Andreas Hausladen
 |*
 |* 16/06/2003: Modifyied
-|*    Alexandre R. L. e Marcondes
+|*    Alexandre Rocha Lima e Marcondes
 |*    Identation
 |* 26/06/2003: Modified
 |*    Andreas Hausladen
 |*    translation error corrected, added default-value for "reserved: PVoid"
+|* 27/06/2003: Modifyied
+|*    Alexandre Rocha Lima e Marcondes
+|*    Identation
 |*
 ******************************************************************************}
 
@@ -164,14 +167,14 @@ type
 // The NeroAPI needs some information:
 }
   tag_NERO_SETTINGS = record
-	nstNeroFilesPath: PChar;  {* directory name with trailing '\' of where to find the additional Nero DLL and text files
+  	nstNeroFilesPath: PChar;  {* directory name with trailing '\' of where to find the additional Nero DLL and text files
                                * No trailing '\' or '/' is necessary on for NeroAPI Portable }
 
-	nstVendor: PChar;
-	nstSoftware: PChar;           { path for registry settings (use "ahead", "Nero - Burning Rom" for Nero application's settings) }
-	nstLanguageFile: PChar;       { name of the Nero language file; relativ to nstNeroFilesPath (e.g. "Nero.txt") }
-	nstIdle: NERO_CALLBACK;       { NERO_IDLE_CALLBACK, may be NULL }
-	nstUserDialog: NERO_CALLBACK; { NERO_USER_DIALOG, must not be NULL, see "NeroUserDialog.h" for details }
+  	nstVendor: PChar;
+  	nstSoftware: PChar;           { path for registry settings (use "ahead", "Nero - Burning Rom" for Nero application's settings) }
+  	nstLanguageFile: PChar;       { name of the Nero language file; relativ to nstNeroFilesPath (e.g. "Nero.txt") }
+	  nstIdle: NERO_CALLBACK;       { NERO_IDLE_CALLBACK, may be NULL }
+  	nstUserDialog: NERO_CALLBACK; { NERO_USER_DIALOG, must not be NULL, see "NeroUserDialog.h" for details }
 
 	{
 	// overburn settings:
@@ -183,8 +186,8 @@ type
 	//  - DAO is used.
 	// Even then, overburning has to be acknowledged via callback (see DLG_OVERBURN in "NeroUserDialog.h").
 	}
-	nstEnableOverburn: BOOL;
-	nstOverburnSize: DWORD;    { in blocks }
+  	nstEnableOverburn: BOOL;
+	  nstOverburnSize: DWORD;    { in blocks }
   end;
   NERO_SETTINGS = tag_NERO_SETTINGS;
   PNERO_SETTINGS = ^NERO_SETTINGS;
@@ -199,13 +202,13 @@ type
 }
 
   NEROAPI_INIT_ERROR = (
-	NEROAPI_INIT_OK = 0,
-	NEROAPI_INIT_INVALID_ARGS,
-	NEROAPI_INIT_UNSPECIFIED_ERROR,					// Unspecified error
-	NEROAPI_INIT_INVALID_SERIAL_NUM,
-	NEROAPI_INIT_DEMOVERSION_EXPIRED,
-	NEROAPI_INIT_ALREADY_INITIALISED,
-	NEROAPI_INIT_CANNOT_LOCK
+  	NEROAPI_INIT_OK = 0,
+	  NEROAPI_INIT_INVALID_ARGS,
+  	NEROAPI_INIT_UNSPECIFIED_ERROR,					// Unspecified error
+  	NEROAPI_INIT_INVALID_SERIAL_NUM,
+  	NEROAPI_INIT_DEMOVERSION_EXPIRED,
+  	NEROAPI_INIT_ALREADY_INITIALISED,
+  	NEROAPI_INIT_CANNOT_LOCK
   );
   TNeroApiInitError = NEROAPI_INIT_ERROR;
 
@@ -227,8 +230,8 @@ Call this function to change a global option of NeroAPI
 }
 type
   NEROAPI_OPTION = (
-	NEROAPI_OPTION_MSG_FILE_NAME,		// Set the language file. The value points to a string containing the file name. This adress will be kept.
-	NEROAPI_OPTION_WRITE_BUFFER_SIZE	// Set write buffer size. Value points onto an integer containing the size in byte
+  	NEROAPI_OPTION_MSG_FILE_NAME,		// Set the language file. The value points to a string containing the file name. This adress will be kept.
+	  NEROAPI_OPTION_WRITE_BUFFER_SIZE	// Set write buffer size. Value points onto an integer containing the size in byte
   );
   TNeroApiOption = NEROAPI_OPTION;
 
@@ -242,19 +245,19 @@ var
 
 type
   NEROAPI_SCSI_DEVTYPE = (
-	NEA_SCSI_DEVTYPE_UNKNOWN,
-	NEA_SCSI_DEVTYPE_WORM,              { can write }
-	NEA_SCSI_DEVTYPE_CDROM,             { can only read }
-	NEA_SCSI_DEVTYPE_UNSUPPORTED_WORM	{ can write but is not supported by NeroAPI }
+  	NEA_SCSI_DEVTYPE_UNKNOWN,
+	  NEA_SCSI_DEVTYPE_WORM,              { can write }
+  	NEA_SCSI_DEVTYPE_CDROM,             { can only read }
+	  NEA_SCSI_DEVTYPE_UNSUPPORTED_WORM	{ can write but is not supported by NeroAPI }
   );
   TNeroApiSCSIDevType = NEROAPI_SCSI_DEVTYPE;
 
   tag_NERO_SPEED_INFOS = record
-	nsiNumSupportedSpeeds: DWORD;     { 1 if the speed cannot be changed }
-	nsiBaseSpeedKBs: DWORD;			  { Speed corresponding to 1X for the selected media in KB/s }
-	nsiSupportedSpeedsKBs: array[0..64 - 1] of DWORD; { List of possible speeds in KB/s }
-	nsiSupportedSpeeds: array[0..64 - 1] of DWORD;    { List of possible speeds in multiple of 150KB/s (1X for CD) (present for compatibility) }
-	nsiReserved: array[0..32 - 1] of DWORD;
+  	nsiNumSupportedSpeeds: DWORD;     { 1 if the speed cannot be changed }
+	  nsiBaseSpeedKBs: DWORD;			  { Speed corresponding to 1X for the selected media in KB/s }
+  	nsiSupportedSpeedsKBs: array[0..64 - 1] of DWORD; { List of possible speeds in KB/s }
+	  nsiSupportedSpeeds: array[0..64 - 1] of DWORD;    { List of possible speeds in multiple of 150KB/s (1X for CD) (present for compatibility) }
+  	nsiReserved: array[0..32 - 1] of DWORD;
   end;
   NERO_SPEED_INFOS = tag_NERO_SPEED_INFOS;
   PNERO_SPEED_INFOS = ^NERO_SPEED_INFOS;
@@ -294,8 +297,8 @@ type
     MEDIA_VPACKET       = $10000,						// Variable Packetwriting
     MEDIA_PACKETW       = MEDIA_MRW or MEDIA_FPACKET	// a bit mask for packetwriting
                           or MEDIA_VPACKET,
-	//NeroAPI>=5.5.10.4
-	MEDIA_HDB           = $20000                        // HD-Burn
+	  //NeroAPI>=5.5.10.4
+  	MEDIA_HDB           = $20000                        // HD-Burn
   );
 {$WARNINGS ON}
   NERO_MEDIA_TYPE = tag_NERO_MEDIA_TYPE;
@@ -322,28 +325,28 @@ const                                       { drive capabilities: }
 
 type
   tag_NERO_SCSI_DEVICE_INFO = record
-	nsdiDeviceName: array[0..64 - 1] of Char;
-	nsdiHostAdapterName: array[0..8 - 1] of Char;
-	nsdiHostAdapterNo: DWORD;
-	nsdiDeviceID: DWORD;
-	nsdiDevType: NEROAPI_SCSI_DEVTYPE;
-	nsdiDriveLetter: Char;        { Windows drive letter or 0 if not available }
+	  nsdiDeviceName: array[0..64 - 1] of Char;
+  	nsdiHostAdapterName: array[0..8 - 1] of Char;
+	  nsdiHostAdapterNo: DWORD;
+  	nsdiDeviceID: DWORD;
+    nsdiDevType: NEROAPI_SCSI_DEVTYPE;
+    nsdiDriveLetter: Char;        { Windows drive letter or 0 if not available }
 
-	nsdiCapabilities: DWORD;       { drive capabilities: see above}
+    nsdiCapabilities: DWORD;       { drive capabilities: see above}
 
-	nsdiReadSpeeds: NERO_SPEED_INFOS;
-	nsdiWriteSpeeds: NERO_SPEED_INFOS;
-	nsdiDriver: Pointer;                               { opaque identifier of the internal driver, required by NeroOpenDevice() }
-	nsdiBufUnderrunProtName: array[0..64 - 1] of Char; { Buffer underrun protection technology name }
-                                                       { The string will be empty if the technology has no name }
-	nsdiMandatoryBUPSpeed: DWORD;                      { it is highly recommanded to enable buffer
-                                                         underrun protection protection when burning at this speed or
-                                                         faster. Contains 0 if there is no recommandation }
-	nsdiMediaSupport: NERO_MEDIA_SET;                  { NeroAPI>=5.5.4.1: Bit field of supported media (constructed with the NERO_MEDIA_TYPE enum)}
+    nsdiReadSpeeds: NERO_SPEED_INFOS;
+    nsdiWriteSpeeds: NERO_SPEED_INFOS;
+    nsdiDriver: Pointer;                               { opaque identifier of the internal driver, required by NeroOpenDevice() }
+    nsdiBufUnderrunProtName: array[0..64 - 1] of Char; { Buffer underrun protection technology name }
+                                                         { The string will be empty if the technology has no name }
+    nsdiMandatoryBUPSpeed: DWORD;                      { it is highly recommanded to enable buffer
+                                                           underrun protection protection when burning at this speed or
+                                                           faster. Contains 0 if there is no recommandation }
+    nsdiMediaSupport: NERO_MEDIA_SET;                  { NeroAPI>=5.5.4.1: Bit field of supported media (constructed with the NERO_MEDIA_TYPE enum)}
 
-	nsdiDriveBufferSize: DWORD;                        { NeroAPI>=5.5.9.4: Drive buffer size (internal) in KB }
+    nsdiDriveBufferSize: DWORD;                        { NeroAPI>=5.5.9.4: Drive buffer size (internal) in KB }
 
-	nsdiReserved: array[0..63 - 1] of DWORD;          { Should be zero }
+    nsdiReserved: array[0..63 - 1] of DWORD;          { Should be zero }
   end;
   NERO_SCSI_DEVICE_INFO = tag_NERO_SCSI_DEVICE_INFO;
   PNERO_SCSI_DEVICE_INFO = ^NERO_SCSI_DEVICE_INFO;
@@ -351,8 +354,8 @@ type
   PNeroSCSIDeviceInfo = PNERO_SCSI_DEVICE_INFO;
 
   tag_NERO_SCSI_DEVICE_INFOS = record
-	nsdisNumDevInfos: DWORD;  { number of the following entries }
-	nsdisDevInfos: array[0..0] of NERO_SCSI_DEVICE_INFO;
+  	nsdisNumDevInfos: DWORD;  { number of the following entries }
+  	nsdisDevInfos: array[0..0] of NERO_SCSI_DEVICE_INFO;
   end;
   NERO_SCSI_DEVICE_INFOS = tag_NERO_SCSI_DEVICE_INFOS;
   PNERO_SCSI_DEVICE_INFOS = ^NERO_SCSI_DEVICE_INFOS;
@@ -362,8 +365,7 @@ type
 { Gets a list of available WORM and CDROM devices, free with NeroFreeMem(). }
 { Returns NULL for error }
 var
-  NeroGetAvailableDrivesEx: function(
-                                     mediaType: NERO_MEDIA_TYPE; // Provide speeds values for this kind of media
+  NeroGetAvailableDrivesEx: function(mediaType: NERO_MEDIA_TYPE; // Provide speeds values for this kind of media
                                      reserved: PVoid = nil       // Must be NULL
                                      ): PNERO_SCSI_DEVICE_INFOS; cdecl;
 
@@ -403,14 +405,14 @@ var
 }
 type
   NERO_DEVICEOPTION = (
-	// change booktype of a DVD+R and DVD+RW for subsequent writes until
-	// next power cycle to DVD-ROM.
-	// void* is a pointer to BOOL in Nero(Set|Get)DeviceOption.
-	// For setting the booktype to DVD-ROM, set parameter to TRUE, to reset
-	// changing the booktype set to FALSE.
-	// In NeroGetDeviceOption, TRUE is returned if the changing the booktype
-	// to DVD-ROM is enabled for both DVD+R and DVD+RW, FALSE otherwise.
-	NERO_DEVICEOPTION_BOOKTYPE_DVDROM = 0
+    // change booktype of a DVD+R and DVD+RW for subsequent writes until
+    // next power cycle to DVD-ROM.
+    // void* is a pointer to BOOL in Nero(Set|Get)DeviceOption.
+    // For setting the booktype to DVD-ROM, set parameter to TRUE, to reset
+    // changing the booktype set to FALSE.
+    // In NeroGetDeviceOption, TRUE is returned if the changing the booktype
+    // to DVD-ROM is enabled for both DVD+R and DVD+RW, FALSE otherwise.
+    NERO_DEVICEOPTION_BOOKTYPE_DVDROM = 0
   );
   TNeroDevieOption = NERO_DEVICEOPTION;
 
@@ -437,22 +439,22 @@ var
 
 type
   NERO_TRACK_TYPE = (
-	NTT_UNKNOWN,
-	NTT_DATA,
-	NTT_AUDIO
+    NTT_UNKNOWN,
+    NTT_DATA,
+    NTT_AUDIO
   );
   TNeroTrackType = NERO_TRACK_TYPE;
 
   tag_NERO_TRACK_INFO = record
-	ntiSessionNumber: DWORD;
-	ntiTrackNumber: DWORD;
-	ntiTrackType: NERO_TRACK_TYPE;
-	ntiTrackStartBlk: DWORD;
-	ntiTrackLengthInBlks: DWORD;
-	ntiArtist: array[0..65 - 1] of Char;
-	ntiTitle: array[0..65 - 1] of Char;
-	ntiISRC: array[0..13 - 1] of Char;      { NeroAPI > 5.5.8.3: if NGCDI_READ_ISRC is present: 12 chars ISRC code + terminator }
-	ntiReserved: array[0..29 - 1] of DWORD; { Should be zero }
+    ntiSessionNumber: DWORD;
+    ntiTrackNumber: DWORD;
+    ntiTrackType: NERO_TRACK_TYPE;
+    ntiTrackStartBlk: DWORD;
+    ntiTrackLengthInBlks: DWORD;
+    ntiArtist: array[0..65 - 1] of Char;
+    ntiTitle: array[0..65 - 1] of Char;
+    ntiISRC: array[0..13 - 1] of Char;      { NeroAPI > 5.5.8.3: if NGCDI_READ_ISRC is present: 12 chars ISRC code + terminator }
+    ntiReserved: array[0..29 - 1] of DWORD; { Should be zero }
   end;
   NERO_TRACK_INFO = tag_NERO_TRACK_INFO;
   TNeroTrackInfo = NERO_TRACK_INFO;
@@ -466,17 +468,17 @@ type
   TNeroMeduimType = NERO_MEDIUM_TYPE;
 
   tag_NERO_CD_INFO = record
-	ncdiFreeCapacityInBlocks: DWORD;
-	ncdiIsWriteable: BOOL;                     { A disc can be non-writeable }
-	ncdiMediumType: NERO_MEDIUM_TYPE;          { Old media type description, ncdiMediaType should be used instead }
-	ncdiArtist: array[0..65 - 1] of Char;
-	ncdiTitle: array[0..65 - 1] of Char;
-	ncdiAvailableEraseModes: DWORD;            { This bitfield can be decoded using the NCDI_IS_ERASE_MODE_AVAILABLE macro }
-	ncdiUnusedBlocks: DWORD;		           { difference beetween Lead-Out position and last possible Lead-Out position }
-	ncdiMediaType: NERO_MEDIA_TYPE;            { NeroAPI>=5.5.9.4: type of media }
-	ncdiReserved: array[0..29 - 1] of DWORD;   { Should be zero }
-	ncdiNumTracks: DWORD;
-	ncdiTrackInfos: array[0..0] of NERO_TRACK_INFO;
+    ncdiFreeCapacityInBlocks: DWORD;
+    ncdiIsWriteable: BOOL;                     { A disc can be non-writeable }
+    ncdiMediumType: NERO_MEDIUM_TYPE;          { Old media type description, ncdiMediaType should be used instead }
+    ncdiArtist: array[0..65 - 1] of Char;
+    ncdiTitle: array[0..65 - 1] of Char;
+    ncdiAvailableEraseModes: DWORD;            { This bitfield can be decoded using the NCDI_IS_ERASE_MODE_AVAILABLE macro }
+    ncdiUnusedBlocks: DWORD;		           { difference beetween Lead-Out position and last possible Lead-Out position }
+    ncdiMediaType: NERO_MEDIA_TYPE;            { NeroAPI>=5.5.9.4: type of media }
+    ncdiReserved: array[0..29 - 1] of DWORD;   { Should be zero }
+    ncdiNumTracks: DWORD;
+    ncdiTrackInfos: array[0..0] of NERO_TRACK_INFO;
   end;
   NERO_CD_INFO = tag_NERO_CD_INFO;
   PNERO_CD_INFO = ^NERO_CD_INFO;
@@ -543,40 +545,40 @@ type
   TNeroAbortedCallback = NERO_ABORTED_CALLBACK;
 
   NERO_TEXT_TYPE = (
-	NERO_TEXT_INFO,        { informative text                     }
-	NERO_TEXT_STOP,        { some operation stopped prematurely   }
-	NERO_TEXT_EXCLAMATION, { important information                }
-	NERO_TEXT_QUESTION,    { a question which requires an answer  }
-	NERO_TEXT_DRIVE,       { a message concerning a CD-ROM drive or recorder }
-	NERO_TEXT_FILE,        { a message concerning a file          }
-	NERO_TEXT_UNSPECIFIED  { no type specified                    }
+    NERO_TEXT_INFO,        { informative text                     }
+    NERO_TEXT_STOP,        { some operation stopped prematurely   }
+    NERO_TEXT_EXCLAMATION, { important information                }
+    NERO_TEXT_QUESTION,    { a question which requires an answer  }
+    NERO_TEXT_DRIVE,       { a message concerning a CD-ROM drive or recorder }
+    NERO_TEXT_FILE,        { a message concerning a file          }
+    NERO_TEXT_UNSPECIFIED  { no type specified                    }
   );
   TNeroTextType = NERO_TEXT_TYPE;
 
   NERO_MAJOR_PHASE = (
-	NERO_PHASE_UNSPECIFIED                  = -1,
-	NERO_PHASE_START_CACHE                  = 24,
-	NERO_PHASE_DONE_CACHE                   = 25,
-	NERO_PHASE_START_TEST                   = 28,
-	NERO_PHASE_DONE_TEST                    = 29,
-	NERO_PHASE_START_SIMULATE               = 32,
-	NERO_PHASE_DONE_SIMULATE                = 33,
-	NERO_PHASE_START_WRITE                  = 36,
-	NERO_PHASE_DONE_WRITE					= 37,
-	NERO_PHASE_START_SIMULATE_NOSPD         = 61,
-	NERO_PHASE_DONE_SIMULATE_NOSPD          = 62,
-	NERO_PHASE_START_WRITE_NOSPD            = 65,
-	NERO_PHASE_DONE_WRITE_NOSPD             = 66,
-	NERO_PHASE_ENCODE_VIDEO                 = 82,
-	NERO_PHASE_SEAMLESSLINK_ACTIVATED       = 87,
-	NERO_PHASE_BUP_ACTIVATED                = 90,
-	NERO_PHASE_CONTINUE_FORMATTING          = 99,
-	NERO_PHASE_FORMATTING_SUCCESSFUL        = 100,
-	NERO_PHASE_DVDVIDEO_DETECTED            = 111,
-	NERO_PHASE_DVDVIDEO_REALLOC_STARTED     = 112,
-	NERO_PHASE_DVDVIDEO_REALLOC_COMPLETED   = 113,
-	NERO_PHASE_DVDVIDEO_REALLOC_NOTNEEDED   = 114, // NeroAPI > 5.5.9.3
-	NERO_PHASE_DVDVIDEO_REALLOC_FAILED      = 115  // NeroAPI > 5.5.9.3
+    NERO_PHASE_UNSPECIFIED                  = -1,
+    NERO_PHASE_START_CACHE                  = 24,
+    NERO_PHASE_DONE_CACHE                   = 25,
+    NERO_PHASE_START_TEST                   = 28,
+    NERO_PHASE_DONE_TEST                    = 29,
+    NERO_PHASE_START_SIMULATE               = 32,
+    NERO_PHASE_DONE_SIMULATE                = 33,
+    NERO_PHASE_START_WRITE                  = 36,
+    NERO_PHASE_DONE_WRITE					= 37,
+    NERO_PHASE_START_SIMULATE_NOSPD         = 61,
+    NERO_PHASE_DONE_SIMULATE_NOSPD          = 62,
+    NERO_PHASE_START_WRITE_NOSPD            = 65,
+    NERO_PHASE_DONE_WRITE_NOSPD             = 66,
+    NERO_PHASE_ENCODE_VIDEO                 = 82,
+    NERO_PHASE_SEAMLESSLINK_ACTIVATED       = 87,
+    NERO_PHASE_BUP_ACTIVATED                = 90,
+    NERO_PHASE_CONTINUE_FORMATTING          = 99,
+    NERO_PHASE_FORMATTING_SUCCESSFUL        = 100,
+    NERO_PHASE_DVDVIDEO_DETECTED            = 111,
+    NERO_PHASE_DVDVIDEO_REALLOC_STARTED     = 112,
+    NERO_PHASE_DVDVIDEO_REALLOC_COMPLETED   = 113,
+    NERO_PHASE_DVDVIDEO_REALLOC_NOTNEEDED   = 114, // NeroAPI > 5.5.9.3
+    NERO_PHASE_DVDVIDEO_REALLOC_FAILED      = 115  // NeroAPI > 5.5.9.3
   );
   TNeroMajorPhase = NERO_MAJOR_PHASE;
 
@@ -597,14 +599,14 @@ type
   NERO_SET_MAJOR_PHASE_CALLBACK = procedure(pUserData: Pointer; phase: NERO_MAJOR_PHASE; reserved: PVoid); cdecl;
 
   tag_NERO_PROGRESS = record
-	npProgressCallback: NERO_PROGRESS_CALLBACK;
-	npAbortedCallback: NERO_ABORTED_CALLBACK;
-	npAddLogLineCallback: NERO_ADD_LOG_LINE_CALLBACK;
-	npSetPhaseCallback: NERO_SET_PHASE_CALLBACK;
-	npUserData: Pointer;
-	npDisableAbortCallback: NERO_DISABLE_ABORT_CALLBACK;     { Will be called only if the NBF_DISABLE_ABORT flags is given to the NeroBurn function }
-	npSetMajorPhaseCallback: NERO_SET_MAJOR_PHASE_CALLBACK;
-	npSubTaskProgressCallback: NERO_PROGRESS_CALLBACK;       { provide the write buffer fill level }
+    npProgressCallback: NERO_PROGRESS_CALLBACK;
+    npAbortedCallback: NERO_ABORTED_CALLBACK;
+    npAddLogLineCallback: NERO_ADD_LOG_LINE_CALLBACK;
+    npSetPhaseCallback: NERO_SET_PHASE_CALLBACK;
+    npUserData: Pointer;
+    npDisableAbortCallback: NERO_DISABLE_ABORT_CALLBACK;     { Will be called only if the NBF_DISABLE_ABORT flags is given to the NeroBurn function }
+    npSetMajorPhaseCallback: NERO_SET_MAJOR_PHASE_CALLBACK;
+    npSubTaskProgressCallback: NERO_PROGRESS_CALLBACK;       { provide the write buffer fill level }
   end;
   NERO_PROGRESS = tag_NERO_PROGRESS;
   PNERO_PROGRESS = ^NERO_PROGRESS;
@@ -627,10 +629,10 @@ type
   TNeroStatusCallback = NERO_STATUS_CALLBACK;
 
   tag_NERO_IO = record
-	nioUserData: Pointer;
-	nioIOCallback: NERO_IO_CALLBACK;
-	nioEOFCallback: NERO_STATUS_CALLBACK;          // shall return TRUE if further IO calls will always fail to transfer any data, i.e. EOF reached
-	nioErrorCallback: NERO_STATUS_CALLBACK;        // shall return TRUE if an error occured during an IO call
+    nioUserData: Pointer;
+    nioIOCallback: NERO_IO_CALLBACK;
+    nioEOFCallback: NERO_STATUS_CALLBACK;          // shall return TRUE if further IO calls will always fail to transfer any data, i.e. EOF reached
+    nioErrorCallback: NERO_STATUS_CALLBACK;        // shall return TRUE if an error occured during an IO call
   end;
   NERO_IO = tag_NERO_IO;
   TNeroIO = NERO_IO;
@@ -641,11 +643,11 @@ type
 }
 
   NERO_DLG_WAITCD_MEDIA_INFO = record
-	ndwmiSize: DWORD;
-	ndwmiLastDetectedMedia: NERO_MEDIA_TYPE;
-	ndwmiRequestedMedia: NERO_MEDIA_SET;
-	ndwmiLastDetectedMediaName: PChar;
-	ndwmiRequestedMediaName: PChar;
+    ndwmiSize: DWORD;
+    ndwmiLastDetectedMedia: NERO_MEDIA_TYPE;
+    ndwmiRequestedMedia: NERO_MEDIA_SET;
+    ndwmiLastDetectedMediaName: PChar;
+    ndwmiRequestedMediaName: PChar;
   end;
   TNeroDlgWaitCDMediaInfo = NERO_DLG_WAITCD_MEDIA_INFO;
 
@@ -655,22 +657,22 @@ type
 
   PNERO_ISO_ITEM = ^NERO_ISO_ITEM;
   tag_NERO_ISO_ITEM = record
-	fileName: array[0..256 - 1] of Char;    // File name on the burnt CD
-	isDirectory: BOOL;						// Is this item a directory ?
-	isReference: BOOL;						// Is this item a reference to a file/directory of a previous session
-    // when recording RockRidge, you can set the name of a directory to be used for
-	// retrieving rockridge informations here
-	sourceFilePath: array[0..256 - 1] of Char;  // Path to the file, including file name (ignored for a directory)
-	subDirFirstItem: PNERO_ISO_ITEM;        // Point on the first item of the sub directory if the item is a directory
-                                        // Can be NULL if the directory is empty
-	                                    // (ignored for a file)
-	nextItem: PNERO_ISO_ITEM;       // Next item in the current directory
-	userData: Pointer;                  // Can be used to store additional informations
+    fileName: array[0..256 - 1] of Char;    // File name on the burnt CD
+    isDirectory: BOOL;						// Is this item a directory ?
+    isReference: BOOL;						// Is this item a reference to a file/directory of a previous session
+      // when recording RockRidge, you can set the name of a directory to be used for
+    // retrieving rockridge informations here
+    sourceFilePath: array[0..256 - 1] of Char;  // Path to the file, including file name (ignored for a directory)
+    subDirFirstItem: PNERO_ISO_ITEM;        // Point on the first item of the sub directory if the item is a directory
+                                          // Can be NULL if the directory is empty
+                                        // (ignored for a file)
+    nextItem: PNERO_ISO_ITEM;       // Next item in the current directory
+    userData: Pointer;                  // Can be used to store additional informations
 
-	// Used to reference a file from a previous session
-	dataStartSec: Longint;
-	dataLength: Int64;
-	entryTime: tm;
+    // Used to reference a file from a previous session
+    dataStartSec: Longint;
+    dataLength: Int64;
+    entryTime: tm;
     itemSize: Integer;                 // Size of the structure
     importinfo: CImportInfo;          // ImportInfo
   end;
@@ -787,10 +789,10 @@ var
 }
 type
   NERO_DATA_EXCHANGE_TYPE = (
-	NERO_ET_FILE,			{ read/write to/from WAV file. }
-	NERO_ET_IO_CALLBACK,	{ exchange data with application directly }
-	NERO_ET_FILE_MP3,		{ read from MP3 file (not for DAE) }
-	NERO_ET_FILE_WMA,		{ read from MS audio file (not for DAE) }
+    NERO_ET_FILE,			{ read/write to/from WAV file. }
+    NERO_ET_IO_CALLBACK,	{ exchange data with application directly }
+    NERO_ET_FILE_MP3,		{ read from MP3 file (not for DAE) }
+    NERO_ET_FILE_WMA,		{ read from MS audio file (not for DAE) }
     NERO_ET_FILE_RAW,       { for a Freestyle compilation,
                             * this and NERO_ET_IO_CALLBACK
                             * are the only types allowed
@@ -801,7 +803,7 @@ type
                             * This exchange type is valid
                             * for freestyle compilations only }
 
-	NERO_ET_AUDIO_FILE	{ audio file created with the plugin manager }
+  	NERO_ET_AUDIO_FILE	{ audio file created with the plugin manager }
   );
   TNeroDataExchangeType = NERO_DATA_EXCHANGE_TYPE;
 
@@ -834,15 +836,15 @@ type
 
 
   tag_NERO_AUDIO_TRACK = record
-	natPauseInBlksBeforeThisTrack: DWORD;
-	natNumIndexPositions: DWORD;
-	natRelativeIndexBlkPositions: array[0..98 - 1] of DWORD;  { offsets between one index position and the next one }
-	natTitle, natArtist: PChar;             { set to NULL if unknown or to be taken from source }
-	natSourceDataExchg: NERO_DATA_EXCHANGE;
-	natLengthInBlocks: DWORD;                { only used for NERO_IO_CALLBACK }
-	natIndex0ContainsData: BOOL;             { NeroAPI 5.5.9.8: TRUE, if audio data shall be written into index
-											  0. Data for index 0 must be provided. }
-	natReserved: array[0..31 - 1] of DWORD;  { Should be zero }
+    natPauseInBlksBeforeThisTrack: DWORD;
+    natNumIndexPositions: DWORD;
+    natRelativeIndexBlkPositions: array[0..98 - 1] of DWORD;  { offsets between one index position and the next one }
+    natTitle, natArtist: PChar;             { set to NULL if unknown or to be taken from source }
+    natSourceDataExchg: NERO_DATA_EXCHANGE;
+    natLengthInBlocks: DWORD;                { only used for NERO_IO_CALLBACK }
+    natIndex0ContainsData: BOOL;             { NeroAPI 5.5.9.8: TRUE, if audio data shall be written into index
+                          0. Data for index 0 must be provided. }
+    natReserved: array[0..31 - 1] of DWORD;  { Should be zero }
   end;
   NERO_AUDIO_TRACK = tag_NERO_AUDIO_TRACK;
   TNeroAudioTrack = NERO_AUDIO_TRACK;
@@ -856,12 +858,12 @@ type
 
   tag_NERO_FREESTYLE_TRACK = record
     nftStructureSize: DWORD;                  { size of this structure, to ensure binary compatibility }
-	nftPauseInBlksBeforeThisTrack: DWORD;
-	nftNumIndexPositions: DWORD;
-	nftRelativeIndexBlkPositions: array[0..98 - 1] of DWORD;  { offsets between one index position and the next one }
-	nftTitle, nftArtist: PChar;               { set to NULL if unknown or to be taken from source }
-	nftSourceDataExchg: NERO_DATA_EXCHANGE;   { source for raw track data }
-	nftLengthInBlocks: DWORD;                 { only used for NERO_IO_CALLBACK }
+    nftPauseInBlksBeforeThisTrack: DWORD;
+    nftNumIndexPositions: DWORD;
+    nftRelativeIndexBlkPositions: array[0..98 - 1] of DWORD;  { offsets between one index position and the next one }
+    nftTitle, nftArtist: PChar;               { set to NULL if unknown or to be taken from source }
+    nftSourceDataExchg: NERO_DATA_EXCHANGE;   { source for raw track data }
+    nftLengthInBlocks: DWORD;                 { only used for NERO_IO_CALLBACK }
     nftTracktype: NERO_TRACKMODE_TYPE;        { specifies track type to be written }
   end;
   NERO_FREESTYLE_TRACK = tag_NERO_FREESTYLE_TRACK;
