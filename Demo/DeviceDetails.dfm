@@ -100,6 +100,7 @@ object FDeviceInformation: TFDeviceInformation
     Top = 8
     Width = 273
     Height = 17
+    Alignment = taCenter
     AutoSize = False
     BorderStyle = sbsSunken
     TabOrder = 2
@@ -130,6 +131,7 @@ object FDeviceInformation: TFDeviceInformation
     Width = 75
     Height = 25
     Caption = '&Close'
+    Default = True
     TabOrder = 5
     OnClick = btnCloseClick
   end

@@ -115,7 +115,7 @@ begin
   lbxMediaTypes.Clear;
   Devices := NeroGetTypeNameOfMedia(NeroDeviceInfo.nsdiMediaSupport);
   if Devices = '' then
-    lbxMediaTypes.Items.Add('No writable media supported')
+    lbxMediaTypes.Items.Add('No writeable media supported')
   else
   begin
     while LastDelimiter(';', Devices) > 0 do

@@ -66,6 +66,12 @@ type
     btnMoreDevice: TButton;
     cbWriteSpeeds: TComboBox;
     lbWriteSpeeds: TLabel;
+    gbMedia: TGroupBox;
+    stMedia: TStaticText;
+    btnRefresh: TButton;
+    btnMoreMedia: TButton;
+    lbFreeBlocks: TLabel;
+    lbTracks: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ApplicationEventsShowHint(var HintStr: String;
@@ -73,13 +79,15 @@ type
     procedure cbDevicesChange(Sender: TObject);
     procedure btnMoreDeviceClick(Sender: TObject);
     procedure cbDevicesCloseUp(Sender: TObject);
+    procedure btnRefreshClick(Sender: TObject);
+    procedure btnMoreMediaClick(Sender: TObject);
   private
     { Private declarations }
   protected
-    NeroDeviceHandle: NERO_DEVICEHANDLE;
-    NeroSettings: PNeroSettings;
   public
     NeroDeviceInfos: PNeroSCSIDeviceInfos;
+    NeroSettings: PNeroSettings;
+    NeroDeviceHandle: NERO_DEVICEHANDLE;
     NeroCDInfo: PNeroCDInfo;
   end;
 
@@ -91,7 +99,7 @@ var
 
 implementation
 
-uses DeviceDetails, Registry;
+uses DeviceDetails, Registry, MediaInformation;
 
 {$R *.dfm}
 
@@ -191,6 +199,7 @@ begin
     else
       cbDevices.Items.Add(NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDeviceName + ' (' + UpperCase(NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDriveLetter) + ':)');
   end;
+  cbDevices.Enabled := (cbDevices.Items.Count > 0);
 
   for DeviceCount := 0 to NeroDeviceInfos.nsdisNumDevInfos - 1 do
     if NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiWriteSpeeds.nsiNumSupportedSpeeds > 0 then
@@ -211,7 +220,9 @@ begin
 
     cbWriteSpeeds.ItemIndex := cbWriteSpeeds.Items.Count - 1;
 
-    NeroDeviceHandle := NeroOpenDevice(@NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex]);
+    btnRefresh.Enabled := True;
+
+    cbDevicesCloseUp(self);
   end;
 end;
 
@@ -257,7 +268,19 @@ begin
     lbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
 
     cbWriteSpeeds.ItemIndex := cbWriteSpeeds.Items.Count - 1;
+    btnRefresh.Enabled := True;
+  end
+  else
+  begin
+    btnRefresh.Enabled := False;
+    cbWriteSpeeds.Enabled := False;
+    btnMoreDevice.Enabled := False;
+    btnMoreMedia.Enabled := False;
+    stMedia.Caption := 'Device not selected';
+    stMedia.Enabled := False;
+    lbWriteSpeeds.Enabled := False;
   end;
+
 end;
 
 procedure TFMainForm.btnMoreDeviceClick(Sender: TObject);
@@ -271,6 +294,51 @@ begin
     NeroCloseDevice(NeroDeviceHandle);
 
   NeroDeviceHandle := NeroOpenDevice(@NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex]);
+
+  btnRefreshClick(self);
+end;
+
+procedure TFMainForm.btnRefreshClick(Sender: TObject);
+begin
+  if Assigned(NeroDeviceHandle) then
+  begin
+    if Assigned(NeroCDInfo) then
+      NeroFreeMem(NeroCDInfo);
+
+    NeroCDInfo := NeroGetCDInfo(NeroDeviceHandle, NGCDI_READ_CD_TEXT or NGCDI_READ_ISRC);
+    if Assigned(NeroCDInfo) then
+    begin
+      case(NeroCDInfo.ncdiMediumType) of
+        NMT_CD_RECORDABLE: stMedia.Caption := 'Recordable media ';
+        NMT_CD_REWRITEABLE: stMedia.Caption := 'Rewriteable media ';
+        NMT_CD_ROM: stMedia.Caption := 'Read-only media ';
+        NMT_UNKNOWN: stMedia.Caption := 'Unknown media type ';
+      end;
+      stMedia.Caption := stMedia.Caption + '(' + NeroGetTypeNameOfMedia(NERO_MEDIA_SET(NeroCDInfo.ncdiMediaType)) + ')';
+
+      btnMoreMedia.Enabled := True;
+      lbFreeBlocks.Caption := IntToStr(NeroCDInfo.ncdiFreeCapacityInBlocks) + ' Free Blocks';
+      lbFreeBlocks.Visible := NeroCDInfo.ncdiIsWriteable;
+      if NeroCDInfo.ncdiNumTracks > 1 then
+        lbTracks.Caption := IntToStr(NeroCDInfo.ncdiNumTracks) + ' Tracks'
+      else
+        lbTracks.Caption := IntToStr(NeroCDInfo.ncdiNumTracks) + ' Track';
+        
+      lbTracks.Visible := (NeroCDInfo.ncdiNumTracks > 0);
+    end
+    else
+    begin
+      btnMoreMedia.Enabled := False;
+      stMedia.Caption := 'No midia inserted';
+      lbTracks.Visible := False;
+      lbFreeBlocks.Visible := False;
+    end;
+  end;
+end;
+
+procedure TFMainForm.btnMoreMediaClick(Sender: TObject);
+begin
+  FMediaInfo.ShowModal;
 end;
 
 end.
