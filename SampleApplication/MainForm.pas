@@ -54,9 +54,7 @@ type
     sbMain: TStatusBar;
     ApplicationEvents: TApplicationEvents;
     gbDevices: TGroupBox;
-    cbDevices: TComboBox;
     btnMoreDevice: TButton;
-    cbWriteSpeeds: TComboBox;
     lbWriteSpeeds: TLabel;
     gbMedia: TGroupBox;
     stMedia: TStaticText;
@@ -129,13 +127,14 @@ type
     cbxCDROMMode2: TCheckBox;
     cbxCDROMUseAllSpace: TCheckBox;
     cbxCDROMDVDVideoRealloc: TCheckBox;
+    dnapiSettings: TdnapiSettings;
+    dnapiDevices: TdnapiDevicesComboBox;
+    dnapiDeviceSpeed: TdnapiDeviceSpeedComboBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ApplicationEventsShowHint(var HintStr: String;
       var CanShow: Boolean; var HintInfo: THintInfo);
-    procedure cbDevicesChange(Sender: TObject);
     procedure btnMoreDeviceClick(Sender: TObject);
-    procedure cbDevicesCloseUp(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnMoreMediaClick(Sender: TObject);
     procedure btnEraseClick(Sender: TObject);
@@ -151,6 +150,9 @@ type
     procedure btnBurnImageClick(Sender: TObject);
     procedure btnBurnISOCDClick(Sender: TObject);
     procedure btnSVCDBurnClick(Sender: TObject);
+    procedure dnapiSettingsError(Sender: TObject; Message: String);
+    procedure dnapiDevicesChange(Sender: TObject);
+    procedure dnapiDevicesCloseUp(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -163,15 +165,12 @@ type
     NeroIsoTrack: CNeroIsoTrack;
     RootIsoItem: PNeroIsoItem;
 
-    NeroSettings: PNeroSettings;
-    NeroDeviceHandle: NERO_DEVICEHANDLE;
     NeroProgress: NERO_PROGRESS;
     NeroCDInfo: PNeroCDInfo;
     NeroWriteCD: PNeroWriteCD;
     NeroWriteVideoCD: PNeroWriteVideoCD;
     NeroWriteFreestyleCD: PNeroWriteFreestyleCD;
     NeroWriteImage: PNeroWriteImage;
-    NeroDeviceInfos: PNeroSCSIDeviceInfos;
 
     procedure NeroError(Action: String);
   end;
@@ -651,128 +650,20 @@ var
   lpVerInfo, lpVS_FixedFileInfo: Pointer;
   Counter: Integer;
   nafi: PNeroAudioFormatInfo;
-  ver1, ver2, ver3,ver4: WORD;
-  initErr: NEROAPI_INIT_ERROR;
-  Callback_1, Callback_2: NERO_CALLBACK;
-  DeviceCount: Integer;
-  Registry: TRegistry;
 begin
   NeroIsoTrack := nil;
   RootIsoItem := nil;
 
-  NeroDeviceHandle := nil;
-  NeroDeviceInfos := nil;
   NeroCDInfo := nil;
   NeroWriteCD := nil;
   NeroWriteVideoCD := nil;
   NeroWriteImage := nil;
   NeroWriteFreestyleCD := nil;
-  NeroSettings := nil;
   sbMain.SimplePanel := true;
 
-  if (NeroAPIGlueConnect(nil)) then
-    sbMain.SimpleText := 'Connected to NeroAPI !'
-  else
-  begin
-    sbMain.SimpleText := 'Cannot connect to NeroAPI !';
-    exit;
-  end;
+  dnapiSettings.Active := True;
 
-	if (NeroGetAPIVersionEx(ver1, ver2, ver3, ver4, nil)) then
-    sbMain.SimpleText :=  'Nero API version ' + IntToStr(ver1) + '.' +
-      IntToStr(ver2) + '.' + IntToStr(ver3) + '.' + IntToStr(ver4)
-  else
-  begin
-    sbMain.SimpleText := 'Could not get NeroAPI version number !';
-    exit;
-  end;
-
-  NeroSettings := AllocMem(sizeof(TNeroSettings));
-
-
-  Registry := TRegistry.Create(KEY_READ);
-  Registry.RootKey := HKEY_LOCAL_MACHINE;
-  Registry.OpenKey('SOFTWARE\Ahead\Shared', False);
-  NeroSettings.nstNeroFilesPath := PAnsiChar(Registry.ReadString('NeroAPI'));
-  Registry.Free;
-
-  NeroSettings.nstVendor := '';
-  NeroSettings.nstSoftware := 'ahead';
-  NeroSettings.nstLanguageFile := 'nero.txt';
-
-  Callback_1.ncCallbackFunction := @IdleCallback;
-  Callback_1.ncUserData := nil;
-  NeroSettings.nstIdle :=  Callback_1;
-
-  Callback_2.ncCallbackFunction := @UserDialog;
-  Callback_2.ncUserData := nil;
-  NeroSettings.nstUserDialog := Callback_2;
-
-  NeroSettings.nstEnableOverburn := False;
-  NeroSettings.nstOverburnSize := 0;
-
-  initErr := NeroInit(@NeroSettings, nil);
-  case (initErr) of
-    NEROAPI_INIT_OK: begin end;
-    NEROAPI_INIT_INVALID_ARGS:
-      sbMain.SimpleText := 'NeroInit() : invalid args';
-    NEROAPI_INIT_INVALID_SERIAL_NUM:
-      sbMain.SimpleText := 'NeroInit() : invalid serial number';
-    NEROAPI_INIT_DEMOVERSION_EXPIRED:
-      sbMain.SimpleText := 'NeroInit() : demo version has expired';
-    NEROAPI_INIT_CANNOT_LOCK:
-      sbMain.SimpleText := 'NeroInit() : cannot lock';
-    NEROAPI_INIT_UNSPECIFIED_ERROR:
-      sbMain.SimpleText := 'NeroInit() : unspecified error';
-  else
-    sbMain.SimpleText := 'NeroInit() : unspecified error';
-  end;
-
-  if initErr <> NEROAPI_INIT_OK then
-    Exit;
-
-  NeroDeviceInfos := PNeroSCSIDeviceInfos(NeroGetAvailableDrivesEx(MEDIA_CD, nil));
-	if not Assigned(NeroDeviceInfos) then
-		sbMain.SimpleText := 'NeroGetAvailableDrives()';
-
-  for DeviceCount := 0 to NeroDeviceInfos.nsdisNumDevInfos - 1 do
-  begin
-    if NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDriveLetter = #0 then
-      cbDevices.Items.Add(NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDeviceName)
-    else
-      cbDevices.Items.Add(NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDeviceName + ' (' + UpperCase(NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDriveLetter) + ':)');
-  end;
-  cbDevices.Enabled := (cbDevices.Items.Count > 0);
-
-  for DeviceCount := 0 to NeroDeviceInfos.nsdisNumDevInfos - 1 do
-    if NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiWriteSpeeds.nsiNumSupportedSpeeds > 0 then
-    begin
-      cbDevices.ItemIndex := DeviceCount;
-      btnMoreDevice.Enabled := True;
-
-      break;
-    end;
-
-  if cbDevices.ItemIndex > -1 then
-  begin
-    cbWriteSpeeds.Clear;
-    for DeviceCount := 0 to NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiNumSupportedSpeeds - 1 do
-      cbWriteSpeeds.Items.Add(FloatToStrF(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount] / NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiBaseSpeedKBs, ffFixed, 0, 0) + 'x (' + IntToStr(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount]) + ' KB/s)' );
-    cbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
-    lbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
-
-    cbWriteSpeeds.ItemIndex := cbWriteSpeeds.Items.Count - 1;
-
-    btnRefresh.Enabled := True;
-
-    cbDevicesCloseUp(self);
-  end;
-
-  if NeroGetAPIVersionEx(ver1, ver2, ver3, ver4, nil) then
-  begin
-    lbVersion01.Caption :=  '* Nero API Version ' + IntToStr(ver1) + '.' +
-      IntToStr(ver2) + '.' + IntToStr(ver3) + '.' + IntToStr(ver4);
-  end;
+  sbMain.SimpleText := dnapiSettings.NeroAPIVersion;
 
   lpdwSize := GetFileVersionInfoSize(PAnsiChar(Application.ExeName), lpdwHandle);
   if lpdwSize > 0  then
@@ -827,7 +718,7 @@ begin
   NeroProgress.npAbortedCallback := AbortedCallback;
   NeroProgress.npAddLogLineCallback := AddLogLine;
   NeroProgress.npSetPhaseCallback := SetPhaseCallback;
-  NeroProgress.npUserData := NeroSettings;
+  NeroProgress.npUserData := dnapiSettings.NeroSettings;
   NeroProgress.npDisableAbortCallback := DisableAbortCallback;
   NeroProgress.npSetMajorPhaseCallback := SetMajorPhaseCallback;
 end;
@@ -835,12 +726,6 @@ end;
 procedure TFMainForm.FormDestroy(Sender: TObject);
 begin
   DragAcceptFiles(self.WindowHandle, False);
-
-  if Assigned(NeroDeviceHandle) then
-    NeroCloseDevice(NeroDeviceHandle);
-
-  if Assigned(NeroDeviceInfos) then
-  	NeroFreeMem(NeroDeviceInfos);
 
   if Assigned(NeroWriteCD) then
   	ReallocMem(NeroWriteCD, 0);
@@ -857,19 +742,13 @@ begin
   if Assigned(NeroCDInfo) then
   	NeroFreeMem(NeroCDInfo);
 
-  if Assigned(NeroSettings) then
-    ReallocMem(NeroSettings, 0);
-
   if Assigned(NeroIsoTrack) then
     NeroFreeIsoTrack(NeroIsoTrack);
 
   if Assigned(RootIsoItem) then
     FreeIsoItem(RootIsoItem);
 
-	NeroClearErrors;
-	NeroDone;
-
-	NeroAPIGlueDone;
+  dnapiSettings.Active := False;
 end;
 
 procedure TFMainForm.ApplicationEventsShowHint(var HintStr: String;
@@ -879,61 +758,19 @@ begin
 		sbMain.SimpleText := Application.Hint;
 end;
 
-procedure TFMainForm.cbDevicesChange(Sender: TObject);
-var
-  DeviceCount: Integer;
-begin
-  btnMoreDevice.Enabled := (cbDevices.ItemIndex <> -1);
-
-  if cbDevices.ItemIndex > -1 then
-  begin
-    cbWriteSpeeds.Clear;
-    for DeviceCount := 0 to NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiNumSupportedSpeeds - 1 do
-      cbWriteSpeeds.Items.Add(FloatToStrF(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount] / NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiBaseSpeedKBs, ffFixed, 0, 0) + 'x (' + IntToStr(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount]) + ' KB/s)' );
-    cbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
-    lbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
-
-    cbWriteSpeeds.ItemIndex := cbWriteSpeeds.Items.Count - 1;
-    cbxBufferUnderrun.Checked := NeroDeviceInfos.nsdisDevInfos[FMainForm.cbDevices.itemIndex].nsdiMandatoryBUPSpeed > 0;
-
-    btnRefresh.Enabled := True;
-  end
-  else
-  begin
-    btnRefresh.Enabled := False;
-    cbWriteSpeeds.Enabled := False;
-    btnMoreDevice.Enabled := False;
-    btnMoreMedia.Enabled := False;
-    stMedia.Caption := 'Device not selected';
-    stMedia.Enabled := False;
-    lbWriteSpeeds.Enabled := False;
-  end;
-
-end;
-
 procedure TFMainForm.btnMoreDeviceClick(Sender: TObject);
 begin
   FDeviceInformation.ShowModal;
 end;
 
-procedure TFMainForm.cbDevicesCloseUp(Sender: TObject);
-begin
-  if Assigned(NeroDeviceHandle) then
-    NeroCloseDevice(NeroDeviceHandle);
-
-  NeroDeviceHandle := NeroOpenDevice(@NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex]);
-
-  btnRefreshClick(self);
-end;
-
 procedure TFMainForm.btnRefreshClick(Sender: TObject);
 begin
-  if Assigned(NeroDeviceHandle) then
+  if Assigned(dnapiDevices.SelectedDeviceHandle) then
   begin
     if Assigned(NeroCDInfo) then
       NeroFreeMem(NeroCDInfo);
 
-    NeroCDInfo := NeroGetCDInfo(NeroDeviceHandle, NGCDI_READ_CD_TEXT or NGCDI_READ_ISRC);
+    NeroCDInfo := NeroGetCDInfo(dnapiDevices.SelectedDeviceHandle, NGCDI_READ_CD_TEXT or NGCDI_READ_ISRC);
     if Assigned(NeroCDInfo) then
     begin
       case(NeroCDInfo.ncdiMediumType) of
@@ -979,7 +816,7 @@ procedure TFMainForm.btnEraseClick(Sender: TObject);
 var
   Time: Integer;
 begin
-  Time := NeroGetCDRWErasingTime(NeroDeviceHandle, NEROAPI_ERASE_ENTIRE);
+  Time := NeroGetCDRWErasingTime(dnapiDevices.SelectedDeviceHandle, NEROAPI_ERASE_ENTIRE);
   if (Time = -1) then
     NeroError('No CD inserted')
   else
@@ -989,7 +826,7 @@ begin
       if (Time = -3) then
         NeroError('This media is not rewritable');
   sbMain.SimpleText := 'Erasing CD-RW. This will take ' + IntToStr(Time) + ' seconds.';
-  time := NeroEraseCDRW(NeroDeviceHandle, NEROAPI_ERASE_ENTIRE);
+  time := NeroEraseCDRW(dnapiDevices.SelectedDeviceHandle, NEROAPI_ERASE_ENTIRE);
   if (Time <> 0) then
     NeroError('Error erasing the CD-RW');
 
@@ -998,7 +835,7 @@ end;
 
 procedure TFMainForm.btnEjectClick(Sender: TObject);
 begin
-  NeroEjectLoadCD(NeroDeviceHandle, true);
+  NeroEjectLoadCD(dnapiDevices.SelectedDeviceHandle, true);
   btnLoad.Enabled := True;
   btnEject.Enabled := False;
   btnRefreshClick(Sender);
@@ -1021,7 +858,7 @@ procedure TFMainForm.btnQuickEraseClick(Sender: TObject);
 var
   Time: Integer;
 begin
-  Time := NeroGetCDRWErasingTime(NeroDeviceHandle, NEROAPI_ERASE_QUICK);
+  Time := NeroGetCDRWErasingTime(dnapiDevices.SelectedDeviceHandle, NEROAPI_ERASE_QUICK);
   if (Time = -1) then
     NeroError('No CD inserted')
   else
@@ -1031,7 +868,7 @@ begin
       if (Time = -3) then
         NeroError('This media is not rewritable');
   sbMain.SimpleText := 'Erasing CD-RW. This will take ' + IntToStr(Time) + ' seconds.';
-  time := NeroEraseCDRW(NeroDeviceHandle, NEROAPI_ERASE_QUICK);
+  time := NeroEraseCDRW(dnapiDevices.SelectedDeviceHandle, NEROAPI_ERASE_QUICK);
   if (Time <> 0) then
     NeroError('Error erasing the CD-RW');
 
@@ -1311,7 +1148,7 @@ begin
 end;
 procedure TFMainForm.btnLoadClick(Sender: TObject);
 begin
-  NeroEjectLoadCD(NeroDeviceHandle, false);
+  NeroEjectLoadCD(dnapiDevices.SelectedDeviceHandle, false);
   btnRefreshClick(Sender);
   btnLoad.Enabled := False;
   btnEject.Enabled := False;
@@ -1538,9 +1375,8 @@ begin
     end;
   end;
 
-  NeroBurn(NeroDeviceHandle, NERO_ISO_AUDIO_CD, NeroWriteCD, Flags,
-    NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
-    @NeroProgress);
+  NeroBurn(dnapiDevices.SelectedDeviceHandle, NERO_ISO_AUDIO_CD, NeroWriteCD, Flags,
+    dnapiDeviceSpeed.SpeedKBs, @NeroProgress);
 
 	for Counter := 0 to NeroWriteCD.nwcdNumTracks do
   begin
@@ -1628,9 +1464,8 @@ begin
     end;
   end;
 
-  NeroBurn(NeroDeviceHandle, NERO_BURN_IMAGE_CD, NeroWriteImage, Flags,
-    NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
-    @NeroProgress);
+  NeroBurn(dnapiDevices.SelectedDeviceHandle, NERO_BURN_IMAGE_CD, NeroWriteImage, Flags,
+    dnapiDeviceSpeed.SpeedKBs, @NeroProgress);
 
   if Assigned(NeroWriteImage) then
     ReallocMem(NeroWriteImage, 0);
@@ -1685,9 +1520,8 @@ begin
     end;
   end;
 
-  NeroBurn(NeroDeviceHandle, NERO_ISO_AUDIO_CD, NeroWriteCD, Flags,
-    NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
-    @NeroProgress);
+  NeroBurn(dnapiDevices.SelectedDeviceHandle, NERO_ISO_AUDIO_CD, NeroWriteCD, Flags,
+    dnapiDeviceSpeed.SpeedKBs, @NeroProgress);
 
   if Assigned(NeroWriteCD) then
     ReallocMem(NeroWriteCD, 0);
@@ -1844,9 +1678,8 @@ begin
     end;
   end;
 
-  NeroBurn(NeroDeviceHandle, NERO_VIDEO_CD, NeroWriteVideoCD, Flags,
-    NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
-    @NeroProgress);
+  NeroBurn(dnapiDevices.SelectedDeviceHandle, NERO_VIDEO_CD, NeroWriteVideoCD, Flags,
+    dnapiDeviceSpeed.SpeedKBs, @NeroProgress);
 
   if Assigned(NeroWriteVideoCD) then
     ReallocMem(NeroWriteVideoCD, 0);
@@ -1867,6 +1700,37 @@ begin
   rgType.ItemIndex := 0;
 
   pcWrite.TabIndex := pcWrite.PageCount - 1;
+end;
+
+procedure TFMainForm.dnapiSettingsError(Sender: TObject; Message: String);
+begin
+  ShowMessage(Message);
+end;
+
+procedure TFMainForm.dnapiDevicesChange(Sender: TObject);
+begin
+  btnMoreDevice.Enabled := dnapiDevices.Active;
+
+  if dnapiDevices.Active then
+  begin
+    cbxBufferUnderrun.Checked := dnapiDevices.SelectedDevice.nsdiMandatoryBUPSpeed > 0;
+
+    btnRefresh.Enabled := True;
+  end
+  else
+  begin
+    btnRefresh.Enabled := False;
+    btnMoreDevice.Enabled := False;
+    btnMoreMedia.Enabled := False;
+    stMedia.Caption := 'Device not selected';
+    stMedia.Enabled := False;
+    lbWriteSpeeds.Enabled := False;
+  end;
+end;
+
+procedure TFMainForm.dnapiDevicesCloseUp(Sender: TObject);
+begin
+  btnRefreshClick(self);
 end;
 
 end.

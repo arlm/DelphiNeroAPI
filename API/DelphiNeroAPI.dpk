@@ -30,7 +30,6 @@ requires
   vcl;
 
 contains
-  dnapiComponents in 'dnapiComponents.pas',
   dnapiIsoTrack in 'dnapiIsoTrack.pas',
   NeroUserDialog in 'NeroUserDialog.pas',
   FileSystemBlockAccessInterface in 'FileSystemBlockAccessInterface.pas',
@@ -40,6 +39,7 @@ contains
   NeroFileSystemContent in 'NeroFileSystemContent.pas',
   NeroIsoTrack in 'NeroIsoTrack.pas',
   NeroPacketWriting in 'NeroPacketWriting.pas',
-  FileSystemBlockAccessExtensions in 'FileSystemBlockAccessExtensions.pas';
+  FileSystemBlockAccessExtensions in 'FileSystemBlockAccessExtensions.pas',
+  dnapiComponents in 'dnapiComponents.pas';
 
 end.

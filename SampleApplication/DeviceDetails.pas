@@ -67,7 +67,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
   private
-    NeroDeviceInfo: TNeroSCSIDeviceInfo;
+    NeroDeviceInfo: PNeroSCSIDeviceInfo;
   public
     { Public declarations }
   end;
@@ -86,7 +86,7 @@ var
   Counter: Integer;
   Devices: String;
 begin
-  NeroDeviceInfo := FMainForm.NeroDeviceInfos.nsdisDevInfos[FMainForm.cbDevices.itemIndex];
+  NeroDeviceInfo := FMainForm.dnapiDevices.SelectedDevice;
 
   if NeroDeviceInfo.nsdiDriveLetter = #0 then
     stName.Caption := NeroDeviceInfo.nsdiDeviceName

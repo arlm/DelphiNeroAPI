@@ -47,20 +47,6 @@ object FMainForm: TFMainForm
       Width = 65
       Height = 13
       Caption = 'Device Name'
-      FocusControl = cbDevices
-    end
-    object cbDevices: TComboBox
-      Left = 80
-      Top = 16
-      Width = 193
-      Height = 21
-      Hint = 'Avaible Devices|Choose one device to perform tests'
-      Style = csDropDownList
-      Enabled = False
-      ItemHeight = 13
-      TabOrder = 0
-      OnChange = cbDevicesChange
-      OnCloseUp = cbDevicesCloseUp
     end
     object btnMoreDevice: TButton
       Left = 276
@@ -78,17 +64,29 @@ object FMainForm: TFMainForm
       Font.Name = 'MS Sans Serif'
       Font.Style = [fsBold]
       ParentFont = False
-      TabOrder = 1
+      TabOrder = 0
       OnClick = btnMoreDeviceClick
     end
-    object cbWriteSpeeds: TComboBox
+    object dnapiDevices: TdnapiDevicesComboBox
+      Left = 80
+      Top = 16
+      Width = 193
+      Height = 21
+      Active = False
+      Settings = dnapiSettings
+      DeviceSpeeds = dnapiDeviceSpeed
+      ItemHeight = 13
+      TabOrder = 1
+      OnChange = dnapiDevicesChange
+      OnCloseUp = dnapiDevicesCloseUp
+    end
+    object dnapiDeviceSpeed: TdnapiDeviceSpeedComboBox
       Left = 80
       Top = 40
       Width = 193
       Height = 21
-      Hint = 'Avaible Write Speeds|Choose the speed you want to burn'
-      Style = csDropDownList
-      Enabled = False
+      Device = dnapiDevices
+      Active = False
       ItemHeight = 13
       TabOrder = 2
     end
@@ -675,5 +673,18 @@ object FMainForm: TFMainForm
   end
   object ApplicationEvents: TApplicationEvents
     OnShowHint = ApplicationEventsShowHint
+    Left = 8
+  end
+  object dnapiSettings: TdnapiSettings
+    Active = False
+    Devices = dnapiDevices
+    NeroAPIVersion = 'NeroAPI not active'
+    NeroFilesPath = 'C:\Program Files\Ahead\Nero'
+    Software = 'ahead'
+    LanguageFile = 'nero.txt'
+    EnableOverburn = False
+    OverburnSize = 0
+    OnError = dnapiSettingsError
+    Left = 40
   end
 end

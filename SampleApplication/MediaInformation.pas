@@ -95,7 +95,7 @@ var
   TrackCount: Integer;
   Session, Node: TTreeNode;
 begin
-  if Assigned(FMainForm.NeroDeviceHandle) then
+  if Assigned(FMainForm.dnapiDevices.SelectedDeviceHandle) then
   begin
     if Assigned(FMainForm.NeroCDInfo) then
     begin
@@ -207,7 +207,7 @@ begin
   begin
     NeroCallBack := AllocMem(SizeOf(TNeroCallBack));
     NeroCallback.ncCallbackFunction := @TrackReadProgressCallback;
-    NeroCallBack.ncUserData := FMainForm.NeroSettings;
+    NeroCallBack.ncUserData := FMainForm.dnapiSettings.NeroSettings;
 
     Buffer := LeftStr(tvTracks.Selected.Text, 9);
     Buffer := RightStr(Buffer, Length(Buffer) - LastDelimiter('#', Buffer));
@@ -243,9 +243,9 @@ begin
     pbProgress.Position := 0;
     pbProgress.Max := FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackLengthInBlks;
 
-    NeroDAE(FMainForm.NeroDeviceHandle, FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackStartBlk,
+    NeroDAE(FMainForm.dnapiDevices.SelectedDeviceHandle, FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackStartBlk,
       FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackLengthInBlks, Exchange,
-      FMainForm.NeroDeviceInfos.nsdisDevInfos[FMainForm.cbDevices.itemIndex].nsdiReadSpeeds.nsiSupportedSpeedsKBs[FMainForm.NeroDeviceInfos.nsdisDevInfos[FMainForm.cbDevices.itemIndex].nsdiReadSpeeds.nsiNumSupportedSpeeds - 1],
+      FMainForm.dnapiDevices.SelectedDevice.nsdiReadSpeeds.nsiSupportedSpeedsKBs[FMainForm.dnapiDevices.SelectedDevice.nsdiReadSpeeds.nsiNumSupportedSpeeds - 1],
       NeroCallBack);
 
     NeroFreeMem(NeroCallBack);
