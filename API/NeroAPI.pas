@@ -57,6 +57,9 @@
 |* 25/03/2004: Modified
 |*    Erik van Pienbroek
 |*    corrected NERO_ISO_ITEM.fileName and NERO_ISO_ITEM.sourceFilePath length
+|* 2004-07-23: Modified
+|*    Andreas Hausladen
+|*    NeroAPI SDK v1.05
 |*
 ******************************************************************************}
 
@@ -192,8 +195,8 @@ const
   {$IFDEF NERO_6}
   NEROAPI_VERSION_MAJOR_HIGH = 6;
   NEROAPI_VERSION_MAJOR_LOW  = 3;
-  NEROAPI_VERSION_MINOR_HIGH = 0;
-  NEROAPI_VERSION_MINOR_LOW  = 0;
+  NEROAPI_VERSION_MINOR_HIGH = 1;
+  NEROAPI_VERSION_MINOR_LOW  = 4;
   {$ELSE}
   NEROAPI_VERSION_MAJOR_HIGH = 5;
   NEROAPI_VERSION_MAJOR_LOW  = 5;
@@ -379,7 +382,6 @@ type
     MEDIA_DVD_M         = $00004,           // DVD-R/RW
     MEDIA_DVD_P         = $00008,           // DVD+RW
     MEDIA_DVD_RAM       = $00010,           // DVD-RAM
-    MEDIA_DVD_ANY       = MEDIA_DVD_M or MEDIA_DVD_P,   // Any DVD-Recorder
     MEDIA_ML            = $00020,           // ML (Multi Level disc)
     MEDIA_MRW           = $00040,           // Mt. Rainier
 
@@ -404,8 +406,12 @@ type
     MEDIA_VPACKET       = $10000,           // Variable Packetwriting
     MEDIA_PACKETW       = MEDIA_MRW or MEDIA_FPACKET    // a bit mask for packetwriting
                           or MEDIA_VPACKET,
-      //NeroAPI>=5.5.10.4
-    MEDIA_HDB           = $20000            // HD-Burn
+    //NeroAPI>=5.5.10.4
+    MEDIA_HDB           = $20000,           // HD-Burn
+
+    //NeroAPI>=6.0.0.29
+    MEDIA_DVD_P_R9      = $40000,
+    MEDIA_DVD_ANY       = MEDIA_DVD_M or MEDIA_DVD_P or MEDIA_DVD_RAM or MEDIA_DVD_P_R9 // Any DVD-Media
   );
 {$WARNINGS ON}
   NERO_MEDIA_TYPE = tag_NERO_MEDIA_TYPE;
@@ -431,7 +437,6 @@ const                                       { drive capabilities: }
   NSDI_ALLOW_CHANGE_BOOKTYPE  = (1 shl 13); { NeroAPI >5.5.10.7: DVD recorder can change booktype of burned medium }
   {$IFDEF NERO_6}
   NSDI_DVDPLUSVR_SUPPORTED    = (1 shl 14); { NeroAPI >= 6.0.0.0: This recorder can write DVD+VR }
-  NSDI_RESERVED3              = (1 shl 15); { Must not be used }
   {$ENDIF NERO_6}
 
 type
@@ -546,15 +551,40 @@ type
     {$IFDEF NERO_6}
     NERO_DEVICEOPTION_BOOKTYPE_DVDROM = 0,
 
-    {
-     * NeroAPI >= 6.0.0.24:
+    {* Set the number of blocks after that to switch from layer 0
+     * to layer 1 when writing on a double layer medium.
+     * Notes:
+     * - the number of blocks must be a multiple of 16
+     * - the layer 0 must be >= totalDataSize/2, because there can
+     *   never be more data on layer 1 than on layer 0.
+     *
+     * In NeroSetDeviceOption value is a pointer to a DWORD variable.
+     * In NeroGetDeviceOption a pointer to a DWORD is returned.
+     *}
+    NERO_DEVICEOPTION_LAYERSWITCH = 1,
+
+    {* NeroAPI >= 6.0.0.24:
      * Set the booktype of the next DVD+R and DVD+RW that is written
      * to DVD-ROM. This option is useful, if you do packetwriting. If you
      * call NeroBurn you have to use the NBF_BOOKTYPE_DVDROM flag or
      * NBF_NO_BOOKTYPE_CHANGE flag.
      * void* is a pointer to BOOL in Nero(Set|Get)DeviceOption.
      *}
-    NERO_DEVICEOPTION_BOOKTYPE_DVDROM_NEXT_WRITE = 2
+    NERO_DEVICEOPTION_BOOKTYPE_DVDROM_NEXT_WRITE = 2,
+
+    {* Set the number of blocks after that to switch from layer 0
+     * to layer 1 when writing on a double layer medium. In difference to
+     * NERO_DEVICEOPTION_LAYERSWITCH the layer break is written
+     * immediately to the disc, while otherwise it is set during burning.
+     * Notes:
+     * - the number of blocks must be a multiple of 16
+     * - the layer 0 must be >= totalDataSize/2, because there can
+     *   never be more data on layer 1 than on layer 0.
+     *
+     * In NeroSetDeviceOption value is a pointer to a DWORD variable.
+     * In NeroGetDeviceOption a pointer to a DWORD is returned.
+     *}
+    NERO_DEVICEOPTION_BREAK_LAYER = 3
     {$ELSE}
     NERO_DEVICEOPTION_BOOKTYPE_DVDROM = 0
     {$ENDIF NERO_6}
@@ -629,7 +659,10 @@ type
 
     {$IFDEF NERO_6}
     ncdiMediumFlags: DWORD;                    { NeroAPI>6.0.0.10: various medium flags (Virtual multisession, ...) }
-    ncdiReserved: array[0..28 - 1] of DWORD;   { Should be zero }
+    ncdiLayer0MaxBlocks: DWORD;                { NeroAPI>6.0.0.19: If this value is set, the medium is a double layer medium whereby
+                                                 layer 0 can not be bigger than the given number of blocks. }
+    ncdiTotalCapacity: DWORD;                  { NeroAPI>=6.3.0.5: The total capacity of this medium }
+    ncdiReserved: array[0..26 - 1] of DWORD;   { Should be zero }
     {$ELSE}
     ncdiReserved: array[0..29 - 1] of DWORD;   { Should be zero }
     {$ENDIF NERO_6}
@@ -642,7 +675,10 @@ type
   PNeroCDInfo = PNERO_CD_INFO;
 
 const // tag_NERO_CD_INFO.ncdiMediumFlags flags:
-  NCDIMF_VIRTUALMULTISESSION = (1 shl 0);  { The medium is a virtual multisession medium, use VMS API to retrieve session information }
+  NCDIMF_VIRTUALMULTISESSION = (1 shl 0);
+  { The medium is a virtual multisession medium, use VMS API to retrieve session information.
+    NOTE: This flag only tells you, that if multisession is written, VMS is used. But not
+          that this medium contains multisessions. }
   NCDIMF_HDB_SUPPORTED       = (1 shl 1);  { The medium supports HD-BURN }
 
 
@@ -829,7 +865,8 @@ type
     NERO_PHASE_DVDVIDEO_REALLOC_STARTED     = 112,
     NERO_PHASE_DVDVIDEO_REALLOC_COMPLETED   = 113,
     NERO_PHASE_DVDVIDEO_REALLOC_NOTNEEDED   = 114, // NeroAPI > 5.5.9.3
-    NERO_PHASE_DVDVIDEO_REALLOC_FAILED      = 115  // NeroAPI > 5.5.9.3
+    NERO_PHASE_DVDVIDEO_REALLOC_FAILED      = 115, // NeroAPI > 5.5.9.3
+    NERO_PHASE_DRM_CHECK_FAILURE            = 169  // NeroAPI >= 6.3.0.6
   );
   TNeroMajorPhase = NERO_MAJOR_PHASE;
 
@@ -1035,7 +1072,7 @@ const
   NCITEF_CREATE_ISO_FS    = (1 shl 3);
   NCITEF_CREATE_UDF_FS    = (1 shl 4);
   NCITEF_CREATE_HFS_FS    = (1 shl 5);
-  NCITEF_DVDVIDEO_REALLOC = (1 shl 6);  // NeroAPI>=5.5.7.8: Perform reallocation of files in the VIDEO_TS directory
+  NCITEF_DVDVIDEO_REALLOC = (1 shl 6);  // NeroAPI>=5.5.7.8:  Perform reallocation of files in the VIDEO_TS directory; NeroAPI>=6.3.1.4: Also create layerbreak if writing on a double layer medium
   NCITEF_USE_STRUCT       = (1 shl 7);  // NeroAPI>=5.5.9.0: 'name' points to an argument struct instead of name. If set, 'root' and other 'flags' are ignored.
   NCITEF_RESERVED1        = (1 shl 8);  // Reserved
   NCITEF_USE_ALLSPACE     = (1 shl 9);  // NeroAPI>=5.5.9.17: Use all space available on the medium for the volume to be created. Supported for DVD+-RW only
@@ -1321,6 +1358,9 @@ type
     nwiImageFileName: array[0..252 - 1] of Char; { Deprecated, use nwiLongImageFileName instead }
     nwiLongImageFileName: PChar;                 { Name of the NRG file to burn
                                                    ISO and CUE files can also be burnt this way }
+
+    nwiMediaType: NERO_MEDIA_TYPE;               { NeroAPI >= 6.3.0.6: Media on which the image should be written. If set to MEDIA_NONE the default media type of the image will be used. }
+    nwiReserved: array[0..32 - 1] of DWORD;
     {$ELSE}
     nwiImageFileName: array[0..256 - 1] of Char; { Name of the NRG file to burn
                                                    ISO and CUE files can also be burnt this way }
@@ -1913,7 +1953,6 @@ begin
 end;
 {$ENDIF NERO_6}
 
-
 {*******************************************************************************}
 
 function NeroInit(var NeroSettings: TNeroSettings; reserved: PChar): NEROAPI_INIT_ERROR; overload;
@@ -1925,7 +1964,6 @@ function NeroInit(NeroSettings: PNeroSettings; reserved: PChar): NEROAPI_INIT_ER
 begin
   Result := _NeroInit(NeroSettings, reserved);
 end;
-
 
 function NeroDone(): BOOL;
 begin

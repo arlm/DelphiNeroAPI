@@ -93,3 +93,7 @@ Version 0.40a
 Version 0.41a
 ---------------
 [-] corrected NERO_ISO_ITEM.fileName and NERO_ISO_ITEM.sourceFilePath length
+
+Version 0.42
+---------------
+[+] added support for Nero SDK 1.05

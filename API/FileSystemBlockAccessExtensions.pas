@@ -34,9 +34,12 @@
 |*
 |* CREATOR: Andreas Hausladen
 |*
-|* 07/03/2004: Modified
+|* 2004-03-07: Modified
 |*    Andreas Hausladen
 |*    Nero 6 (NeroAPI SDK v1.04)
+|* 2004-07-23: Modified
+|*    Andreas Hausladen
+|*    NeroAPI SDK v1.05
 |*
 ******************************************************************************}
 
@@ -73,7 +76,10 @@ type
     etMediumCDStamp,
     etFragmentReservation,
     etUDFImageEditExtension,
-    etSessionControl
+    etSessionControl,
+    etNeroFSBAExtensionReserved1,
+    etNeroFSBAExtensionReserved2,
+    etMediumInfo
     {$ELSE}
     etIllegalBlockAccessExtension
     {$ENDIF NERO_6}
