@@ -1,0 +1,46 @@
+{******************************************************************************}
+{                                                                              }
+{ Nero API interface Unit for Object Pascal                                    }
+{                                                                              }
+{ Portions created by Ahead are Copyright (C) 1995-2003 Ahead Software AG.     }
+{ All Rights Reserved.                                                         }
+{                                                                              }
+{ The original file is: NeroAPI.h/NeroAPIGlue.h, released March 2003. The      }
+{ original Pascal code is: NeroAPI.pas, released June 2003. The initial        }
+{ developer of the Pascal code is Andreas Hausladen (ahuser@sourceforge.net).  }
+{                                                                              }
+{ Portions created by Alexandre Rocha Lima e Marcondes are Copyright (C) 2003  }
+{ Alexandre Rocha Lima e Marcondes . All Rights Reserved.                                      }
+{                                                                              }
+{ Obtained through: Project Nero API for Delphi                                }
+{                                                                              }
+{ You may retrieve the latest version of this file at the Nero API for Delphi  }
+{ home page, located at http://www.sourceforge.net/projects/delphineroapi      }
+{                                                                              }
+{ The contents of this file are used with permission, subject to the Mozilla   }
+{ Public License Version 1.1 (the "License"); you may not use this file except }
+{ in compliance with the License. You may obtain a copy of the License at      }
+{ http://www.mozilla.org/MPL/MPL-1.1.html                                      }
+{                                                                              }
+{ Software distributed under the License is distributed on an "AS IS" basis,   }
+{ WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for }
+{ the specific language governing rights and limitations under the License.    }
+{                                                                              }
+{******************************************************************************}
+
+{******************************************************************************
+|* NeroSDK / NeroAPI
+|*
+|* PURPOSE: Change Log
+******************************************************************************}
+
+Symbol : Meaning
+
+[+]    : Added feature
+[*]    : Improved/changed feature
+[-]    : Bug fixed (we hope)
+
+Version 0.1a
+---------------
+
+[+] First public release
