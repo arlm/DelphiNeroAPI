@@ -10,7 +10,7 @@
 { developer of the Pascal code is Andreas Hausladen (ahuser@sourceforge.net).  }
 {                                                                              }
 { Portions created by Alexandre Rocha Lima e Marcondes are Copyright (C) 2003  }
-{ Alexandre Rocha Lima e Marcondes . All Rights Reserved.                                      }
+{ Alexandre Rocha Lima e Marcondes . All Rights Reserved.                      }
 {                                                                              }
 { Obtained through: Project Nero API for Delphi                                }
 {                                                                              }
@@ -57,3 +57,10 @@ Version 0.21a
 
 [-] corrected memory allocation on NeroWriteCD structure (CD-DA)
 [-] corrected general memory deallocation routines (now pointers are nil after deallocation)
+[+] added VideoCD/SuperVideoCD burning sample (still not complete)
+[+] added .bin/.cue/.nrg CD Image burning sample (not tested)
+
+Version 0.22a
+---------------
+
+[+] added ISO CD-ROM burning sample (not tested)
