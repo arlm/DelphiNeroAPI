@@ -38,7 +38,7 @@
 |*    added Audio Track Extraction to WAV Files (NeroDAE)
 |* 29/01/2004: Modified
 |*    Alexandre Rocha Lima e Marcondes
-|*    converted byte values megabyte (MB)
+|*    converted byte values to megabytes (MB)
 ******************************************************************************}
 
 {******************************************************************************
