@@ -195,8 +195,6 @@ type
     procedure FreeIsoItem(var item: PNeroIsoItem);
     procedure FreeIsoTrack(var IsoTrack: CNeroIsoTrack);
     procedure AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
-
-
   public
     NeroIsoTrack: CNeroIsoTrack;
     RootIsoItem: PNeroIsoItem;
@@ -257,96 +255,96 @@ begin
     begin
 { TODO : UserDialog: Auto insert dialog }
 {
-				static const CResponse mapping[] =
+        static const CResponse mapping[] =
           "Install drivers & restart", DLG_RETURN_INSTALL_DRIVER,
-					"Turn off & restart", DLG_RETURN_OFF_RESTART,
-					"Exit", DLG_RETURN_EXIT,
-					"Continue at own risk", DLG_RETURN_CONTINUE,
-					NULL
+          "Turn off & restart", DLG_RETURN_OFF_RESTART,
+          "Exit", DLG_RETURN_EXIT,
+          "Continue at own risk", DLG_RETURN_CONTINUE,
+          NULL
 
-				puts ("Auto Insert Notification is turned on in the system configuration.\n"
-					"This may cause serious problems while burning: your CD might be damaged,\n"
-					"or the system might hang up.\n"
-					"\n"
-					"Nero is able to burn CDs with Auto Insert Notification turned on if all\n"
-					"necessary drivers are installed.\n"
-					"\n"
-					"You can do the following:\n"
-					"Install drivers and restart Windows\n"
-					"Turn off Auto Insert Notification and restart Windows\n"
-					"Exit Nero\n"
-					"Continue at your own risk\n");
+        puts ("Auto Insert Notification is turned on in the system configuration.\n"
+          "This may cause serious problems while burning: your CD might be damaged,\n"
+          "or the system might hang up.\n"
+          "\n"
+          "Nero is able to burn CDs with Auto Insert Notification turned on if all\n"
+          "necessary drivers are installed.\n"
+          "\n"
+          "You can do the following:\n"
+          "Install drivers and restart Windows\n"
+          "Turn off Auto Insert Notification and restart Windows\n"
+          "Exit Nero\n"
+          "Continue at your own risk\n");
 }
       Result := DLG_RETURN_INSTALL_DRIVER;
     end;
-		DLG_DISCONNECT_RESTART:
+    DLG_DISCONNECT_RESTART:
     begin
 { TODO : UserDialog: Disconnect and Restart dialog }
 {
-				puts ("Disconnect is turned off in the system configuration.\n"
-					"This may cause serious problems while burning: your CD\n"
-					"might be damaged, or the system might hang up.\n");
+        puts ("Disconnect is turned off in the system configuration.\n"
+          "This may cause serious problems while burning: your CD\n"
+          "might be damaged, or the system might hang up.\n");
 
-					static const CResponse mapping[] =
-						"Turn on & restart", DLG_RETURN_ON_RESTART,
-						"Don't turn on & restart\n", DLG_RETURN_RESTART,
-						NULL
+          static const CResponse mapping[] =
+            "Turn on & restart", DLG_RETURN_ON_RESTART,
+            "Don't turn on & restart\n", DLG_RETURN_RESTART,
+            NULL
 }
       Result := DLG_RETURN_ON_RESTART;
     end;
-		DLG_DISCONNECT:
+    DLG_DISCONNECT:
     begin
 { TODO : UserDialog: Disconnect dialog }
 {
-				puts ("Disconnect is turned off in the system configuration.\n"
-					"This may cause serious problems while burning: your CD\n"
-					"might be damaged, or the system might hang up.\n");
+        puts ("Disconnect is turned off in the system configuration.\n"
+          "This may cause serious problems while burning: your CD\n"
+          "might be damaged, or the system might hang up.\n");
 
-					static const CResponse mapping[] =
-						"Turn on & restart", DLG_RETURN_ON_RESTART,
-						"Don't turn on & restart", DLG_RETURN_RESTART,
-						"Continue at own risk", DLG_RETURN_CONTINUE,
-						NULL
+          static const CResponse mapping[] =
+            "Turn on & restart", DLG_RETURN_ON_RESTART,
+            "Don't turn on & restart", DLG_RETURN_RESTART,
+            "Continue at own risk", DLG_RETURN_CONTINUE,
+            NULL
 }
       Result := DLG_RETURN_ON_RESTART;
     end;
-		DLG_AUTO_INSERT_RESTART:
+    DLG_AUTO_INSERT_RESTART:
     begin
       MessageDlg('Auto Insert Notification is now OFF. ' + #13#10 +
         'You should restart Windows.' + #13#10, mtInformation, [mbOK], 0);
 
-			Result := DLG_RETURN_EXIT;
+      Result := DLG_RETURN_EXIT;
     end;
-		DLG_RESTART:
+    DLG_RESTART:
     begin
       MessageDlg('Please restart Windows now.' + #13#10, mtInformation, [mbOK], 0);
 
-			Result := DLG_RETURN_EXIT;
+      Result := DLG_RETURN_EXIT;
     end;
-		DLG_SETTINGS_RESTART:
+    DLG_SETTINGS_RESTART:
     begin
 { TODO : UserDialog: Settings and Restart dialog }
 {
-				static const CResponse mapping[] =
-					"Restart", DLG_RETURN_RESTART,
-					"Continue at own risk", DLG_RETURN_CONTINUE,
-					NULL
+        static const CResponse mapping[] =
+          "Restart", DLG_RETURN_RESTART,
+          "Continue at own risk", DLG_RETURN_CONTINUE,
+          NULL
 
-				puts ("Nero detected some modifications of your PC system configuration\n"
-					"and needs to modify some settings. Please restart your PC to make\n"
-					"the changes become effective.\n");
+        puts ("Nero detected some modifications of your PC system configuration\n"
+          "and needs to modify some settings. Please restart your PC to make\n"
+          "the changes become effective.\n");
 }
       Result := DLG_RETURN_RESTART;
     end;
-		DLG_OVERBURN:
+    DLG_OVERBURN:
     begin
       if MessageDlg('Sorry, this compilation contains too much data to fit on the CD' + #13#10 +
-				'with respect to the normal CD capacity. Do you want to try' + #13#10 +
-				'overburn writing at your own risk (this might cause read' + #13#10 +
-				'errors at the end of the CD or might even damage your recorder)?' + #13#10#13#10 +
-				'Note: It is also possible, that SCSI/Atapi errors occur at the end' + #13#10 +
-				'of the simulation or burning. Even in this case there is a certain' + #13#10 +
-				'chance, that the CD is readable.' + #13#10, mtWarning, [mbYes,mbNo], 0) = mrYes then
+        'with respect to the normal CD capacity. Do you want to try' + #13#10 +
+        'overburn writing at your own risk (this might cause read' + #13#10 +
+        'errors at the end of the CD or might even damage your recorder)?' + #13#10#13#10 +
+        'Note: It is also possible, that SCSI/Atapi errors occur at the end' + #13#10 +
+        'of the simulation or burning. Even in this case there is a certain' + #13#10 +
+        'chance, that the CD is readable.' + #13#10, mtWarning, [mbYes,mbNo], 0) = mrYes then
       begin
         Result := DLG_RETURN_TRUE;
       end
@@ -355,12 +353,12 @@ begin
         Result := DLG_RETURN_FALSE;
       end;
     end;
-		DLG_COPY_QUALITY_LOSS:
+    DLG_COPY_QUALITY_LOSS:
     begin
       if MessageDlg('Disc must be written as "track at once" ("disc at once" not' + #13#10 +
-				'supported or not able to write such a disc). This means' + #13#10 +
-				'there might be some minor quality loss (e.g. lost audio index' + #13#10 +
-				'or different pause between audio tracks). Do you want to' + #13#10 +
+        'supported or not able to write such a disc). This means' + #13#10 +
+        'there might be some minor quality loss (e.g. lost audio index' + #13#10 +
+        'or different pause between audio tracks). Do you want to' + #13#10 +
         'proceed anyway?' + #13#10, mtWarning, [mbYes,mbNo], 0) = mrYes then
       begin
         Result := DLG_RETURN_TRUE;
@@ -370,14 +368,14 @@ begin
         Result := DLG_RETURN_FALSE;
       end;
     end;
-		DLG_COPY_FULLRISK:
+    DLG_COPY_FULLRISK:
     begin
       if MessageDlg('Disc must be written as "track at once" ("disc at once" not' + #13#10 +
-				'supported or not able to write such a disc).  Unfortunately' + #13#10 +
-				'your image has a special format which can most likely only' + #13#10 +
-				'be written correctly with "disc at once". But you may' + #13#10 +
-				'PROCEED AT YOUR OWN RISK. Do you want to continue' + #13#10 +
-				'burning?' + #13#10, mtWarning, [mbYes,mbNo], 0) = mrYes then
+        'supported or not able to write such a disc).  Unfortunately' + #13#10 +
+        'your image has a special format which can most likely only' + #13#10 +
+        'be written correctly with "disc at once". But you may' + #13#10 +
+        'PROCEED AT YOUR OWN RISK. Do you want to continue' + #13#10 +
+        'burning?' + #13#10, mtWarning, [mbYes,mbNo], 0) = mrYes then
       begin
         Result := DLG_RETURN_TRUE;
       end
@@ -386,41 +384,41 @@ begin
         Result := DLG_RETURN_FALSE;
       end;
     end;
-		DLG_AUDIO_PROBLEMS:
+    DLG_AUDIO_PROBLEMS:
     begin
-			if (DWORD(data) and AUP_NOTRACK_FOUND = AUP_NOTRACK_FOUND) then
+      if (DWORD(data) and AUP_NOTRACK_FOUND = AUP_NOTRACK_FOUND) then
       begin
         MessageDlg('No tracks given.', mtInformation, [mbOK], 0);
-			  Result := DLG_RETURN_EXIT;
+        Result := DLG_RETURN_EXIT;
         exit;
       end;
 
-			if (DWORD(data) and AUP_MEGA_FATAL = AUP_MEGA_FATAL) then
+      if (DWORD(data) and AUP_MEGA_FATAL = AUP_MEGA_FATAL) then
       begin
-				MessageDlg('Fatal internal problem.', mtError, [mbOK], 0);
-				Result := DLG_RETURN_EXIT;
+        MessageDlg('Fatal internal problem.', mtError, [mbOK], 0);
+        Result := DLG_RETURN_EXIT;
         exit;
       end;
 
       sBuffer := 'Nero has detected that the following audio properties are not' + #13#10 +
-				'supported by your recorder in the current write mode and need' + #13#10 +
-				'to be modified:' + #13#10;
+        'supported by your recorder in the current write mode and need' + #13#10 +
+        'to be modified:' + #13#10;
 
-			if (DWORD(data) and AUP_FIRST_TR_PAUSE = AUP_FIRST_TR_PAUSE) then
+      if (DWORD(data) and AUP_FIRST_TR_PAUSE = AUP_FIRST_TR_PAUSE) then
         sBuffer := sBuffer + '  - CD specification allows only 2-3 Seconds pause for the first track' + #13#10;
-			if (DWORD(data) and AUP_PAUSE_SETTINGS = AUP_PAUSE_SETTINGS) then
+      if (DWORD(data) and AUP_PAUSE_SETTINGS = AUP_PAUSE_SETTINGS) then
         sBuffer := sBuffer + '  - Pause length between the tracks not supported' + #13#10;
-			if (DWORD(data) and AUP_INDEX_SETTINGS = AUP_INDEX_SETTINGS) then
+      if (DWORD(data) and AUP_INDEX_SETTINGS = AUP_INDEX_SETTINGS) then
         sBuffer := sBuffer + '  - Additional index positions not supported' + #13#10;
-			if (DWORD(data) and AUP_ISRC_SETTINGS = AUP_ISRC_SETTINGS) then
+      if (DWORD(data) and AUP_ISRC_SETTINGS = AUP_ISRC_SETTINGS) then
         sBuffer := sBuffer + '  - ISRC codes not supported' + #13#10;
-			if (DWORD(data) and AUP_COPYPROT_SETTINGS = AUP_COPYPROT_SETTINGS) then
+      if (DWORD(data) and AUP_COPYPROT_SETTINGS = AUP_COPYPROT_SETTINGS) then
         sBuffer := sBuffer + '  - Copy protection bit not supported' + #13#10;
 
       sBuffer := sBuffer + 'Nero can change the audio track settings for you to fit the' + #13#10 +
-				'capabilities of your recorder. This might cause some audio' + #13#10 +
-				'properties to be lost. Do you want Nero to change the track' + #13#10 +
-				'settings for you?' + #13#10;
+        'capabilities of your recorder. This might cause some audio' + #13#10 +
+        'properties to be lost. Do you want Nero to change the track' + #13#10 +
+        'settings for you?' + #13#10;
 
       if MessageDlg(sBuffer, mtInformation, [mbYes,mbNo], 0) = mrYes then
       begin
@@ -431,134 +429,134 @@ begin
         Result := DLG_RETURN_FALSE;
       end;
     end;
-		DLG_WAITCD:
+    DLG_WAITCD:
     begin
-				pacBuffer := NeroGetLocalizedWaitCDTexts(NERO_WAITCD_TYPE(Integer(data)));
-				if pacBuffer <> nil then
+        pacBuffer := NeroGetLocalizedWaitCDTexts(NERO_WAITCD_TYPE(Integer(data)));
+        if pacBuffer <> nil then
         begin
-					MessageDlg(pacBuffer, mtInformation, [mbOK], 0);
-					NeroFreeMem(pacBuffer);
+          MessageDlg(pacBuffer, mtInformation, [mbOK], 0);
+          NeroFreeMem(pacBuffer);
         end;
 
         Result := DLG_RETURN_EXIT;
     end;
-		DLG_WAITCD_REMINDER:
+    DLG_WAITCD_REMINDER:
     begin
-				pacBuffer := NeroGetLocalizedWaitCDTexts(NERO_WAITCD_TYPE(Integer(data)));
-				if pacBuffer <> nil then
+        pacBuffer := NeroGetLocalizedWaitCDTexts(NERO_WAITCD_TYPE(Integer(data)));
+        if pacBuffer <> nil then
         begin
-					MessageDlg(pacBuffer, mtInformation, [mbOK], 0);
-					NeroFreeMem(pacBuffer);
+          MessageDlg(pacBuffer, mtInformation, [mbOK], 0);
+          NeroFreeMem(pacBuffer);
         end;
 
         Result := DLG_RETURN_EXIT;
     end;
     DLG_WAITCD_DONE:
     begin
-			// Nothing to be done in the text interface, should close dialog box in a GUI
+      // Nothing to be done in the text interface, should close dialog box in a GUI
     end;
-		DLG_FILESEL_IMAGE:
+    DLG_FILESEL_IMAGE:
     begin
       InputQuery('Image File Not Found', 'Enter file name to save image to: ', sBuffer);
 
       StrPCopy(PAnsiChar(data), sBuffer);
       PAnsiChar(data)[SizeOf(PAnsiChar(data)) - 1] := #00;
 
-			Result := DLG_RETURN_TRUE;
+      Result := DLG_RETURN_TRUE;
     end;
-		DLG_BURNIMAGE_CANCEL:
+    DLG_BURNIMAGE_CANCEL:
     begin
       MessageDlg('There is not enough space available to burn the image.' + #13#10, mtInformation, [mbOK], 0);
 
       Result := DLG_RETURN_EXIT;
     end;
-		DLG_NON_EMPTY_CDRW:
+    DLG_NON_EMPTY_CDRW:
     begin
 { TODO : UserDialog: Non-empty CDRW dialog }
 {
-			static const CResponse mapping[] =
-				"Erase CD", DLG_RETURN_CONTINUE,
-				"Eject CD", DLG_RETURN_RESTART,
-				"Cancel", DLG_RETURN_EXIT,
+      static const CResponse mapping[] =
+        "Erase CD", DLG_RETURN_CONTINUE,
+        "Eject CD", DLG_RETURN_RESTART,
+        "Cancel", DLG_RETURN_EXIT,
 
-			puts ("This CDRW is not empty.");
+      puts ("This CDRW is not empty.");
 
-			if (DLG_RETURN_CONTINUE == res)
+      if (DLG_RETURN_CONTINUE == res)
       [
-				// Erase the CDRW
+        // Erase the CDRW
 
-				NEROAPI_CDRW_ERASE_MODE mode = NEROAPI_ERASE_QUICK;
+        NEROAPI_CDRW_ERASE_MODE mode = NEROAPI_ERASE_QUICK;
 
-				int time = NeroGetCDRWErasingTime(((CBurnContext*)pUserData)->m_NeroDeviceHandle,mode);
+        int time = NeroGetCDRWErasingTime(((CBurnContext*)pUserData)->m_NeroDeviceHandle,mode);
 
-				// If time is negative, it means error.
-				//
-				switch (time)
-				[
-				case -1:
-					puts("No CD inserted!");
-					break;
+        // If time is negative, it means error.
+        //
+        switch (time)
+        [
+        case -1:
+          puts("No CD inserted!");
+          break;
 
-				case -2:
-					puts("This CD recorder does not support CDRW!");
-					break;
+        case -2:
+          puts("This CD recorder does not support CDRW!");
+          break;
 
-				case -3:
-					puts ("The inserted media is NOT rewritable!");
-					break;
+        case -3:
+          puts ("The inserted media is NOT rewritable!");
+          break;
 
-				default:
-					if (time < 0)
-					[
-						// If this is some unknown error (negative value)
-						// we should print generic error message and not
-						// even attepmt erasing.
-						//
-						puts ("Unknown error while trying to erase CDRW!");
-					]
-					else
-					[
-						// If the value is positive, it is the approximate
-						// second count the process will take.
-						//
-						printf("Erasing CDRW. This will take %d seconds.\n",time);
+        default:
+          if (time < 0)
+          [
+            // If this is some unknown error (negative value)
+            // we should print generic error message and not
+            // even attepmt erasing.
+            //
+            puts ("Unknown error while trying to erase CDRW!");
+          ]
+          else
+          [
+            // If the value is positive, it is the approximate
+            // second count the process will take.
+            //
+            printf("Erasing CDRW. This will take %d seconds.\n",time);
 
-						int err = NeroEraseCDRW(((CBurnContext*)pUserData)->m_NeroDeviceHandle,mode);
-						if (err)
-						[
-							puts("Error erasing the CDRW");
-						]
-					]
-				]
-			]
+            int err = NeroEraseCDRW(((CBurnContext*)pUserData)->m_NeroDeviceHandle,mode);
+            if (err)
+            [
+              puts("Error erasing the CDRW");
+            ]
+          ]
+        ]
+      ]
 }
-			Result := DLG_RETURN_RESTART;
+      Result := DLG_RETURN_RESTART;
     end;
-		DLG_WAITCD_MEDIA_INFO:
+    DLG_WAITCD_MEDIA_INFO:
     begin
 { TODO : UserDialog: WaitCD Media INfor dialog }
 {
-				const NERO_DLG_WAITCD_MEDIA_INFO * pMediaInfo = (const NERO_DLG_WAITCD_MEDIA_INFO *) data;
+        const NERO_DLG_WAITCD_MEDIA_INFO * pMediaInfo = (const NERO_DLG_WAITCD_MEDIA_INFO *) data;
 
-				printf ("Last detected media: %s\n", pMediaInfo->ndwmiLastDetectedMediaName);
-				printf ("Requested media: %s\n", pMediaInfo->ndwmiRequestedMediaName);
+        printf ("Last detected media: %s\n", pMediaInfo->ndwmiLastDetectedMediaName);
+        printf ("Requested media: %s\n", pMediaInfo->ndwmiRequestedMediaName);
 
-				// The return value is ignored.
-				//
+        // The return value is ignored.
+        //
 }
       Result := DLG_RETURN_EXIT;
     end;
-		DLG_COMP_REC_CONFLICT:
+    DLG_COMP_REC_CONFLICT:
     begin
       MessageDlg('The compilation cannot be written on this recorder! ' + #13#10 +
-					'You should modify your compilation settings or burn ' + #13#10 +
-					'the disc on another recorder, that supports the required medium type.' + #13#10, mtInformation, [mbOK], 0);
+          'You should modify your compilation settings or burn ' + #13#10 +
+          'the disc on another recorder, that supports the required medium type.' + #13#10, mtInformation, [mbOK], 0);
 
       Result := DLG_RETURN_EXIT;
     end;
-		DLG_WRONG_MEDIUM:
+    DLG_WRONG_MEDIUM:
     begin
-			MessageDlg('Another type of medium must be used to burn this compilation!', mtInformation, [mbOK], 0);
+      MessageDlg('Another type of medium must be used to burn this compilation!', mtInformation, [mbOK], 0);
 
       Result := DLG_RETURN_EXIT;
     end;
@@ -599,7 +597,7 @@ end;
 function ProgressCallback(pUserData: Pointer; dwProgressInPercent: DWORD): BOOL; cdecl;
 begin
   FMainForm.sbMain.SimplePanel := True;
-	FMainForm.sbMain.SimpleText := 'Track extraction in progress (' + FormatFloat('000 ', dwProgressInPercent) + '%)';
+  FMainForm.sbMain.SimpleText := 'Track extraction in progress (' + FormatFloat('000 ', dwProgressInPercent) + '%)';
 
   Application.ProcessMessages;
 
@@ -615,7 +613,7 @@ procedure AddLogLine(pUserData: Pointer; _type: NERO_TEXT_TYPE; text: PChar); cd
 var
   Header: String;
 begin
-	case _type of
+  case _type of
     NERO_TEXT_INFO:        // informative text
     begin
       MessageDlg(text, mtInformation, [mbOK], 0);
@@ -634,7 +632,7 @@ begin
     begin
       MessageDlg(text, mtConfirmation, [mbOK], 0);
     end;
-    NERO_TEXT_DRIVE:		   // a message concerning a CD-ROM drive or recorder
+    NERO_TEXT_DRIVE:       // a message concerning a CD-ROM drive or recorder
     begin
       MessageDlg(text, mtInformation, [mbOK], 0);
     end;
@@ -649,8 +647,8 @@ end;
 procedure DisableAbortCallback(pUserData: Pointer; abortEnabled: BOOL); cdecl;
 begin
   if abortEnabled then
-		ShowMessage('The current process cannot be interrupted')
-	else
+    ShowMessage('The current process cannot be interrupted')
+  else
     ShowMessage('The process can be interrupted again');
 end;
 
@@ -716,7 +714,7 @@ begin
     exit;
   end;
 
-	if (NeroGetAPIVersionEx(ver1, ver2, ver3, ver4, nil)) then
+  if (NeroGetAPIVersionEx(ver1, ver2, ver3, ver4, nil)) then
     sbMain.SimpleText :=  'Nero API version ' + IntToStr(ver1) + '.' +
       IntToStr(ver2) + '.' + IntToStr(ver3) + '.' + IntToStr(ver4)
   else
@@ -770,8 +768,8 @@ begin
     Exit;
 
   NeroDeviceInfos := PNeroSCSIDeviceInfos(NeroGetAvailableDrivesEx(MEDIA_CD, nil));
-	if not Assigned(NeroDeviceInfos) then
-		sbMain.SimpleText := 'NeroGetAvailableDrives()';
+  if not Assigned(NeroDeviceInfos) then
+    sbMain.SimpleText := 'NeroGetAvailableDrives()';
 
   for DeviceCount := 0 to NeroDeviceInfos.nsdisNumDevInfos - 1 do
   begin
@@ -878,22 +876,22 @@ begin
     NeroCloseDevice(NeroDeviceHandle);
 
   if Assigned(NeroDeviceInfos) then
-  	NeroFreeMem(NeroDeviceInfos);
+    NeroFreeMem(NeroDeviceInfos);
 
   if Assigned(NeroWriteCD) then
-  	ReallocMem(NeroWriteCD, 0);
+    ReallocMem(NeroWriteCD, 0);
 
   if Assigned(NeroWriteVideoCD) then
-  	ReallocMem(NeroWriteVideoCD, 0);
+    ReallocMem(NeroWriteVideoCD, 0);
 
   if Assigned(NeroWriteFreestyleCD) then
-  	ReallocMem(NeroWriteFreestyleCD, 0);
+    ReallocMem(NeroWriteFreestyleCD, 0);
 
   if Assigned(NeroWriteImage) then
-  	ReallocMem(NeroWriteImage, 0);
+    ReallocMem(NeroWriteImage, 0);
 
   if Assigned(NeroCDInfo) then
-  	NeroFreeMem(NeroCDInfo);
+    NeroFreeMem(NeroCDInfo);
 
   if Assigned(NeroSettings) then
     ReallocMem(NeroSettings, 0);
@@ -904,17 +902,17 @@ begin
   if Assigned(RootIsoItem) then
     FreeIsoItem(RootIsoItem);
 
-	NeroClearErrors;
-	NeroDone;
+  NeroClearErrors;
+  NeroDone;
 
-	NeroAPIGlueDone;
+  NeroAPIGlueDone;
 end;
 
 procedure TFMainForm.ApplicationEventsShowHint(var HintStr: String;
   var CanShow: Boolean; var HintInfo: THintInfo);
 begin
   if CanShow then
-		sbMain.SimpleText := Application.Hint;
+    sbMain.SimpleText := Application.Hint;
 end;
 
 procedure TFMainForm.cbDevicesChange(Sender: TObject);
@@ -998,7 +996,7 @@ begin
     else
     begin
       btnMoreMedia.Enabled := False;
-      stMedia.Caption := 'No midia inserted';
+      stMedia.Caption := 'No media inserted';
       lbTracks.Visible := False;
       lbFreeBlocks.Visible := False;
       btnErase.Enabled := False;
@@ -1046,13 +1044,13 @@ procedure TFMainForm.NeroError(Action: String);
 var
   Error: PChar;
 begin
-	Error := NeroGetLastError();
+  Error := NeroGetLastError();
   if (Error <> '') then
-  	MessageBox(Application.Handle, Error, PChar(Action), MB_ICONERROR)
+    MessageBox(Application.Handle, Error, PChar(Action), MB_ICONERROR)
   else
-  	MessageBox(Application.Handle, 'Failed', PChar(Action), MB_ICONERROR);
+    MessageBox(Application.Handle, 'Failed', PChar(Action), MB_ICONERROR);
 
-	NeroFreeMem(Error);
+  NeroFreeMem(Error);
 end;
 
 procedure TFMainForm.btnQuickEraseClick(Sender: TObject);
@@ -1581,10 +1579,10 @@ begin
     NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
     @NeroProgress);
 
-	for Counter := 0 to NeroWriteCD.nwcdNumTracks do
+  for Counter := 0 to NeroWriteCD.nwcdNumTracks do
   begin
     if (NeroWriteCD.nwcdTracks[Counter].natSourceDataExchg.ndeType = NERO_ET_IO_CALLBACK) and
-			Assigned(NeroWriteCD.nwcdTracks[Counter].natSourceDataExchg.ndeData.ndeIO.nioUserData) then
+      Assigned(NeroWriteCD.nwcdTracks[Counter].natSourceDataExchg.ndeData.ndeIO.nioUserData) then
     begin
       FileClose(Integer(NeroWriteCD.nwcdTracks[Counter].natSourceDataExchg.ndeData.ndeIO.nioUserData^));
     end;
@@ -1789,7 +1787,7 @@ var
 begin
   TempItem := RootItem;
 
-  if not (RootItem.fileName = '') then
+  if RootItem.fileName <> '' then
   begin
     while Assigned(TempItem.nextItem) do
       TempItem := TempItem.nextItem;
@@ -1798,11 +1796,20 @@ begin
     TempItem := TempItem.nextItem;
   end;
 
+  TempItem.isReference := False;
+  TempItem.isDirectory := DirectoryExists(FileName);
+  TempItem.importinfo := nil;
+  TempItem.userData := nil;
+  TempItem.subDirFirstItem := nil;
+
   StrPCopy(TempItem.fileName, ExtractFileName(FileName));
   TempItem.fileName[SizeOf(TempItem.fileName) - 1] := #00;
 
-  StrPCopy(TempItem.sourceFilePath, FileName);
-  TempItem.fileName[SizeOf(TempItem.sourceFilePath) - 1] := #00;
+  if TempItem.isDirectory then
+    TempItem.sourceFilePath[0] := #0 // otherwise the directory will not be burned.
+  else
+    StrPCopy(TempItem.sourceFilePath, FileName);
+  TempItem.sourceFilePath[SizeOf(TempItem.sourceFilePath) - 1] := #0;
 
   FileTime := FileDateToDateTime(FileAge(FileName));
   DecodeDateTime(FileTime, tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, tm_msec);
@@ -1817,31 +1824,28 @@ begin
   TempItem.entryTime.tm_min := tm_min;
   TempItem.entryTime.tm_sec := tm_min;
 
-  TempItem.isReference := False;
-  TempItem.isDirectory := DirectoryExists(FileName);
-  TempItem.importinfo := nil;
-  TempItem.userData := nil;
-  TempItem.subDirFirstItem := nil;
   SubDirItem := nil;
 
   if TempItem.isDirectory then
-    if FindFirst(IncludeTrailingPathDelimiter(FileName) + '*.*', faAnyFile + faHidden + faArchive + faReadOnly + faSysFile + faDirectory, sr) = 0 then
+    if FindFirst(IncludeTrailingPathDelimiter(FileName) + '*.*', faAnyFile or faDirectory, sr) = 0 then
     begin
       repeat
-        if Assigned(SubDirItem) then
+        if (sr.Attr and faDirectory = 0) or ((sr.Name <> '.') and (sr.Name <> '..')) then
         begin
-          SubDirItem.nextItem := NeroCreateIsoItem();
+          if Assigned(SubDirItem) then
+          begin
+            SubDirItem.nextItem := NeroCreateIsoItem();
+            SubDirItem := SubDirItem.nextItem;
+          end
+          else
+          begin
+            SubDirItem := NeroCreateIsoItem();
+            TempItem.subDirFirstItem := SubDirItem;
+          end;
           SubDirItem.fileName := '';
-          SubDirItem := SubDirItem.nextItem;
-        end
-        else
-        begin
-          SubDirItem := NeroCreateIsoItem();
-          SubDirItem.fileName := '';
-          TempItem.subDirFirstItem := SubDirItem;
-        end;
 
-        AddFileToRootIsoItem(SubDirItem, sr.Name);
+          AddFileToRootIsoItem(SubDirItem, IncludeTrailingPathDelimiter(FileName) + sr.Name);
+        end;
       until FindNext(sr) <> 0;
 
       FindClose(sr);

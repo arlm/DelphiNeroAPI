@@ -2,7 +2,7 @@ object FMainForm: TFMainForm
   Left = 623
   Top = 277
   Width = 555
-  Height = 452
+  Height = 456
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'Delphi Nero API 1.02'
   Color = clBtnFace
@@ -12,7 +12,7 @@ object FMainForm: TFMainForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesktopCenter
+  Position = poScreenCenter
   ShowHint = True
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -20,7 +20,7 @@ object FMainForm: TFMainForm
   TextHeight = 13
   object sbMain: TStatusBar
     Left = 0
-    Top = 406
+    Top = 403
     Width = 547
     Height = 19
     Panels = <
