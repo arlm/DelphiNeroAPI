@@ -1,6 +1,6 @@
 object FMainForm: TFMainForm
-  Left = 1023
-  Top = 777
+  Left = 410
+  Top = 534
   Width = 516
   Height = 370
   Caption = 'Delphi Nero API 1.02'
@@ -89,7 +89,7 @@ object FMainForm: TFMainForm
     Left = 256
     Top = 8
     Width = 249
-    Height = 73
+    Height = 105
     Caption = ' Media '
     TabOrder = 2
     object lbFreeBlocks: TLabel
@@ -151,6 +151,36 @@ object FMainForm: TFMainForm
       ParentFont = False
       TabOrder = 2
       OnClick = btnMoreMediaClick
+    end
+    object btnErase: TButton
+      Left = 8
+      Top = 72
+      Width = 75
+      Height = 25
+      Caption = 'Erase Disk'
+      Enabled = False
+      TabOrder = 3
+      OnClick = btnEraseClick
+    end
+    object btnEject: TButton
+      Left = 168
+      Top = 72
+      Width = 75
+      Height = 25
+      Caption = 'Eject'
+      Enabled = False
+      TabOrder = 4
+      OnClick = btnEjectClick
+    end
+    object btnQuickErase: TButton
+      Left = 88
+      Top = 72
+      Width = 75
+      Height = 25
+      Caption = 'Quick Erase'
+      Enabled = False
+      TabOrder = 5
+      OnClick = btnQuickEraseClick
     end
   end
   object ApplicationEvents: TApplicationEvents

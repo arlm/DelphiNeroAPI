@@ -72,6 +72,9 @@ type
     btnMoreMedia: TButton;
     lbFreeBlocks: TLabel;
     lbTracks: TLabel;
+    btnErase: TButton;
+    btnEject: TButton;
+    btnQuickErase: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ApplicationEventsShowHint(var HintStr: String;
@@ -81,6 +84,9 @@ type
     procedure cbDevicesCloseUp(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
     procedure btnMoreMediaClick(Sender: TObject);
+    procedure btnEraseClick(Sender: TObject);
+    procedure btnEjectClick(Sender: TObject);
+    procedure btnQuickEraseClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -89,6 +95,7 @@ type
     NeroSettings: PNeroSettings;
     NeroDeviceHandle: NERO_DEVICEHANDLE;
     NeroCDInfo: PNeroCDInfo;
+    procedure NeroError(Action: String);
   end;
 
 function IdleCallback(pUserData: Pointer): Boolean; cdecl;
@@ -317,14 +324,17 @@ begin
       stMedia.Caption := stMedia.Caption + '(' + NeroGetTypeNameOfMedia(NERO_MEDIA_SET(NeroCDInfo.ncdiMediaType)) + ')';
 
       btnMoreMedia.Enabled := True;
+      btnEject.Enabled := True;
       lbFreeBlocks.Caption := IntToStr(NeroCDInfo.ncdiFreeCapacityInBlocks) + ' Free Blocks';
       lbFreeBlocks.Visible := NeroCDInfo.ncdiIsWriteable;
       if NeroCDInfo.ncdiNumTracks > 1 then
         lbTracks.Caption := IntToStr(NeroCDInfo.ncdiNumTracks) + ' Tracks'
       else
         lbTracks.Caption := IntToStr(NeroCDInfo.ncdiNumTracks) + ' Track';
-        
+
       lbTracks.Visible := (NeroCDInfo.ncdiNumTracks > 0);
+      btnQuickErase.Enabled := NCDI_IS_ERASE_MODE_AVAILABLE(NeroCDInfo^, Cardinal(NEROAPI_ERASE_QUICK)) and lbTracks.Visible;
+      btnErase.Enabled := NCDI_IS_ERASE_MODE_AVAILABLE(NeroCDInfo^, Cardinal(NEROAPI_ERASE_ENTIRE)) and lbTracks.Visible;
     end
     else
     begin
@@ -332,6 +342,9 @@ begin
       stMedia.Caption := 'No midia inserted';
       lbTracks.Visible := False;
       lbFreeBlocks.Visible := False;
+      btnErase.Enabled := False;
+      btnQuickErase.Enabled := False;
+      btnEject.Enabled := False;
     end;
   end;
 end;
@@ -339,6 +352,66 @@ end;
 procedure TFMainForm.btnMoreMediaClick(Sender: TObject);
 begin
   FMediaInfo.ShowModal;
+end;
+
+procedure TFMainForm.btnEraseClick(Sender: TObject);
+var
+  Time: Integer;
+begin
+  Time := NeroGetCDRWErasingTime(NeroDeviceHandle, NEROAPI_ERASE_ENTIRE);
+  if (Time = -1) then
+    NeroError('No CD inserted')
+  else
+    if (Time = -2) then
+      NeroError('This CD recorder does not support CD-RW')
+    else
+      if (Time = -3) then
+        NeroError('This media is not rewritable');
+  sbMain.SimpleText := 'Erasing CD-RW. This will take ' + IntToStr(Time) + ' seconds.';
+  time := NeroEraseCDRW(NeroDeviceHandle, NEROAPI_ERASE_ENTIRE);
+  if (Time <> 0) then
+    NeroError('Error erasing the CD-RW');
+
+  btnRefreshClick(self);
+end;
+
+procedure TFMainForm.btnEjectClick(Sender: TObject);
+begin
+  NeroEjectLoadCD(NeroDeviceHandle, True);
+end;
+
+procedure TFMainForm.NeroError(Action: String);
+var
+  Error: PChar;
+begin
+	Error := NeroGetLastError();
+  if (Error <> '') then
+  	MessageBox(Application.Handle, Error, PChar(Action), MB_ICONERROR)
+  else
+  	MessageBox(Application.Handle, 'Failed', PChar(Action), MB_ICONERROR);
+
+	NeroFreeMem(Error);
+end;
+
+procedure TFMainForm.btnQuickEraseClick(Sender: TObject);
+var
+  Time: Integer;
+begin
+  Time := NeroGetCDRWErasingTime(NeroDeviceHandle, NEROAPI_ERASE_QUICK);
+  if (Time = -1) then
+    NeroError('No CD inserted')
+  else
+    if (Time = -2) then
+      NeroError('This CD recorder does not support CD-RW')
+    else
+      if (Time = -3) then
+        NeroError('This media is not rewritable');
+  sbMain.SimpleText := 'Erasing CD-RW. This will take ' + IntToStr(Time) + ' seconds.';
+  time := NeroEraseCDRW(NeroDeviceHandle, NEROAPI_ERASE_QUICK);
+  if (Time <> 0) then
+    NeroError('Error erasing the CD-RW');
+
+  btnRefreshClick(self);
 end;
 
 end.
