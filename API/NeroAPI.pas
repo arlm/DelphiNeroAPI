@@ -36,6 +36,10 @@
 |* 16/06/2003: Modifyied
 |*    Alexandre R. L. e Marcondes
 |*    Identation
+|* 26/06/2003: Modified
+|*    Andreas Hausladen
+|*    translation error corrected, added default-value for "reserved: PVoid"
+|*
 ******************************************************************************}
 
 {******************************************************************************
@@ -110,15 +114,15 @@ var
 // This file is the interface for this version of NeroAPI
 const
   NEROAPI_VERSION_MAJOR_HIGH = 5;
-  NEROAPI_VERSION_MAJOR_LOW = 5;
+  NEROAPI_VERSION_MAJOR_LOW  = 5;
   NEROAPI_VERSION_MINOR_HIGH = 10;
-  NEROAPI_VERSION_MINOR_LOW = 15;
+  NEROAPI_VERSION_MINOR_LOW  = 15;
 
 { Fills the pointed numbers with version number and returns true for
    success. Extended in NeroAPI 5.5.9.9 to support multiple digits }
 var
   NeroGetAPIVersionEx: function(var majhi, majlo, minhi, minlo: Word;
-                            reserved: PVoid  // Must be NULL
+                            reserved: PVoid = nil // Must be NULL
                             ): BOOL; cdecl;
 
 { Using this function, an application can tell NeroAPI for which version of NeroAPI it was
@@ -128,7 +132,7 @@ NeroAPI will behaves as NeroAPI 5.0.3.9. If your application uses NeroAPIGlue.c,
 will be automatically called. Extended in NeroAPI 5.5.9.9 to support multiple digits
 Returns true for success}
   NeroSetExpectedAPIVersionEx: function(majhi, majlo, minhi, minlo: Word;
-                                     reserved: PVoid // Must be NULL
+                                     reserved: PVoid = nil// Must be NULL
                                      ): BOOL; cdecl;
 
 
@@ -148,7 +152,7 @@ type
   NERO_CALLBACK = tag_NERO_CALLBACK;
   PNERO_CALLBACK = ^NERO_CALLBACK;
   TNeroCallBack = NERO_CALLBACK;
-  PNeroCallBack = ^TNeroCallBack;
+  PNeroCallBack = PNERO_CALLBACK;
 
 
 // typedef BOOL (NERO_CALLBACK_ATTR *NERO_IDLE_CALLBACK) (void *pUserData);
@@ -185,7 +189,7 @@ type
   NERO_SETTINGS = tag_NERO_SETTINGS;
   PNERO_SETTINGS = ^NERO_SETTINGS;
   TNeroSettings = NERO_SETTINGS;
-  PNeroSettings = ^TNeroSettings;
+  PNeroSettings = PNERO_SETTINGS;
 
 {
 // Initialize the DLL. Must be successful before any of the remaining
@@ -207,8 +211,8 @@ type
 
 // Make sure to keep *all* the data including the strings valid as long as you're using NeroAPI,
 // since Nero will only store a pointer to this structure, not make a copy.
-var
-  NeroInit: function (const pNeroSettings: PNERO_SETTINGS; const reserved: PChar): NEROAPI_INIT_ERROR; cdecl;
+function NeroInit(var NeroSettings: TNeroSettings; reserved: PChar = nil): NEROAPI_INIT_ERROR; overload;
+function NeroInit(NeroSettings: PNeroSettings; reserved: PChar = nil): NEROAPI_INIT_ERROR; overload;
 
 
 {
@@ -255,7 +259,7 @@ type
   NERO_SPEED_INFOS = tag_NERO_SPEED_INFOS;
   PNERO_SPEED_INFOS = ^NERO_SPEED_INFOS;
   TNeroSpeedInfos = NERO_SPEED_INFOS;
-  PNeroSpeedInfos = ^TNeroSpeedInfos;
+  PNeroSpeedInfos = PNERO_SPEED_INFOS;
 
 {$WARNINGS OFF}
   tag_NERO_MEDIA_TYPE = (
@@ -344,7 +348,7 @@ type
   NERO_SCSI_DEVICE_INFO = tag_NERO_SCSI_DEVICE_INFO;
   PNERO_SCSI_DEVICE_INFO = ^NERO_SCSI_DEVICE_INFO;
   TNeroSCSIDeviceInfo = NERO_SCSI_DEVICE_INFO;
-  PNeroSCSIDeviceInfo = TNeroSCSIDeviceInfo;
+  PNeroSCSIDeviceInfo = PNERO_SCSI_DEVICE_INFO;
 
   tag_NERO_SCSI_DEVICE_INFOS = record
 	nsdisNumDevInfos: DWORD;  { number of the following entries }
@@ -353,25 +357,25 @@ type
   NERO_SCSI_DEVICE_INFOS = tag_NERO_SCSI_DEVICE_INFOS;
   PNERO_SCSI_DEVICE_INFOS = ^NERO_SCSI_DEVICE_INFOS;
   TNeroSCSIDeviceInfos = NERO_SCSI_DEVICE_INFOS;
-  PNeroSCSIDeviceInfos = ^TNeroSCSIDeviceInfos;
+  PNeroSCSIDeviceInfos = PNERO_SCSI_DEVICE_INFOS;
 
 { Gets a list of available WORM and CDROM devices, free with NeroFreeMem(). }
 { Returns NULL for error }
 var
   NeroGetAvailableDrivesEx: function(
                                      mediaType: NERO_MEDIA_TYPE; // Provide speeds values for this kind of media
-                                     reserved: PVoid           // Must be NULL
+                                     reserved: PVoid = nil       // Must be NULL
                                      ): PNERO_SCSI_DEVICE_INFOS; cdecl;
 
 { Get a string describing the given bit field of supported media
    Free with NeroFreeMem();
 }
-  NeroGetTypeNameOfMedia: function(media: NERO_MEDIA_SET; reserved: PVoid): PChar; cdecl;
+  NeroGetTypeNameOfMedia: function(media: NERO_MEDIA_SET; reserved: PVoid = nil): PChar; cdecl;
 
 {
 // Open and close a device:
 }
-  NeroOpenDevice: function(const pDevInfo: PNERO_SCSI_DEVICE_INFO): NERO_DEVICEHANDLE; cdecl; { NULL for errors }
+  NeroOpenDevice: function(pDevInfo: PNERO_SCSI_DEVICE_INFO): NERO_DEVICEHANDLE; cdecl; { NULL for errors }
   NeroCloseDevice: procedure(aDeviceHandle: NERO_DEVICEHANDLE); cdecl;
 
 {
@@ -390,7 +394,7 @@ var
   NeroGetAvailableSpeeds: function(aDeviceHandle: NERO_DEVICEHANDLE;
 							       accessType: NERO_ACCESSTYPE;
 							       mediaType: NERO_MEDIA_TYPE;
-							       reserved: PVoid): PNERO_SPEED_INFOS; cdecl;
+							       reserved: PVoid = nil): PNERO_SPEED_INFOS; cdecl;
 
 
 {
@@ -424,7 +428,7 @@ var
 // by the caller
 }
   NeroGetDeviceOption: function(aDeviceHandle: NERO_DEVICEHANDLE;
-                                aOption: NERO_DEVICEOPTION; reserved: PVoid): Pointer;
+                                aOption: NERO_DEVICEOPTION; reserved: PVoid = nil): Pointer;
 
 
 {
@@ -477,7 +481,7 @@ type
   NERO_CD_INFO = tag_NERO_CD_INFO;
   PNERO_CD_INFO = ^NERO_CD_INFO;
   TNeroCDInfo = NERO_CD_INFO;
-  PNeroCDInfo = ^TNeroCDInfo;
+  PNeroCDInfo = PNERO_CD_INFO;
 
 
 // #define NCDI_IS_ERASE_MODE_AVAILABLE(cdInfo,eraseMode)	((cdInfo).ncdiAvailableEraseModes & (1<<(eraseMode)))
@@ -506,7 +510,7 @@ const
 // Returns NULL in case of error.
 }
 var
-  NeroGetDiscImageInfo: function(imagePath: PChar; reserved: PVoid): PNERO_CD_INFO; cdecl;
+  NeroGetDiscImageInfo: function(imagePath: PChar; reserved: PVoid = nil): PNERO_CD_INFO; cdecl;
 
 
 {
@@ -578,11 +582,11 @@ type
 
 { a one-line text to be displayed; text pointer becomes invalid after returning from this function }
 // typedef void  (NERO_CALLBACK_ATTR *NERO_ADD_LOG_LINE_CALLBACK)(void *pUserData, NERO_TEXT_TYPE type, const char *text);
-  NERO_ADD_LOG_LINE_CALLBACK = procedure(pUserData: Pointer; _type: NERO_TEXT_TYPE; const text: PChar); cdecl;
+  NERO_ADD_LOG_LINE_CALLBACK = procedure(pUserData: Pointer; _type: NERO_TEXT_TYPE; text: PChar); cdecl;
 
 { set the phase line; text pointer becomes invalid after returning from this function }
 // typedef void  (NERO_CALLBACK_ATTR *NERO_SET_PHASE_CALLBACK)(void *pUserData, const char *text);
-  NERO_SET_PHASE_CALLBACK = procedure(pUserData: Pointer; const text: PChar); cdecl;
+  NERO_SET_PHASE_CALLBACK = procedure(pUserData: Pointer; text: PChar); cdecl;
 
 { Tell the main program whether the burn process can be interrupted or not }
 // typedef void (NERO_CALLBACK_ATTR *NERO_DISABLE_ABORT_CALLBACK)(void *pUserData,BOOL abortEnabled);
@@ -605,7 +609,7 @@ type
   NERO_PROGRESS = tag_NERO_PROGRESS;
   PNERO_PROGRESS = ^NERO_PROGRESS;
   TNeroProgress = NERO_PROGRESS;
-  PNeroProgress = ^TNeroProgress;
+  PNeroProgress = PNERO_PROGRESS;
 
 {
 // Data exchange between application and NeroAPI is done with
@@ -671,6 +675,8 @@ type
     importinfo: CImportInfo;          // ImportInfo
   end;
   NERO_ISO_ITEM = tag_NERO_ISO_ITEM;
+  TNeroIsoItem = NERO_ISO_ITEM;
+  PNeroIsoItem = PNERO_ISO_ITEM;
 
 // NeroCreateIsoItem: Allocate an instance from the NERO_ISO_ITEM structure
 //    The itemSize member of the structure will be automatically be filled by this
@@ -690,7 +696,7 @@ var
 //    from a previous session
 //    Note that the new NERO_ISO_ITEM's nextItem,userData and subDirFirstItem members are set to NULL
 //    Available for NeroAPI versions >5.5.9.9
-  NeroCopyIsoItem: function(const iso_item: PNERO_ISO_ITEM): PNERO_ISO_ITEM; cdecl;
+  NeroCopyIsoItem: function(iso_item: PNERO_ISO_ITEM): PNERO_ISO_ITEM; cdecl;
 
 
 // Create an ISO track from a NERO_ISO_ITEM tree
@@ -701,7 +707,7 @@ var
 // for the burn options with NeroCITEArgs::dwBurnOptions. root should also be NULL
 // in this case.
   NeroCreateIsoTrackEx: function(root: PNERO_ISO_ITEM;  // First item of the root directory
-                                 const name: PChar;     // Name of the CD
+                                 name: PChar;     // Name of the CD
                                  flags: DWORD           // See constants below
                                  ): CNeroIsoTrack; cdecl;
 type
@@ -752,9 +758,9 @@ var
 // *ppCDStamp will be filled with a pointer on a CDStamp object which will have to be freed later
 
   NeroImportIsoTrackEx: function(pRecorder: NERO_DEVICEHANDLE;
-						     trackNumber: DWORD;
-						     ppCDStamp: PPointer;
-						     flags: DWORD): PNERO_ISO_ITEM; cdecl;
+                                 trackNumber: DWORD;
+                                 var ppCDStamp: Pointer;
+                                 flags: DWORD): PNERO_ISO_ITEM; cdecl;
 
 const
   NIITEF_IMPORT_ROCKRIDGE = (1 shl 0); // Will be ignored, RockRidge is now always imported if present
@@ -770,11 +776,11 @@ var
 
 {
 type
-  IFileSystemDescContainer = interface;  declared in NeroFileSystemContent
+  IFileSystemDescContainer = nero interface;  declared in NeroFileSystemContent
 }
 
 var
-  NeroCreateFileSystemContainer: function(reserved: PVoid): IFileSystemDescContainer; cdecl;
+  NeroCreateFileSystemContainer: function(reserved: PVoid = nil): IFileSystemDescContainer; cdecl;
 
 {
 // Recording functions:
@@ -799,8 +805,9 @@ type
   );
   TNeroDataExchangeType = NERO_DATA_EXCHANGE_TYPE;
 
+// typedef void * NERO_AUDIO_ITEM_HANDLE;
   _NERO_AUDIO_ITEM_HANDLE = record end;
-  NERO_AUDIO_ITEM_HANDLE = ^_NERO_AUDIO_ITEM_HANDLE;
+  NERO_AUDIO_ITEM_HANDLE = ^_NERO_AUDIO_ITEM_HANDLE; // NERO_AUDIO_ITEM_HANDLE is a " void* "
   PNERO_AUDIO_ITEM_HANDLE = ^NERO_AUDIO_ITEM_HANDLE;
 
   tagNERO_AUDIO_ITEM_INFO = record
@@ -823,7 +830,7 @@ type
   NERO_DATA_EXCHANGE = tag_NERO_DATA_EXCHANGE;
   PNERO_DATA_EXCHANGE = ^NERO_DATA_EXCHANGE;
   TNeroDataExchange = NERO_DATA_EXCHANGE;
-  PNeroDataExchange = ^TNeroDataExchange;
+  PNeroDataExchange = PNERO_DATA_EXCHANGE;
 
 
   tag_NERO_AUDIO_TRACK = record
@@ -832,7 +839,7 @@ type
 	natRelativeIndexBlkPositions: array[0..98 - 1] of DWORD;  { offsets between one index position and the next one }
 	natTitle, natArtist: PChar;             { set to NULL if unknown or to be taken from source }
 	natSourceDataExchg: NERO_DATA_EXCHANGE;
-	natLengthInBlocks: DWORD;                { only used for NERO_IO_CALLBACK */
+	natLengthInBlocks: DWORD;                { only used for NERO_IO_CALLBACK }
 	natIndex0ContainsData: BOOL;             { NeroAPI 5.5.9.8: TRUE, if audio data shall be written into index
 											  0. Data for index 0 must be provided. }
 	natReserved: array[0..31 - 1] of DWORD;  { Should be zero }
@@ -971,7 +978,7 @@ type
   NERO_WRITE_FREESTYLE_CD = tag_NERO_WRITE_FREESTYLE_CD;
   PNERO_WRITE_FREESTYLE_CD = ^NERO_WRITE_FREESTYLE_CD;
   TNeroWriteFreestyleCD = NERO_WRITE_FREESTYLE_CD;
-  PNeroWriteFreestyleCD = ^TNeroWriteFreestyleCD;
+  PNeroWriteFreestyleCD = PNERO_WRITE_FREESTYLE_CD;
 
 // To burn an IFileSystemDescContainer object
 
@@ -1033,7 +1040,7 @@ var
   NeroDAE: function(aDeviceHandle: NERO_DEVICEHANDLE;
                     dwTrackStartBlk: DWORD;
                     dwTrackLengthInBlks: DWORD;
-                    const pDestDataExchg: PNERO_DATA_EXCHANGE;
+                    pDestDataExchg: PNERO_DATA_EXCHANGE;
                     iSpeedInX: DWORD;     // speed of extraction, 0 means maximum speed
                     pNeroProgressCallback: PNERO_CALLBACK { has to be a NERO_PROGRESS_CALLBACK }
                    ): Integer; cdecl;
@@ -1109,7 +1116,7 @@ type
   NERO_AUDIO_FORMAT_INFO = tagNERO_AUDIO_FORMAT_INFO;
   PNERO_AUDIO_FORMAT_INFO = ^NERO_AUDIO_FORMAT_INFO;
   TNeroAudioFormatInfo = NERO_AUDIO_FORMAT_INFO;
-  PNeroAudioFormatInfo = ^TNeroAudioFormatInfo;
+  PNeroAudioFormatInfo = PNERO_AUDIO_FORMAT_INFO;
 
 
 //////////////////////////////////////////////////////////// Helper functions //
@@ -1155,7 +1162,7 @@ var
 // This function has to be called first.
 }
 
-function NeroAPIGlueConnect(reserved: PVoid): Boolean;
+function NeroAPIGlueConnect(reserved: PVoid = nil): Boolean;
 
 {
 // This one cleans up after using the glue code.
@@ -1181,8 +1188,12 @@ const
 
 var
   LibNeroAPI: HMODULE; // NeroAPI.dll module handle
-  _NeroDone: procedure(); cdecl;
   FNeroDone: Boolean;
+
+// overloaded or extended functions
+var
+  _NeroInit: function(pNeroSettings: PNERO_SETTINGS; reserved: PChar): NEROAPI_INIT_ERROR; cdecl;
+  _NeroDone: procedure(); cdecl;
 
 procedure NeroNotImplemented; cdecl;
 begin
@@ -1206,7 +1217,7 @@ begin
   NeroClearErrors                := GetNeroProc('NeroClearErrors');
   NeroGetAPIVersionEx            := GetNeroProc('NeroGetAPIVersionEx');
   NeroSetExpectedAPIVersionEx    := GetNeroProc('NeroSetExpectedAPIVersionEx');
-  NeroInit                       := GetNeroProc('NeroInit');
+  _NeroInit                      := GetNeroProc('NeroInit');
   _NeroDone                      := GetNeroProc('NeroDone');
   NeroSetOption                  := GetNeroProc('NeroSetOption');
   NeroGetAvailableDrivesEx       := GetNeroProc('NeroGetAvailableDrivesEx');
@@ -1263,6 +1274,17 @@ begin
 end;
 
 {*******************************************************************************}
+
+function NeroInit(var NeroSettings: TNeroSettings; reserved: PChar): NEROAPI_INIT_ERROR; overload;
+begin
+  Result := _NeroInit(@NeroSettings, reserved);
+end;
+
+function NeroInit(NeroSettings: PNeroSettings; reserved: PChar): NEROAPI_INIT_ERROR; overload;
+begin
+  Result := _NeroInit(NeroSettings, reserved);
+end;
+
 
 procedure NeroDone();
 begin
