@@ -32,19 +32,10 @@
 |* History
 |*
 |* CREATOR: Alexandre Rocha Lima e Marcondes
-|*
-|* 02/07/2003: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    added Audio Track Extraction to WAV Files (NeroDAE)
-|* 29/01/2004: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    converted byte values to megabytes (MB)
 ******************************************************************************}
 
 {******************************************************************************
-|* NeroSDK / NeroAPI
-|*
-|* PROGRAM: NeroAPITest.cpp and NeroAPITest.h
+|* DelphiNeroAPI
 |*
 |* PURPOSE: Media Information
 ******************************************************************************}

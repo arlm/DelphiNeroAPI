@@ -1,4 +1,4 @@
-program DemoApp;
+program SampleApp;
 
 uses
   Forms,

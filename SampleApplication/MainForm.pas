@@ -33,44 +33,12 @@
 |*
 |* CREATOR: Alexandre Rocha Lima e Marcondes
 |*
-|* 26/06/2003: Modified
-|*    Andreas Hausladen
-|*    memory error corrected on NeroSettings
-|* 26/06/2003: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    memory error corrected on NeroDeviceInfos, added Device List
-|* 02/07/2003: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    added Media detecting (NeroCDInfo)
-|* 29/01/2004: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    added CD-DA writing
-|*    corrected memory allocation on NeroWriteCD structure (CD-DA)
-|*    corrected general memory deallocation routines (ReallocMem instead of FreeMem)
-|* 02/02/2004: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    added Image writing
-|* 18/02/2004: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    added ISO CD writing (Thanks to Gabriele Lauricella for the ISO CD Writing code example)
-|* 20/02/2004: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    added some of the most important User Dialog responses
-|*    IdleCallback now processes the application messages
-|* 23/02/2004: Modified
-|*    Alexandre Rocha Lima e Marcondes
-|*    PCM Audio files importing routines now are gracefully closing the files
-|*    added version reporting on About PageSheet
-|*    added supported file formats list on About PageSheet
-|*
 ******************************************************************************}
 
 {******************************************************************************
-|* NeroSDK / NeroAPI
+|* DelphiNeroAPI
 |*
-|* PROGRAM: NeroAPITest.cpp and NeroAPITest.h
-|*
-|* PURPOSE: Test functions of Nero API DLL
+|* PURPOSE: Test functions DelphiNeroAPI components
 ******************************************************************************}
 unit MainForm;
 
