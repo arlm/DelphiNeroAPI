@@ -625,7 +625,7 @@ type
   NERO_IO_CALLBACK = function(pUserData: Pointer; pBuffer: PByte; dwLen: DWORD): DWORD; cdecl;
   TNeroIOCallback = NERO_IO_CALLBACK;
 // typedef BOOL (NERO_CALLBACK_ATTR *NERO_STATUS_CALLBACK)(void *pUserData);
-  NERO_STATUS_CALLBACK = function(pUserData: Pointer): BOOL;
+  NERO_STATUS_CALLBACK = function(pUserData: Pointer): BOOL; cdecl;
   TNeroStatusCallback = NERO_STATUS_CALLBACK;
 
   tag_NERO_IO = record
