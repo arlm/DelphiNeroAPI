@@ -42,6 +42,9 @@
 |* 02/07/2003: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    added Media detecting (NeroCDInfo)
+|* 29/01/2004: Modified
+|*    Alexandre Rocha Lima e Marcondes
+|*    added CD-DA writing
 |*
 ******************************************************************************}
 
@@ -59,7 +62,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, NeroAPI, NeroUserDialog, ComCtrls, StdCtrls, AppEvnts, ExtCtrls,
-  JvImage;
+  JvImage, ShellAPI;
 
 type
   TFMainForm = class(TForm)
@@ -79,6 +82,40 @@ type
     btnErase: TButton;
     btnEject: TButton;
     btnQuickErase: TButton;
+    pcWrite: TPageControl;
+    tsISO: TTabSheet;
+    tsAudio: TTabSheet;
+    tsUDF: TTabSheet;
+    tsISOUDF: TTabSheet;
+    tsVCD: TTabSheet;
+    tsSVCD: TTabSheet;
+    tsImage: TTabSheet;
+    lbxCDDATracks: TListBox;
+    lbCDDATracks: TLabel;
+    tsAbout: TTabSheet;
+    btnLoad: TButton;
+    lbInstructions03: TLabel;
+    lbInstructions02: TLabel;
+    lbInstructions01: TLabel;
+    lbInstructions0: TLabel;
+    lbInstructions04: TLabel;
+    lbInstructions05: TLabel;
+    lbInstructions06: TLabel;
+    lbCDDAArtist: TLabel;
+    lbCDDATitle: TLabel;
+    edCDDAArtist: TEdit;
+    edCDDATitle: TEdit;
+    btnBurnCDDA: TButton;
+    gbSettings: TGroupBox;
+    cbxSimulateBurn: TCheckBox;
+    cbxTestSpeed: TCheckBox;
+    cbxVerifyData: TCheckBox;
+    cbxEjectCD: TCheckBox;
+    cbxBufferUnderrun: TCheckBox;
+    lbDeviceName: TLabel;
+    cbxCloseSession: TCheckBox;
+    cbWritingMethod: TComboBox;
+    lbWritingMethod: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ApplicationEventsShowHint(var HintStr: String;
@@ -91,19 +128,40 @@ type
     procedure btnEraseClick(Sender: TObject);
     procedure btnEjectClick(Sender: TObject);
     procedure btnQuickEraseClick(Sender: TObject);
+    procedure btnLoadClick(Sender: TObject);
+    procedure pcWriteChange(Sender: TObject);
+    procedure edCDDAArtistChange(Sender: TObject);
+    procedure edCDDATitleChange(Sender: TObject);
+    procedure btnBurnCDDAClick(Sender: TObject);
   private
     { Private declarations }
   protected
+    procedure WMDropFiles(var msg : TWMDropFiles); message WM_DROPFILES;
   public
-    NeroDeviceInfos: PNeroSCSIDeviceInfos;
     NeroSettings: PNeroSettings;
     NeroDeviceHandle: NERO_DEVICEHANDLE;
+    NeroProgress: NERO_PROGRESS;
     NeroCDInfo: PNeroCDInfo;
+    NeroWriteCD: PNeroWriteCD;
+    NeroDeviceInfos: PNeroSCSIDeviceInfos;
+
     procedure NeroError(Action: String);
   end;
 
 function IdleCallback(pUserData: Pointer): Boolean; cdecl;
 function UserDialog(pUserData: Pointer; Dtype: NeroUserDlgInOut; data: Pointer): NeroUserDlgInOut; cdecl;
+
+function ProgressCallback(pUserData: Pointer; dwProgressInPercent: DWORD): BOOL; cdecl;
+function AbortedCallback(pUserData: Pointer): BOOL; cdecl;
+procedure AddLogLine(pUserData: Pointer; _type: NERO_TEXT_TYPE; text: PChar); cdecl;
+procedure SetPhaseCallback(pUserData: Pointer; text: PChar); cdecl;
+procedure DisableAbortCallback(pUserData: Pointer; abortEnabled: BOOL); cdecl;
+procedure SetMajorPhaseCallback(pUserData: Pointer; phase: NERO_MAJOR_PHASE; reserved: PVoid); cdecl;
+
+function WriteIOCallback(pUserData: Pointer; pBuffer: PByte; dwLen: DWORD): DWORD; cdecl;
+function ReadIOCallback(pUserData: Pointer; pBuffer: PByte; dwLen: DWORD): DWORD; cdecl;
+function EOFCallback(pUserData: Pointer): BOOL; cdecl;
+function ErrorCallback(pUserData: Pointer): BOOL; cdecl;
 
 var
   FMainForm: TFMainForm;
@@ -116,12 +174,99 @@ uses DeviceDetails, Registry, MediaInformation;
 
 function IdleCallback(pUserData: Pointer): Boolean; cdecl;
 begin
-  Result := True;
+  Result := False;
 end;
 
 function UserDialog(pUserData: Pointer; Dtype: NeroUserDlgInOut; data: Pointer): NeroUserDlgInOut; cdecl;
 begin
   Result := DLG_WAITCD;
+end;
+
+function WriteIOCallback(pUserData: Pointer; pBuffer: PByte; dwLen: DWORD): DWORD; cdecl;
+begin
+  Result := FileWrite(Integer(pUserData^), pBuffer, dwLen) div SizeOf(pBuffer);
+end;
+
+function ReadIOCallback(pUserData: Pointer; pBuffer: PByte; dwLen: DWORD): DWORD; cdecl;
+begin
+  Result := FileRead(Integer(pUserData^), pBuffer, dwLen);
+end;
+
+function EOFCallback(pUserData: Pointer): BOOL; cdecl;
+var
+  FilePosition, FileLength: Int64;
+begin
+  FilePosition := FileSeek(Integer(pUserData^), 0, 1);
+  FileLength := GetFileSize(Integer(pUserData^), nil);
+  Result := (FilePosition = FileLength);
+end;
+
+function ErrorCallback(pUserData: Pointer): BOOL; cdecl;
+begin
+  Result := BOOL(GetLastError);
+end;
+
+function ProgressCallback(pUserData: Pointer; dwProgressInPercent: DWORD): BOOL; cdecl;
+begin
+  FMainForm.sbMain.SimplePanel := True;
+	FMainForm.sbMain.SimpleText := 'Track extraction in progress (' + FormatFloat('000 ', dwProgressInPercent) + '%)';
+
+  Application.ProcessMessages;
+
+  Result := IdleCallback(pUserData);
+end;
+
+function AbortedCallback(pUserData: Pointer): BOOL; cdecl;
+begin
+  Result := BOOL(GetLastError);
+end;
+
+procedure AddLogLine(pUserData: Pointer; _type: NERO_TEXT_TYPE; text: PChar); cdecl;
+var
+  Header: String;
+begin
+	case _type of
+    NERO_TEXT_INFO:        // informative text
+    begin
+      header := 'i ';
+    end;
+    NERO_TEXT_STOP:        // some operation stopped prematurely
+    begin
+      header := '# ';
+    end;
+    NERO_TEXT_EXCLAMATION: // important information
+    begin
+      header := '! ';
+    end;
+    NERO_TEXT_QUESTION:    // a question which requires an answer
+    begin
+      header := '? ';
+    end;
+    NERO_TEXT_DRIVE:		   // a message concerning a CD-ROM drive or recorder
+    begin
+      header := '- ';
+    end;
+  end;
+
+  ShowMessage(header + text);
+end;
+
+procedure SetPhaseCallback(pUserData: Pointer; text: PChar); cdecl;
+begin
+  ShowMessage(text);
+end;
+
+procedure DisableAbortCallback(pUserData: Pointer; abortEnabled: BOOL); cdecl;
+begin
+  if abortEnabled then
+		ShowMessage('The current process cannot be interrupted')
+	else
+    ShowMessage('The process can be interrupted again');
+end;
+
+procedure SetMajorPhaseCallback(pUserData: Pointer; phase: NERO_MAJOR_PHASE; reserved: PVoid); cdecl;
+begin
+
 end;
 
 procedure TFMainForm.FormCreate(Sender: TObject);
@@ -135,6 +280,7 @@ begin
   NeroDeviceHandle := nil;
   NeroDeviceInfos := nil;
   NeroCDInfo := nil;
+  NeroWriteCD := nil;
   NeroSettings := nil;
   sbMain.SimplePanel := true;
 
@@ -235,15 +381,32 @@ begin
 
     cbDevicesCloseUp(self);
   end;
+
+  pcWrite.TabIndex := pcWrite.PageCount - 1;
+
+  DragAcceptFiles(self.WindowHandle, True);
+
+  NeroProgress.npProgressCallback := ProgressCallback;
+  NeroProgress.npAbortedCallback := AbortedCallback;
+  NeroProgress.npAddLogLineCallback := AddLogLine;
+  NeroProgress.npSetPhaseCallback := SetPhaseCallback;
+  NeroProgress.npUserData := NeroSettings;
+  NeroProgress.npDisableAbortCallback := DisableAbortCallback;
+  NeroProgress.npSetMajorPhaseCallback := SetMajorPhaseCallback;
 end;
 
 procedure TFMainForm.FormDestroy(Sender: TObject);
 begin
+  DragAcceptFiles(self.WindowHandle, False);
+
   if Assigned(NeroDeviceHandle) then
     NeroCloseDevice(NeroDeviceHandle);
 
   if Assigned(NeroDeviceInfos) then
   	NeroFreeMem(NeroDeviceInfos);
+
+  if Assigned(NeroWriteCD) then
+  	FreeMem(NeroWriteCD);
 
   if Assigned(NeroCDInfo) then
   	NeroFreeMem(NeroCDInfo);
@@ -279,6 +442,8 @@ begin
     lbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
 
     cbWriteSpeeds.ItemIndex := cbWriteSpeeds.Items.Count - 1;
+    cbxBufferUnderrun.Checked := NeroDeviceInfos.nsdisDevInfos[FMainForm.cbDevices.itemIndex].nsdiMandatoryBUPSpeed > 0;
+
     btnRefresh.Enabled := True;
   end
   else
@@ -329,7 +494,7 @@ begin
 
       btnMoreMedia.Enabled := True;
       btnEject.Enabled := True;
-      lbFreeBlocks.Caption := IntToStr(NeroCDInfo.ncdiFreeCapacityInBlocks) + ' Free Blocks';
+      lbFreeBlocks.Caption := IntToStr(NeroCDInfo.ncdiFreeCapacityInBlocks) + ' Free Blocks (' + FloatToStrF(NeroCDInfo.ncdiFreeCapacityInBlocks * 2352 / 1024 / 1024 ,ffGeneral, 3, 3) + ' MB)';
       lbFreeBlocks.Visible := NeroCDInfo.ncdiIsWriteable;
       if NeroCDInfo.ncdiNumTracks > 1 then
         lbTracks.Caption := IntToStr(NeroCDInfo.ncdiNumTracks) + ' Tracks'
@@ -381,7 +546,8 @@ end;
 
 procedure TFMainForm.btnEjectClick(Sender: TObject);
 begin
-  NeroEjectLoadCD(NeroDeviceHandle, True);
+  NeroEjectLoadCD(NeroDeviceHandle, true);
+  btnLoad.Enabled := True;
 end;
 
 procedure TFMainForm.NeroError(Action: String);
@@ -416,6 +582,234 @@ begin
     NeroError('Error erasing the CD-RW');
 
   btnRefreshClick(self);
+end;
+
+procedure TFMainForm.WMDropFiles(var msg: TWMDropFiles);
+var
+  CFileName: array [0 .. MAX_PATH] of Char;
+  WhichFiles: TStringList;
+  index, i, FilesCount, FileHandle: Integer;
+  TrackName: String;
+begin
+  WhichFiles := TStringList.Create;
+  try
+    FilesCount := DragQueryFile(Msg.Drop, $FFFFFFFF, CFileName, MAX_PATH);
+    for i := 0 to Pred(FilesCount) do
+    begin
+      if DragQueryFile(Msg.Drop, i, CFileName, MAX_PATH) > 0 then
+      begin
+        WhichFiles.Add(CFileName);
+      end;
+    end;
+
+    if WhichFiles.Count > 0 then
+    begin
+      Screen.Cursor := crHourGlass;
+      for i := 0 to Pred(WhichFiles.Count) do
+      begin
+        case pcWrite.TabIndex of
+          0:
+          begin
+          end;
+          1:
+          begin
+          end;
+          2:
+          begin
+          end;
+          3:
+          begin
+          end;
+          4:
+          begin
+            if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.wav') then
+            begin
+              if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.mp3') then
+              begin
+                if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.wma') then
+                begin
+                  if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.pcm') then
+                  begin
+                    continue;
+                  end;
+                end;
+              end;
+            end;
+
+            TrackName := ExtractFileName(WhichFiles.Strings[i]);
+            index := lbxCDDATracks.Items.Add('');
+            lbxCDDATracks.Items[index] := '[' + IntToStr(index) + '] ' + TrackName + ' [Pause 00s]';
+
+            if index = 0 then
+            begin
+              NeroWriteCD.nwcdTracks[index].natPauseInBlksBeforeThisTrack := 2 * 75;
+              NeroWriteCD.nwcdTracks[index].natIndex0ContainsData := False;
+            end;
+
+            if LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.wav' then
+            begin
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeType := NERO_ET_FILE;
+              StrPCopy(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName, WhichFiles.Strings[i]);
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName[SizeOf(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName) - 1] := #00;
+              continue;
+            end;
+
+            if LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.mp3' then
+            begin
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeType := NERO_ET_FILE_MP3;
+              StrPCopy(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName, WhichFiles.Strings[i]);
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName[SizeOf(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName) - 1] := #00;
+              continue;
+            end;
+
+            if LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.wma' then
+            begin
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeType := NERO_ET_FILE_WMA;
+              StrPCopy(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName, WhichFiles.Strings[i]);
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName[SizeOf(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName) - 1] := #00;
+              continue;
+            end;
+
+            if LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.pcm' then
+            begin
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeType := NERO_ET_IO_CALLBACK;
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeIO.nioIOCallback := ReadIOCallback;
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeIO.nioEOFCallback := EOFCallback;
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeIO.nioErrorCallback := ErrorCallback;
+
+              FileHandle := FileOpen(WhichFiles.Strings[i], fmOpenRead);
+              if FileHandle = -1 then
+                continue;
+
+              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeIO.nioUserData := @FileHandle;
+              NeroWriteCD.nwcdTracks[i].natLengthInBlocks := GetFileSize(FileHandle, nil) div 2352;
+
+              FileClose(FileHandle);
+              continue;
+            end;
+          end;
+          5:
+          begin
+          end;
+          6:
+          begin
+          end;
+        end;
+      end;
+      Screen.Cursor := crDefault;
+    end;
+  finally
+    DragFinish(Msg.Drop);
+    WhichFiles.Free;
+  end;
+end;
+procedure TFMainForm.btnLoadClick(Sender: TObject);
+begin
+  NeroEjectLoadCD(NeroDeviceHandle, false);
+  btnLoad.Enabled := False;
+end;
+
+procedure TFMainForm.pcWriteChange(Sender: TObject);
+begin
+  if pcWrite.TabIndex < 7 then
+  begin
+    if Assigned(NeroWriteCD) then
+    	FreeMem(NeroWriteCD);
+
+    NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NeroWriteCD)));
+
+    if NeroCDInfo.ncdiMediumType = NMT_UNKNOWN then
+  		NeroWriteCD.nwcdMediaType := MEDIA_DVD_ANY
+    else
+  		NeroWriteCD.nwcdMediaType := MEDIA_CD;
+
+    case pcWrite.TabIndex of
+      0:
+      begin
+      end;
+      1:
+      begin
+      end;
+      2:
+      begin
+      end;
+      3:
+      begin
+      end;
+      4:
+      begin
+        edCDDAArtist.Text := '';
+        edCDDATitle.Text := '';
+        lbxCDDATracks.Items.Clear;
+
+        NeroWriteCD.nwcdNumTracks := 0;
+        NeroWriteCD.nwcdArtist := '';
+        NeroWriteCD.nwcdTitle := '';
+      end;
+      5:
+      begin
+      end;
+      6:
+      begin
+      end;
+    end;
+  end;
+end;
+
+procedure TFMainForm.edCDDAArtistChange(Sender: TObject);
+begin
+  NeroWriteCD.nwcdArtist := PAnsiChar(edCDDAArtist.Text);
+end;
+
+procedure TFMainForm.edCDDATitleChange(Sender: TObject);
+begin
+  NeroWriteCD.nwcdTitle := PAnsiChar(edCDDATitle.Text);
+end;
+
+procedure TFMainForm.btnBurnCDDAClick(Sender: TObject);
+var
+  Flags: Cardinal;
+begin
+  if cbxSimulateBurn.Checked then
+    Flags := NBF_SIMULATE
+  else
+    Flags := NBF_WRITE;
+
+  Flags := Flags + NBF_DISABLE_ABORT + NBF_DETECT_NON_EMPTY_CDRW +
+    NBF_SPEED_IN_KBS + NBF_CD_TEXT;
+
+  if cbxCloseSession.Checked then
+    Flags := Flags + NBF_CLOSE_SESSION;
+
+  if cbxTestSpeed.Checked then
+    Flags := Flags + NBF_SPEED_TEST;
+
+  if cbxBufferUnderrun.Checked then
+    Flags := Flags + NBF_BUF_UNDERRUN_PROT;
+
+  if cbxVerifyData.Checked then
+    Flags := Flags + NBF_VERIFY;
+
+  if not cbxEjectCD.Checked then
+    Flags := Flags + NBF_DISABLE_EJECT;
+
+  case cbWritingMethod.ItemIndex of
+    0: // TAO
+    begin
+      //TAO is the default, do nothing
+    end;
+    1: //DAO
+    begin
+      Flags := Flags + NBF_DAO;
+    end;
+  end;
+
+  NeroBurn(NeroDeviceHandle, NERO_ISO_AUDIO_CD, NeroWriteCD, Flags,
+    NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
+    @NeroProgress);
+
+  if Assigned(NeroWriteCD) then
+    FreeMem(NeroWriteCD);
 end;
 
 end.

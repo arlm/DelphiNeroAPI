@@ -36,6 +36,9 @@
 |* 02/07/2003: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    added Audio Track Extraction to WAV Files (NeroDAE)
+|* 29/01/2004: Modified
+|*    Alexandre Rocha Lima e Marcondes
+|*    converted byte values megabyte (MB)
 ******************************************************************************}
 
 {******************************************************************************
@@ -113,7 +116,7 @@ begin
       end;
       stMedia.Caption := stMedia.Caption + '(' + NeroGetTypeNameOfMedia(NERO_MEDIA_SET(FMainForm.NeroCDInfo.ncdiMediaType)) + ')';
 
-      lbFreeBlocks.Caption := IntToStr(FMainForm.NeroCDInfo.ncdiFreeCapacityInBlocks) + ' Free Blocks';
+      lbFreeBlocks.Caption := IntToStr(FMainForm.NeroCDInfo.ncdiFreeCapacityInBlocks) + ' Free Blocks (' + FloatToStrF(FMainForm.NeroCDInfo.ncdiFreeCapacityInBlocks * 2352 / 1024 / 1024, ffGeneral, 3, 3) + ' MB)';
       lbFreeBlocks.Visible := FMainForm.NeroCDInfo.ncdiIsWriteable;
 
       lbArtist.Caption := 'Artist : ' + FMainForm.NeroCDInfo.ncdiArtist;
@@ -160,7 +163,7 @@ begin
 
         Node.Text := Node.Text + ' (start block : ' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackStartBlk) +
           ' end block : '  + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackLengthInBlks + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackStartBlk) +
-          ' )';
+          ' [' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackLengthInBlks) + '] = ' + FloatToStrF(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackLengthInBlks * 2352 / 1024 / 1024 , ffGeneral, 3, 3) +  ' MB)';
 
         if FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiISRC <> '' then
           Node.Text := Node.Text + ' ISRC : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiISRC;
@@ -168,8 +171,6 @@ begin
           Node.Text := Node.Text + ' Artist : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiArtist;
         if FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTitle <> '' then
           Node.Text := Node.Text + ' Title : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTitle;
-
-
       end;
       btnCancel.Tag := 0;
       pbProgress.Visible := False;
@@ -191,7 +192,7 @@ end;
 function TrackReadProgressCallback(pUserData: Pointer;
   dwProgressInPercent: DWORD): BOOL;
 begin
-	FMediaInfo.Caption := 'Track extraction in progress (' + IntToStr(dwProgressInPercent) + '%)';
+	FMediaInfo.Caption := 'Track extraction in progress (' + FormatFloat('000 ', dwProgressInPercent) + '%)';
   FMediaInfo.pbProgress.StepBy(dwProgressInPercent);
   Application.ProcessMessages;
 
