@@ -132,9 +132,9 @@ object FMainForm: TFMainForm
       TabOrder = 0
     end
     object btnRefresh: TButton
-      Left = 224
+      Left = 223
       Top = 40
-      Width = 65
+      Width = 70
       Height = 25
       Caption = 'Refresh'
       Enabled = False
@@ -161,9 +161,9 @@ object FMainForm: TFMainForm
       OnClick = btnMoreMediaClick
     end
     object btnErase: TButton
-      Left = 8
+      Left = 4
       Top = 72
-      Width = 65
+      Width = 70
       Height = 25
       Caption = 'Erase Disk'
       Enabled = False
@@ -171,9 +171,9 @@ object FMainForm: TFMainForm
       OnClick = btnEraseClick
     end
     object btnEject: TButton
-      Left = 152
+      Left = 150
       Top = 72
-      Width = 65
+      Width = 70
       Height = 25
       Caption = 'Eject CD'
       Enabled = False
@@ -181,9 +181,9 @@ object FMainForm: TFMainForm
       OnClick = btnEjectClick
     end
     object btnQuickErase: TButton
-      Left = 80
+      Left = 77
       Top = 72
-      Width = 65
+      Width = 70
       Height = 25
       Caption = 'Quick Erase'
       Enabled = False
@@ -191,9 +191,9 @@ object FMainForm: TFMainForm
       OnClick = btnQuickEraseClick
     end
     object btnLoad: TButton
-      Left = 224
+      Left = 223
       Top = 72
-      Width = 65
+      Width = 70
       Height = 25
       Caption = 'Load CD'
       Enabled = False
@@ -206,7 +206,7 @@ object FMainForm: TFMainForm
     Top = 200
     Width = 539
     Height = 201
-    ActivePage = tsAbout
+    ActivePage = tsAudio
     HotTrack = True
     TabOrder = 3
     OnChange = pcWriteChange

@@ -45,6 +45,8 @@
 |* 29/01/2004: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    added CD-DA writing
+|*    corrected memory allocation on NeroWriteCD structure (CD-DA)
+|*    corrected general memory deallocation routines (ReallocMem instead of FreeMem)
 |*
 ******************************************************************************}
 
@@ -406,13 +408,13 @@ begin
   	NeroFreeMem(NeroDeviceInfos);
 
   if Assigned(NeroWriteCD) then
-  	FreeMem(NeroWriteCD);
+  	ReallocMem(NeroWriteCD, 0);
 
   if Assigned(NeroCDInfo) then
   	NeroFreeMem(NeroCDInfo);
 
   if Assigned(NeroSettings) then
-    FreeMemory(NeroSettings);
+    ReallocMem(NeroSettings, 0);
 
 	NeroClearErrors;
 	NeroDone;
@@ -548,6 +550,8 @@ procedure TFMainForm.btnEjectClick(Sender: TObject);
 begin
   NeroEjectLoadCD(NeroDeviceHandle, true);
   btnLoad.Enabled := True;
+  btnEject.Enabled := False;
+  btnRefreshClick(Sender);
 end;
 
 procedure TFMainForm.NeroError(Action: String);
@@ -602,6 +606,11 @@ begin
       end;
     end;
 
+    if Assigned(NeroWriteCD) then
+      ReallocMem(NeroWriteCD, SizeOf(NeroWriteCD) + SizeOf(NERO_AUDIO_TRACK) * WhichFiles.Count)
+    else
+    	NeroWriteCD :=AllocMem(SizeOf(NERO_WRITE_CD) + SizeOf(NERO_AUDIO_TRACK) * WhichFiles.Count);
+
     if WhichFiles.Count > 0 then
     begin
       Screen.Cursor := crHourGlass;
@@ -638,7 +647,7 @@ begin
 
             TrackName := ExtractFileName(WhichFiles.Strings[i]);
             index := lbxCDDATracks.Items.Add('');
-            lbxCDDATracks.Items[index] := '[' + IntToStr(index) + '] ' + TrackName + ' [Pause 00s]';
+            lbxCDDATracks.Items[index] := '[' + IntToStr(index + 1) + '] ' + TrackName + ' [Pause 00s]';
 
             if index = 0 then
             begin
@@ -706,7 +715,9 @@ end;
 procedure TFMainForm.btnLoadClick(Sender: TObject);
 begin
   NeroEjectLoadCD(NeroDeviceHandle, false);
+  btnRefreshClick(Sender);
   btnLoad.Enabled := False;
+  btnEject.Enabled := False;
 end;
 
 procedure TFMainForm.pcWriteChange(Sender: TObject);
@@ -714,14 +725,20 @@ begin
   if pcWrite.TabIndex < 7 then
   begin
     if Assigned(NeroWriteCD) then
-    	FreeMem(NeroWriteCD);
-
-    NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NeroWriteCD)));
-
-    if NeroCDInfo.ncdiMediumType = NMT_UNKNOWN then
-  		NeroWriteCD.nwcdMediaType := MEDIA_DVD_ANY
+    	ZeroMemory(NeroWriteCD, SizeOf(NeroWriteCD))
     else
-  		NeroWriteCD.nwcdMediaType := MEDIA_CD;
+    	NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NERO_WRITE_CD)));
+
+
+    if Assigned(NeroCDInfo) then
+    begin
+      if NeroCDInfo.ncdiMediumType = NMT_UNKNOWN then
+    		NeroWriteCD.nwcdMediaType := MEDIA_DVD_ANY
+      else
+  		  NeroWriteCD.nwcdMediaType := MEDIA_CD;
+    end
+    else
+  		  NeroWriteCD.nwcdMediaType := MEDIA_CD;
 
     case pcWrite.TabIndex of
       0:
@@ -809,7 +826,15 @@ begin
     @NeroProgress);
 
   if Assigned(NeroWriteCD) then
-    FreeMem(NeroWriteCD);
+    ReallocMem(NeroWriteCD, 0);
+
+  if cbxEjectCD.Checked then
+  begin
+    btnLoad.Enabled := True;
+    btnRefreshClick(Self);
+  end;
+
+  pcWrite.TabIndex := pcWrite.PageCount - 1;
 end;
 
 end.
