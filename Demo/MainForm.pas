@@ -70,9 +70,9 @@ begin
     exit;
   end;
 
-  NeroSettings := AllocMem(sizeof(NeroSettings));
+  NeroSettings := AllocMem(sizeof(TNeroSettings));
 
-  NeroSettings.nstNeroFilesPath := 'C:\Program Files\Ahead\Nero';
+  NeroSettings.nstNeroFilesPath := 'D:\Programme\Ahead\Nero';
   NeroSettings.nstVendor := '';
   NeroSettings.nstSoftware := 'ahead';
   NeroSettings.nstLanguageFile := 'nero.txt';
@@ -89,36 +89,24 @@ begin
   NeroSettings.nstOverburnSize := 0;
 
   initErr := NeroInit(NeroSettings, nil);
-	case (initErr) of
+  case (initErr) of
     NEROAPI_INIT_OK:
-    begin
       sbMain.Panels[0].Text := 'NeroAPI init() OK !';
-    end;
     NEROAPI_INIT_INVALID_ARGS:
-    begin
       sbMain.Panels[0].Text := 'NeroInit() : invalid args';
-    end;
     NEROAPI_INIT_INVALID_SERIAL_NUM:
-    begin
-  		sbMain.Panels[0].Text := 'NeroInit() : invalid serial number';
-    end;
-	  NEROAPI_INIT_DEMOVERSION_EXPIRED:
-    begin
-  		sbMain.Panels[0].Text := 'NeroInit() : demo version has expired';
-    end;
-	  NEROAPI_INIT_CANNOT_LOCK:
-    begin
-  		sbMain.Panels[0].Text := 'NeroInit() : cannot lock';
-    end;
+      sbMain.Panels[0].Text := 'NeroInit() : invalid serial number';
+    NEROAPI_INIT_DEMOVERSION_EXPIRED:
+      sbMain.Panels[0].Text := 'NeroInit() : demo version has expired';
+    NEROAPI_INIT_CANNOT_LOCK:
+      sbMain.Panels[0].Text := 'NeroInit() : cannot lock';
     NEROAPI_INIT_UNSPECIFIED_ERROR:
-    begin
-  		sbMain.Panels[0].Text := 'NeroInit() : unspecified error';
-    end;
-    else
-    begin
       sbMain.Panels[0].Text := 'NeroInit() : unspecified error';
-    end;
+
+  else
+    sbMain.Panels[0].Text := 'NeroInit() : unspecified error';
   end;
+  if initErr <> NEROAPI_INIT_OK then Exit;
 
 //  NeroDeviceInfos := AllocMem(sizeof(NeroDeviceInfos));
   NeroDeviceInfos := NeroGetAvailableDrivesEx(MEDIA_CD, nil);

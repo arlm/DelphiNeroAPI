@@ -1,6 +1,6 @@
 object FMainForm: TFMainForm
-  Left = 355
-  Top = 439
+  Left = 232
+  Top = 223
   Width = 640
   Height = 370
   Caption = 'Delphi Nero API 1.02'
@@ -18,7 +18,7 @@ object FMainForm: TFMainForm
   TextHeight = 13
   object sbMain: TStatusBar
     Left = 0
-    Top = 324
+    Top = 317
     Width = 632
     Height = 19
     Panels = <
@@ -26,7 +26,7 @@ object FMainForm: TFMainForm
         Width = 200
       end
       item
-        Width = 135
+        Width = 145
       end
       item
         Width = 80
@@ -41,5 +41,6 @@ object FMainForm: TFMainForm
         Bevel = pbNone
         Width = 80
       end>
+    SimplePanel = False
   end
 end
