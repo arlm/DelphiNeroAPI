@@ -50,4 +50,10 @@ Version 0.2a
 
 [-] corrected NERO_STATUS_CALLBACK calling convention
 [*] byte values on Media and Track information is now in megabytes (MB)
-[+] Added CD-DA burning sample (still not complete)
+[+] added CD-DA burning sample (still not complete)
+
+Version 0.21a
+---------------
+
+[-] corrected memory allocation on NeroWriteCD structure (CD-DA)
+[-] corrected general memory deallocation routines (now pointers are nil after deallocation)
