@@ -236,6 +236,18 @@ uses DeviceDetails, Registry, MediaInformation, DateUtils;
 
 {$R *.dfm}
 
+function DirectoryAge(const DirectoryName: string): Integer;
+var
+  sr: TSearchRec;
+begin
+  Result := -1;
+  if FindFirst(DirectoryName, faAnyFile or faDirectory, sr) = 0 then
+  begin
+    Result := sr.Time;
+    FindClose(sr);
+  end;
+end;
+
 function IdleCallback(pUserData: Pointer): Boolean; cdecl;
 begin
   Application.ProcessMessages;
@@ -1812,7 +1824,10 @@ begin
     StrPCopy(TempItem.sourceFilePath, FileName);
   TempItem.sourceFilePath[SizeOf(TempItem.sourceFilePath) - 1] := #0;
 
-  FileTime := FileDateToDateTime(FileAge(FileName));
+  if TempItem.isDirectory then
+    FileTime := FileDateToDateTime(DirectoryAge(FileName))
+  else
+    FileTime := FileDateToDateTime(FileAge(FileName));
   DecodeDateTime(FileTime, tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, tm_msec);
 
   TempItem.entryTime.tm_year := tm_year;
