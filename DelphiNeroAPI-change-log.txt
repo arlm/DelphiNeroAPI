@@ -29,7 +29,7 @@
 {******************************************************************************}
 
 {******************************************************************************
-|* NeroSDK / NeroAPI
+|* DelphiNeroAPI
 |*
 |* PURPOSE: Change Log
 ******************************************************************************}
@@ -64,3 +64,15 @@ Version 0.22a
 ---------------
 
 [+] added ISO CD-ROM burning sample (not tested)
+
+Version 0.30a
+---------------
+
+[+] added initial refactoring class TdnapiSettings (initializing and important functions)
+[+] added initial refactoring component class TdnapiDevicesComboBox
+[+] added initial refactoring component class TdnapiDeviceSpeed
+[+] added version reporting on about
+[+] added supported file formats list on about
+[*] IdleCallback now processes application messages
+[*] User Dialog responses now handle most of the options
+[-] PCM Audio files importiong routines now are gracefully closing the files

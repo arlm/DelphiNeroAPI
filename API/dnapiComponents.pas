@@ -662,20 +662,9 @@ begin
 
       initErr := NeroInit(@FNeroSettings, nil);
       case (initErr) of
-        NEROAPI_INIT_OK:
+        NEROAPI_INIT_OK, NEROAPI_INIT_ALREADY_INITIALISED:
         begin
           FActive := True;
-
-          if Assigned(FDevices) then
-            FDevices.SetActive(True);
-
-          if Assigned(FOnActivate) then
-            FOnActivate(Self);
-        end;
-        NEROAPI_INIT_ALREADY_INITIALISED:
-        begin
-          FActive := True;
-          FMessage := 'NeroInit() : already initialized';
 
           if Assigned(FDevices) then
             FDevices.SetActive(True);
