@@ -168,7 +168,7 @@ type
     cbxCDROMDVDVideoRealloc: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ApplicationEventsShowHint(var HintStr: String;
+    procedure ApplicationEventsShowHint(var HintStr: string;
       var CanShow: Boolean; var HintInfo: THintInfo);
     procedure cbDevicesChange(Sender: TObject);
     procedure btnMoreDeviceClick(Sender: TObject);
@@ -194,7 +194,7 @@ type
     procedure WMDropFiles(var msg : TWMDropFiles); message WM_DROPFILES;
     procedure FreeIsoItem(var item: PNeroIsoItem);
     procedure FreeIsoTrack(var IsoTrack: CNeroIsoTrack);
-    procedure AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
+    procedure AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: string);
   public
     NeroIsoTrack: CNeroIsoTrack;
     RootIsoItem: PNeroIsoItem;
@@ -209,7 +209,7 @@ type
     NeroWriteImage: PNeroWriteImage;
     NeroDeviceInfos: PNeroSCSIDeviceInfos;
 
-    procedure NeroError(Action: String);
+    procedure NeroError(Action: string);
   end;
 
 function IdleCallback(pUserData: Pointer): Boolean; cdecl;
@@ -245,7 +245,7 @@ end;
 
 function UserDialog(pUserData: Pointer; Dtype: NeroUserDlgInOut; data: Pointer): NeroUserDlgInOut; cdecl;
 var
-  sBuffer: String;
+  sBuffer: string;
   pacBuffer: PAnsiChar;
 begin
   Result := DLG_MAX;
@@ -611,7 +611,7 @@ end;
 
 procedure AddLogLine(pUserData: Pointer; _type: NERO_TEXT_TYPE; text: PChar); cdecl;
 var
-  Header: String;
+  Header: string;
 begin
   case _type of
     NERO_TEXT_INFO:        // informative text
@@ -908,7 +908,7 @@ begin
   NeroAPIGlueDone;
 end;
 
-procedure TFMainForm.ApplicationEventsShowHint(var HintStr: String;
+procedure TFMainForm.ApplicationEventsShowHint(var HintStr: string;
   var CanShow: Boolean; var HintInfo: THintInfo);
 begin
   if CanShow then
@@ -1040,7 +1040,7 @@ begin
   btnRefreshClick(Sender);
 end;
 
-procedure TFMainForm.NeroError(Action: String);
+procedure TFMainForm.NeroError(Action: string);
 var
   Error: PChar;
 begin
@@ -1079,8 +1079,8 @@ var
   cFileName: array [0 .. MAX_PATH] of Char;
   WhichFiles: TStringList;
   index, i, FilesCount, FileHandle: Integer;
-  TrackName: String;
-  paBuffer: PAnsiChar;
+  TrackName: string;
+  paBuffer: string;
   Flags: Cardinal;
 begin
   WhichFiles := TStringList.Create;
@@ -1290,7 +1290,7 @@ begin
           if cbxCDROMDVDVideoRealloc.Checked then
             Flags := Flags + NCITEF_DVDVIDEO_REALLOC;
 
-          NeroIsoTrack := NeroCreateIsoTrackEx(RootIsoItem, PCHAR(edCDROMTrackName.Text),  Flags);
+          NeroIsoTrack := NeroCreateIsoTrackEx(RootIsoItem, PChar(edCDROMTrackName.Text),  Flags);
           NeroWriteCD.nwcdCDExtra := False;
           if Assigned(NeroCDInfo) then
             NeroWriteCD.nwcdMediaType := NeroCDInfo.ncdiMediaType;
@@ -1302,7 +1302,7 @@ begin
         end;
         3:
         begin
-          NeroIsoTrack := NeroCreateIsoTrackEx(nil, nil, 0);
+          NeroIsoTrack := NeroCreateIsoTrackEx(nil, PChar(edCDROMTrackName.Text), 0);
 
           NeroWriteCD.nwcdCDExtra := False;
           NeroWriteCD.nwcdMediaType := NeroCDInfo.ncdiMediaType;{ TODO : Add support to CDExtra }
@@ -1311,14 +1311,15 @@ begin
         end;
         4:
         begin
-          NeroIsoTrack := NeroCreateIsoTrackEx(nil, nil, 0);
+          NeroIsoTrack := NeroCreateIsoTrackEx(nil, PChar(edCDROMTrackName.Text), 0);
 
           NeroWriteVideoCD.nwvcdCustomVCDEngine := nil;
 
           if NeroWriteVideoCD.nwvcdTempPath = '' then
           begin
-            paBuffer := '';
-            if GetTempPath(MAX_PATH, paBuffer) = 0 then
+            SetLength(paBuffer, MAX_PATH);
+            SetLength(paBuffer, GetTempPath(MAX_PATH, PChar(paBuffer)));
+            if paBuffer = '' then
             begin
               if DirectoryExists('C:\TEMP') then
                 paBuffer := 'C:\TEMP'
@@ -1778,7 +1779,7 @@ begin
   end;
 end;
 
-procedure TFMainForm.AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
+procedure TFMainForm.AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: string);
 var
   FileTime: TDateTime;
   tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, tm_msec: WORD;

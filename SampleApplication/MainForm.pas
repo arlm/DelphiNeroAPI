@@ -127,12 +127,9 @@ type
     cbxCDROMMode2: TCheckBox;
     cbxCDROMUseAllSpace: TCheckBox;
     cbxCDROMDVDVideoRealloc: TCheckBox;
-    dnapiSettings: TdnapiSettings;
-    dnapiDevices: TdnapiDevicesComboBox;
-    dnapiDeviceSpeed: TdnapiDeviceSpeedComboBox;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure ApplicationEventsShowHint(var HintStr: String;
+    procedure ApplicationEventsShowHint(var HintStr: string;
       var CanShow: Boolean; var HintInfo: THintInfo);
     procedure btnMoreDeviceClick(Sender: TObject);
     procedure btnRefreshClick(Sender: TObject);
@@ -150,7 +147,7 @@ type
     procedure btnBurnImageClick(Sender: TObject);
     procedure btnBurnISOCDClick(Sender: TObject);
     procedure btnSVCDBurnClick(Sender: TObject);
-    procedure dnapiSettingsError(Sender: TObject; Message: String);
+    procedure dnapiSettingsError(Sender: TObject; Message: string);
     procedure dnapiDevicesChange(Sender: TObject);
     procedure dnapiDevicesCloseUp(Sender: TObject);
   private
@@ -158,7 +155,7 @@ type
   protected
     procedure WMDropFiles(var msg : TWMDropFiles); message WM_DROPFILES;
     procedure FreeIsoItem(var item: PNeroIsoItem);
-    procedure AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
+    procedure AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: string);
 
 
   public
@@ -172,7 +169,7 @@ type
     NeroWriteFreestyleCD: PNeroWriteFreestyleCD;
     NeroWriteImage: PNeroWriteImage;
 
-    procedure NeroError(Action: String);
+    procedure NeroError(Action: string);
   end;
 
 function IdleCallback(pUserData: Pointer): Boolean; cdecl;
@@ -208,7 +205,7 @@ end;
 
 function UserDialog(pUserData: Pointer; Dtype: NeroUserDlgInOut; data: Pointer): NeroUserDlgInOut; cdecl;
 var
-  sBuffer: String;
+  sBuffer: string;
   pacBuffer: PAnsiChar;
 begin
   Result := DLG_MAX;
@@ -574,7 +571,7 @@ end;
 
 procedure AddLogLine(pUserData: Pointer; _type: NERO_TEXT_TYPE; text: PChar); cdecl;
 var
-  Header: String;
+  Header: string;
 begin
 	case _type of
     NERO_TEXT_INFO:        // informative text
@@ -749,7 +746,7 @@ begin
     FreeIsoItem(RootIsoItem);
 end;
 
-procedure TFMainForm.ApplicationEventsShowHint(var HintStr: String;
+procedure TFMainForm.ApplicationEventsShowHint(var HintStr: string;
   var CanShow: Boolean; var HintInfo: THintInfo);
 begin
   if CanShow then
@@ -839,7 +836,7 @@ begin
   btnRefreshClick(Sender);
 end;
 
-procedure TFMainForm.NeroError(Action: String);
+procedure TFMainForm.NeroError(Action: string);
 var
   Error: PChar;
 begin
@@ -878,8 +875,8 @@ var
   cFileName: array [0 .. MAX_PATH] of Char;
   WhichFiles: TStringList;
   index, i, FilesCount, FileHandle: Integer;
-  TrackName: String;
-  paBuffer: PAnsiChar;
+  TrackName: string;
+  paBuffer: string;
   Flags: Cardinal;
 begin
   WhichFiles := TStringList.Create;
@@ -1100,7 +1097,7 @@ begin
         end;
         3:
         begin
-          NeroIsoTrack := NeroCreateIsoTrackEx(nil, nil, 0);
+          NeroIsoTrack := NeroCreateIsoTrackEx(nil, PChar(edCDROMTrackName.Text), 0);
 
           NeroWriteCD.nwcdCDExtra := False;
           NeroWriteCD.nwcdMediaType := NeroCDInfo.ncdiMediaType;{ TODO : Add support to CDExtra }
@@ -1109,14 +1106,15 @@ begin
         end;
         4:
         begin
-          NeroIsoTrack := NeroCreateIsoTrackEx(nil, nil, 0);
+          NeroIsoTrack := NeroCreateIsoTrackEx(nil, PChar(edCDROMTrackName.Text), 0);
 
           NeroWriteVideoCD.nwvcdCustomVCDEngine := nil;
 
           if NeroWriteVideoCD.nwvcdTempPath = '' then
           begin
-            paBuffer := '';
-            if GetTempPath(MAX_PATH, paBuffer) = 0 then
+            SetLength(paBuffer, MAX_PATH);
+            SetLength(paBuffer, GetTempPath(MAX_PATH, PChar(paBuffer)));
+            if paBuffer = '' then
             begin
               if DirectoryExists('C:\TEMP') then
                 paBuffer := 'C:\TEMP'
@@ -1570,7 +1568,7 @@ begin
   end;
 end;
 
-procedure TFMainForm.AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
+procedure TFMainForm.AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: string);
 var
   FileTime: TDateTime;
   tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, tm_msec: WORD;
@@ -1700,7 +1698,7 @@ begin
   pcWrite.TabIndex := pcWrite.PageCount - 1;
 end;
 
-procedure TFMainForm.dnapiSettingsError(Sender: TObject; Message: String);
+procedure TFMainForm.dnapiSettingsError(Sender: TObject; Message: string);
 begin
   ShowMessage(Message);
 end;
