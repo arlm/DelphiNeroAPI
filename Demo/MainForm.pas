@@ -719,7 +719,7 @@ begin
     exit;
   end;
 
-  NeroSettings := AllocMem(sizeof(TNeroSettings));
+  NeroSettings := AllocMem(sizeof(NERO_SETTINGS));
 
 
   Registry := TRegistry.Create(KEY_READ);
@@ -1119,7 +1119,7 @@ begin
           1:
           begin
             if Assigned(NeroWriteCD) then
-              ReallocMem(NeroWriteCD, SizeOf(NeroWriteCD))
+              ReallocMem(NeroWriteCD, SizeOf(NERO_WRITE_CD))
             else
               NeroWriteCD :=AllocMem(SizeOf(NERO_WRITE_CD));
 
@@ -1288,7 +1288,8 @@ begin
 
           NeroIsoTrack := NeroCreateIsoTrackEx(RootIsoItem, PCHAR(edCDROMTrackName.Text),  Flags);
           NeroWriteCD.nwcdCDExtra := False;
-          NeroWriteCD.nwcdMediaType := NeroCDInfo.ncdiMediaType;
+          if Assigned(NeroCDInfo) then
+            NeroWriteCD.nwcdMediaType := NeroCDInfo.ncdiMediaType;
           NeroWriteCD.nwcdpCDStamp := nil;
           NeroWriteCD.nwcdIsoTrack := NeroIsoTrack;
         end;
@@ -1716,6 +1717,9 @@ begin
       Flags := Flags + NBF_DAO;
     end;
   end;
+
+  if Assigned(NeroCDInfo) then
+    NeroWriteCD.nwcdMediaType := NeroCDInfo.ncdiMediaType;
 
   NeroBurn(NeroDeviceHandle, NERO_ISO_AUDIO_CD, NeroWriteCD, Flags,
     NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],

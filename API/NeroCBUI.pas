@@ -196,7 +196,7 @@ const
 type
   UserDlgHandler = interface           ['{BC91ED21-E702-44E5-AA88-9F2F70E986C6}']
   end;
-
+{
   IModelessDialog = interface;
   INERO_SCSI_DEVICE_INFO = interface;
   IRecorderComboboxCallbacks = interface;
@@ -236,7 +236,7 @@ type
   IMfcPropertyPage = interface;
   IPrivateDeviceInfos = interface;
   IPrivateImageInfoDlg = interface;
-
+}
   size_t = WORD;
   MIDL_user_allocate = function(Value: size_t):Pointer; cdecl;
   MIDL_user_free = procedure(Value: Pointer); cdecl;

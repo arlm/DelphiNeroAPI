@@ -49,30 +49,18 @@ Symbol : Meaning
 [*]    : Improved/changed feature
 [-]    : Bug fixed (we hope)
 
-Version 0.1a
+Version 0.42
 ---------------
+[+] added support for Nero SDK 1.05
+[-] corrected Access Violation at file drop
 
-[+] First public release
-
-Version 0.2a
+Version 0.41a
 ---------------
+[-] corrected NERO_ISO_ITEM.fileName and NERO_ISO_ITEM.sourceFilePath length
 
-[-] corrected NERO_STATUS_CALLBACK calling convention
-[*] byte values on Media and Track information is now in megabytes (MB)
-[+] added CD-DA burning sample (still not complete)
-
-Version 0.21a
+Version 0.40a
 ---------------
-
-[-] corrected memory allocation on NeroWriteCD structure (CD-DA)
-[-] corrected general memory deallocation routines (now pointers are nil after deallocation)
-[+] added VideoCD/SuperVideoCD burning sample (still not complete)
-[+] added .bin/.cue/.nrg CD Image burning sample (not tested)
-
-Version 0.22a
----------------
-
-[+] added ISO CD-ROM burning sample (not tested)
+[+] added support to Nero SDK 1.03 and Nero SDK 1.04
 
 Version 0.30a
 ---------------
@@ -86,14 +74,27 @@ Version 0.30a
 [*] User Dialog responses now handle most of the options
 [-] PCM Audio files importiong routines now are gracefully closing the files
 
-Version 0.40a
+Version 0.22a
 ---------------
-[+] added support to Nero SDK 1.03 and Nero SDK 1.04
 
-Version 0.41a
----------------
-[-] corrected NERO_ISO_ITEM.fileName and NERO_ISO_ITEM.sourceFilePath length
+[+] added ISO CD-ROM burning sample (not tested)
 
-Version 0.42
+Version 0.21a
 ---------------
-[+] added support for Nero SDK 1.05
+
+[-] corrected memory allocation on NeroWriteCD structure (CD-DA)
+[-] corrected general memory deallocation routines (now pointers are nil after deallocation)
+[+] added VideoCD/SuperVideoCD burning sample (still not complete)
+[+] added .bin/.cue/.nrg CD Image burning sample (not tested)
+
+Version 0.2a
+---------------
+
+[-] corrected NERO_STATUS_CALLBACK calling convention
+[*] byte values on Media and Track information is now in megabytes (MB)
+[+] added CD-DA burning sample (still not complete)
+
+Version 0.1a
+---------------
+
+[+] First public release

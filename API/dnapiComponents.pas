@@ -123,7 +123,6 @@ type
 
   TdnapiDevicesComboBox = class(TCustomComboBox)
   private
-    FNeroDeviceInfos: PNeroSCSIDeviceInfos;
     FSettings: TdnapiSettings;
     FSelectedDeviceHandle: NERO_DEVICEHANDLE;
     FActive: Boolean;
@@ -132,6 +131,7 @@ type
     function GetSelectedDevice: PNeroSCSIDeviceInfo;
     procedure SetActive(const Value: Boolean);
     procedure SetDeviceSpeeds(const Value: TdnapiDeviceSpeedComboBox);
+    function GetNeroDeviceInfos: PNeroSCSIDeviceInfos;
   protected
     procedure GetDeviceInfo;
     procedure Notification(AComponent: TComponent; Operation: TOperation); override;
@@ -148,7 +148,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
 
-    property NeroDeviceInfos: PNeroSCSIDeviceInfos read FNeroDeviceInfos;
+    property NeroDeviceInfos: PNeroSCSIDeviceInfos read GetNeroDeviceInfos;
     property SelectedDevice: PNeroSCSIDeviceInfo read GetSelectedDevice;
     property SelectedDeviceHandle: NERO_DEVICEHANDLE read FSelectedDeviceHandle;
   published
@@ -295,6 +295,10 @@ type
 
 procedure Register;
 
+var
+
+  FNeroDeviceInfos: PNeroSCSIDeviceInfos;
+
 implementation
 
 uses Registry, Dialogs;
@@ -405,6 +409,11 @@ begin
 
       SetActive(True);
     end;
+end;
+
+function TdnapiDevicesComboBox.GetNeroDeviceInfos: PNeroSCSIDeviceInfos;
+begin
+  Result := FNeroDeviceInfos;
 end;
 
 function TdnapiDevicesComboBox.GetSelectedDevice: PNeroSCSIDeviceInfo;
@@ -966,11 +975,5 @@ procedure TdnapiDeviceSpeedComboBox.SetKind(const Value: TSpeedKind);
 begin
   FKind := Value;
 end;
-
-initialization
-  OnIdleCallback := nil;
-  OnUserDialogCallback := nil;
-
-finalization
 
 end.
