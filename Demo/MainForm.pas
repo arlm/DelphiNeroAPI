@@ -1143,7 +1143,7 @@ begin
           3:
           begin
             if Assigned(NeroWriteCD) then
-              ReallocMem(NeroWriteCD, SizeOf(NeroWriteCD) + SizeOf(NERO_AUDIO_TRACK) * (WhichFiles.Count - 1))
+              ReallocMem(NeroWriteCD, SizeOf(NERO_WRITE_CD) + SizeOf(NERO_AUDIO_TRACK) * (WhichFiles.Count - 1))
             else
               NeroWriteCD :=AllocMem(SizeOf(NERO_WRITE_CD) + SizeOf(NERO_AUDIO_TRACK) * (WhichFiles.Count - 1));
 
@@ -1217,7 +1217,7 @@ begin
           4:
           begin
             if Assigned(NeroWriteVideoCD) then
-              ReallocMem(NeroWriteVideoCD, SizeOf(NeroWriteVideoCD) + SizeOf(NERO_VIDEO_ITEM) * (WhichFiles.Count - 1))
+              ReallocMem(NeroWriteVideoCD, SizeOf(NERO_WRITE_VIDEO_CD) + SizeOf(NERO_VIDEO_ITEM) * (WhichFiles.Count - 1))
             else
               NeroWriteVideoCD :=AllocMem(SizeOf(NERO_WRITE_VIDEO_CD) + SizeOf(NERO_VIDEO_ITEM) * (WhichFiles.Count - 1));
 

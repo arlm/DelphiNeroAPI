@@ -34,6 +34,8 @@
 |* Andreas Hausladen (NeroAPI porting and corrections)
 |* Gabriele Lauricella (ISO CD Writing code example)
 |* Erik van Pienbroek (NERO_ISO_ITEM corrections for Nero 6)
+|* Thanu (Noticing File Drop bug)
+|* Miglinszki Péter (ZeroMemory and ReallocMem corrections)
 |*
 ******************************************************************************}
 
@@ -53,6 +55,8 @@ Version 0.42
 ---------------
 [+] added support for Nero SDK 1.05
 [-] corrected Access Violation at file drop
+[-] corrected ZeroMemory and ReallocMem bugs
+[-] corrected NeroIsoTrack deallocation bug
 
 Version 0.41a
 ---------------
