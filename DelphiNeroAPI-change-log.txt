@@ -44,3 +44,10 @@ Version 0.1a
 ---------------
 
 [+] First public release
+
+Version 0.2a
+---------------
+
+[-] corrected NERO_STATUS_CALLBACK calling convention
+[*] byte values on Media and Track information is now in megabytes (MB)
+[+] Added CD-DA burning sample (still not complete)
