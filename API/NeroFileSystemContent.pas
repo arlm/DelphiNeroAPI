@@ -2,7 +2,7 @@
 {                                                                              }
 { Nero API interface Unit for Object Pascal                                    }
 {                                                                              }
-{ Portions created by Ahead are Copyright (C) 1995-2003 Ahead Software AG.     }
+{ Portions created by Ahead are Copyright (C) 1995-2004 Ahead Software AG.     }
 { All Rights Reserved.                                                         }
 {                                                                              }
 { The original file is: NeroFileSystemContent.h, released March 2003. The      }
@@ -10,7 +10,7 @@
 { initial developer of the Pascal code is Andreas Hausladen                    }
 { (ahuser@sourceforge.net).                                                    }
 {                                                                              }
-{ Portions created by Andreas Hausladen are Copyright (C) 2003                 }
+{ Portions created by Andreas Hausladen are Copyright (C) 2003,2004            }
 { Andreas Hausladen. All Rights Reserved.                                      }
 {                                                                              }
 { Obtained through: Project Nero API for Delphi                                }
@@ -34,9 +34,13 @@
 |*
 |* CREATOR: Andreas Hausladen
 |*
-|* 16/06/2003: Modifyied
+|* 16/06/2003: Modified
 |*    Alexandre R. L. e Marcondes
 |*    Identation
+|* 07/03/2004: Modified
+|*    Andreas Hausladen
+|*    Nero 6 (NeroAPI SDK v1.04)
+|*
 ******************************************************************************}
 
 {******************************************************************************
@@ -44,30 +48,29 @@
 |*
 |* PROGRAM: NeroFileSystemContent.h
 |*
-|* PURPOSE: 
+|* PURPOSE:
 |* This is the third NeroAPI interface for preparing data CDs/DVDs. Unlike NeroIsoTrack.h,
 |* it is not much "callback based",thus most of the process will be driven by the 
 |* application, making it easier to write. This interface is closely connected to the
 |* internal engine of NeroAPI, this improves the cooperation of NeroAPI and the application.
 |*
 |* This set of classes describe the content of the file system of a disc.
-|* The application will build a file structure using the IFileSystemContent object. 
-|* During the burn process, NeroAPI will request the content of files using the 
+|* The application will build a file structure using the IFileSystemContent object.
+|* During the burn process, NeroAPI will request the content of files using the
 |* IFileContent interface.
 |*
 |* Use the NeroCreateFileSystemContainer function of NeroAPI.h to get an instance of an
-|* IFileSystemDescContainer object. Then, use the NERO_WRITE_FILE_SYSTEM_CONTAINER structure 
+|* IFileSystemDescContainer object. Then, use the NERO_WRITE_FILE_SYSTEM_CONTAINER structure
 |* to burn the file structure created.
 ******************************************************************************}
 unit NeroFileSystemContent;
-{$ALIGN 8}
-{$MINENUMSIZE 4}
-{$WEAKPACKAGEUNIT}
+
+{$INCLUDE NeroAPI.inc}
 
 interface
 uses
   Windows, Types;
-  
+
 type
   InterfaceBase = class
   public
@@ -155,11 +158,11 @@ type
 // create the content of the file in the ProduceFile function
   IFileProducer = class(InterfaceBase)
   public
-	// Calling this method will automatically update the file size to the amount of data
-	// delivered by the producer
+    // Calling this method will automatically update the file size to the amount of data
+    // delivered by the producer
     function ProduceFile(str: IDataInputStream): ENTRY_ERROR; virtual; cdecl; abstract;
 
-	// Called by NeroAPI when the object is not needed anymore
+    // Called by NeroAPI when the object is not needed anymore
     procedure Release(); virtual; cdecl; abstract;
   end;
 
@@ -178,18 +181,18 @@ type
 // Description of a file
   IDirectoryEntryContainer = class(IDirectoryEntry)
   public
-	// Using this function, the file size can be changed after having added the entry to the directory
+    // Using this function, the file size can be changed after having added the entry to the directory
     procedure SetSize(size: Int64);                      virtual; cdecl; abstract;
 
-	// The two functions below can be used to readjust the directory priority
-	// Priority numbers will be used in upward order: the file with smaller values first
+    // The two functions below can be used to readjust the directory priority
+    // Priority numbers will be used in upward order: the file with smaller values first
     procedure SetPriority(priority: Integer);            virtual; cdecl; abstract;
     procedure SetDirOrder(directoryPriority: Integer);   virtual; cdecl; abstract;
 
-	// Set the sector number that will be saved into the directory structure
+    // Set the sector number that will be saved into the directory structure
     procedure SetDataStartSec(num: Cardinal);            virtual; cdecl; abstract;
 
-	// Set the physical position of the file in the filesystem
+    // Set the physical position of the file in the filesystem
     procedure SetFixedDataStartSec(position: Cardinal);  virtual; cdecl; abstract;
 
     procedure SetFileNumber(num: Integer);               virtual; cdecl; abstract;
@@ -200,16 +203,16 @@ type
 // Extension of the IDirectoryEntryContainer interface
   IDirectoryEntryContainer2 = class(IDirectoryEntryContainer)
   public
-	// If the file entry was created using an IFileProducer, returns a pointer on it
+    // If the file entry was created using an IFileProducer, returns a pointer on it
     function GetFileProducer(): IFileProducer;           virtual; cdecl; abstract;
 
-	// Update the size attribute of this file by producing its content without writing
-	// it anywhere
+    // Update the size attribute of this file by producing its content without writing
+    // it anywhere
     function MeasureSize(): ENTRY_ERROR;                 virtual; cdecl; abstract;
 
-	// Set the size that is stored in the media directory record but do not change the
-	// size of allocated and requested data
-	// This is currently only available for ISO filesystems
+    // Set the size that is stored in the media directory record but do not change the
+    // size of allocated and requested data
+    // This is currently only available for ISO filesystems
     function SetDirRecordSize(size: Int64): ENTRY_ERROR; virtual; cdecl; abstract;
   end;
 
@@ -217,27 +220,27 @@ type
 // Represents the content of a directory
   IDirectoryContainer = class(IDirectory)
   public
-	// Add a directory a returns a pointer on it
-	// directoryPriority specifies the position in the directory. See this->AddFile
-	// for details
+    // Add a directory a returns a pointer on it
+    // directoryPriority specifies the position in the directory. See this->AddFile
+    // for details
     function AddDirectory(const name: PChar; directoryPriority: Integer): IDirectoryContainer; virtual; cdecl; abstract;
 
-  // Add a file the directory. The fp object will be automatically deleted when the directory
-	// container will be deleted
-	//
-	// the filesize passed here does *not* need to be correct, it will be used by the
-	// filesystem generator to preallocate space so it must be the *maximum* space the final
-	// version of the file may need (worst-case).
-	//
-	// Priority specifies some user-defined ordinal defining the order in which the files are
-	// being written to the disc physically (like .ifo comes before .vob).
-	// Priorities are valid across directories
-	// The fileentry order in a directory is defined by the directoryPriority parameter which is the primary
-	// sort criterium when arranging the files in a directory (Note that this is only true for
-	// filesystems that do not require files to be sorted in the directory, e.g. UDF)
-	// If any of the priority specifiers is -1, the producer doesn't care about the priority
-	// and Nero will put the file where it thinks it fit
-	// AddFile will return NULL if a file with the same name already exists
+    // Add a file the directory. The fp object will be automatically deleted when the directory
+    // container will be deleted
+    //
+    // the filesize passed here does *not* need to be correct, it will be used by the
+    // filesystem generator to preallocate space so it must be the *maximum* space the final
+    // version of the file may need (worst-case).
+    //
+    // Priority specifies some user-defined ordinal defining the order in which the files are
+    // being written to the disc physically (like .ifo comes before .vob).
+    // Priorities are valid across directories
+    // The fileentry order in a directory is defined by the directoryPriority parameter which is the primary
+    // sort criterium when arranging the files in a directory (Note that this is only true for
+    // filesystems that do not require files to be sorted in the directory, e.g. UDF)
+    // If any of the priority specifiers is -1, the producer doesn't care about the priority
+    // and Nero will put the file where it thinks it fit
+    // AddFile will return NULL if a file with the same name already exists
     function AddFile(const name: PChar; const fp: IFileProducer; size: Int64;
       priority: Integer; directoryPriority: Integer): IDirectoryEntryContainer; overload; virtual; cdecl; abstract;
 
@@ -253,6 +256,21 @@ type
     function SubDirectory(const name: PChar): IDirectoryContainer; virtual; cdecl; abstract;
   end;
 
+{$IFDEF NERO_6}
+  // Supplemental method to the IDirectoryContainer interface
+
+  IDirectoryContainerSearch_enum = (
+    SEARCH_DEPTH_INCL,   // Searches whole tree including given start object
+    SEARCH_CHILDREN_EXCL // Searches children of start object only
+  );
+
+  IDirectoryContainerSearch = class
+  public
+    // Like 'SubDirectory' of 'IDirectoryContainer' but with different search modes.
+    // 'reserved' is intended for future use and MUST be initialized with NULL for now.
+    function SubDirectoryEx(name: PChar; mode: Cardinal; reserved: Pointer = nil): IDirectoryContainer; virtual; cdecl; abstract;
+  end;
+{$ENDIF NERO_6}
 
 // Represents the content of a file system
   IFileSystemDescContainer = class(IFileSystemContent)

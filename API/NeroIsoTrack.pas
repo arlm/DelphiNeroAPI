@@ -2,14 +2,14 @@
 {                                                                              }
 { Nero API interface Unit for Object Pascal                                    }
 {                                                                              }
-{ Portions created by Ahead are Copyright (C) 1995-2003 Ahead Software AG.     }
+{ Portions created by Ahead are Copyright (C) 1995-2004 Ahead Software AG.     }
 { All Rights Reserved.                                                         }
 {                                                                              }
 { The original file is: NeroISOTrack.h, released April 2003. The original      }
 { Pascal code is: NeroISOTrack.pas, released June 2003. The initial developer  }
 { of the Pascal code is Andreas Hausladen (ahuser@sourceforge.net).            }
 {                                                                              }
-{ Portions created by Andreas Hausladen are Copyright (C) 2003                 }
+{ Portions created by Andreas Hausladen are Copyright (C) 2003,2004            }
 { Andreas Hausladen. All Rights Reserved.                                      }
 {                                                                              }
 { Obtained through: Project Nero API for Delphi                                }
@@ -33,9 +33,13 @@
 |*
 |* CREATOR: Andreas Hausladen
 |*
-|* 16/06/2003: Modifyied
+|* 16/06/2003: Modified
 |*    Alexandre R. L. e Marcondes
 |*    Identation
+|* 07/03/2004: Modified
+|*    Andreas Hausladen
+|*    Nero 6 (NeroAPI SDK v1.04)
+|*
 ******************************************************************************}
 
 {******************************************************************************
@@ -48,17 +52,19 @@
 |* NOTE: In contrast to NeroAPI.h, this code is not pure C, but rather C++
 ******************************************************************************}
 unit NeroIsoTrack;
-{$ALIGN 8}
-{$MINENUMSIZE 4}
-{$WEAKPACKAGEUNIT}
+
+{$INCLUDE NeroAPI.inc}
 
 interface
+
 uses
   Windows, Types;
-  
+
 type
-  tm = record { time.h }
-    tm_sec, tm_min, tm_hour, tm_mday, tm_mon, tm_year, tm_wday, tm_yday, tm_isdst: Integer;
+  tm = record { from time.h }
+    tm_sec, tm_min, tm_hour: Integer;
+    tm_mday, tm_mon, tm_year, tm_wday, tm_yday: Integer;
+    tm_isdst: Integer;
   end;
 
   TDestructorDone = class
@@ -143,14 +149,14 @@ type
 
     // The following entries are only needed when e.g. creating your
     // own Video CD ISO track and not implemented yet.
-{$ifdef NotDefined}
+    {$IFDEF NotDefined}
     function IsMode2(): BOOL; virtual; cdecl;                   // TRUE if the application delivers mode 2 data (2336 bytes/block);
                                                                 // NOTE: the size above are the number of bytes delivered by the application
                                                                 // NOTE to ahead implementor: in contrast, the ISO entry length always assumes a
                                                                 // lock size of 2048 and thus GetSize() has to be multiplied by 2048/2336 before using it as CIsoListEntry::size
     function GetBlockOffset(): Integer; virtual; cdecl;         // file data is to be written in this block (relative to beginning of ISO track),
                                                                 // or in a block chosen by NeroAPI if -1
-{$endif}
+    {$ENDIF NotDefined}
     // Can be used to reference files from previous session
     function GetDataStartSec(): DWORD; virtual; cdecl;
     function IsDataFixed(): BOOL; virtual; cdecl;
@@ -167,10 +173,17 @@ type
     // See CreateHandle(). Creates rsc fork handle for HFS filesystems
     // Will be preferred to reading the resource fork from the file specified by GetName() if !=NULL
     function CreateResourceHandle(): CNeroIsoHandle; virtual; cdecl;
+
+    {$IFDEF NERO_6}
+    function GetUnicodeName(): PWideChar; virtual; cdecl; // the name for this entry in unicode format; will be copied by API
+
+    // NeroAPI>=6.0.0.14: Not necessary to implement this. Only used for internal purposes.
+    function GetInterface(name: PChar): Pointer; virtual; cdecl;
+    {$ENDIF NERO_6}
   private
     // Reserved for future use
 {$HINTS OFF} // private Symbols 'reserved1..9' not used
-	// Reserved for future use
+    // Reserved for future use
     function reserved1(): Integer; virtual; cdecl;
     function reserved2(): Integer; virtual; cdecl;
     function reserved3(): Integer; virtual; cdecl;
@@ -178,8 +191,11 @@ type
     function reserved5(): Integer; virtual; cdecl;
     function reserved6(): Integer; virtual; cdecl;
     function reserved7(): Integer; virtual; cdecl;
+    {$IFDEF NERO6}
+    {$ELSE}
     function reserved8(): Integer; virtual; cdecl;
     function reserved9(): Integer; virtual; cdecl;
+    {$ENDIF NERO6}
 {$HINTS ON}
   end;
 
@@ -189,7 +205,7 @@ type
   CNeroIsoTrack = class(CNeroIsoEntry)
   private
 {
-	  friend class CNeroIsoTrackProxy5039;	// Internal compatibility stuff;
+    friend class CNeroIsoTrackProxy5039;	// Internal compatibility stuff;
     friend class CNeroIsoTrackProxy55915;   // Internal compatibility stuff;
 }
   public
@@ -229,7 +245,7 @@ type
       publisher, dataPreparer, application,
       copyright, _abstract, bibliographic: PChar); virtual; cdecl;
 
-	// Reserved for future use
+    // Reserved for future use
     function reserved1(): Integer; reintroduce; virtual; cdecl;
     function reserved2(): Integer; reintroduce; virtual; cdecl;
     function reserved3(): Integer; reintroduce; virtual; cdecl;
@@ -237,13 +253,17 @@ type
     function reserved5(): Integer; reintroduce; virtual; cdecl;
     function reserved6(): Integer; reintroduce; virtual; cdecl;
     function reserved7(): Integer; reintroduce; virtual; cdecl;
+    {$IFDEF NERO_6}
+    {$ELSE}
     function reserved8(): Integer; reintroduce; virtual; cdecl;
-    function reserved9(): Integer; reintroduce; virtual; cdecl;
+    {$ENDIF NERO_6}
   end;
 {$HINTS ON}
 
 implementation
-uses NeroAPI;
+
+uses
+  NeroAPI;
 
 { TDestructorDone }
 
@@ -265,7 +285,19 @@ begin
   Result := nil;
 end;
 
-{$ifdef NotDefined}
+{$IFDEF NERO_6}
+function CNeroIsoEntry.GetUnicodeName(): PWideChar;
+begin
+  Result := nil;
+end;
+
+function CNeroIsoEntry.GetInterface(name: PChar): Pointer;
+begin
+  Result := nil;
+end;
+{$ENDIF NERO_6}
+
+{$IFDEF NotDefined}
 function CNeroIsoEntry.IsMode2: BOOL;
 begin
   Result := False;
@@ -273,9 +305,9 @@ end;
 
 function CNeroIsoEntry.GetBlockOffset: Integer;
 begin
-
+  Result := 0;
 end;
-{$endif}
+{$ENDIF NotDefined}
 
 function CNeroIsoEntry.GetDataStartSec: DWORD;
 begin
@@ -402,8 +434,10 @@ function CNeroIsoTrack.reserved4(): Integer; begin Result := 0; end;
 function CNeroIsoTrack.reserved5(): Integer; begin Result := 0; end;
 function CNeroIsoTrack.reserved6(): Integer; begin Result := 0; end;
 function CNeroIsoTrack.reserved7(): Integer; begin Result := 0; end;
+{$IFDEF NERO_6}
+{$ELSE}
 function CNeroIsoTrack.reserved8(): Integer; begin Result := 0; end;
-function CNeroIsoTrack.reserved9(): Integer; begin Result := 0; end;
+{$ENDIF NERO_6}
 
 
 end.

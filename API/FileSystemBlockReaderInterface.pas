@@ -2,7 +2,7 @@
 {                                                                              }
 { Nero API interface Unit for Object Pascal                                    }
 {                                                                              }
-{ Portions created by Ahead are Copyright (C) 1995-2003 Ahead Software AG.     }
+{ Portions created by Ahead are Copyright (C) 1995-2004 Ahead Software AG.     }
 { All Rights Reserved.                                                         }
 {                                                                              }
 { The original file is: FileSystemBlockReaderInterface.h, released May 2003.   }
@@ -10,7 +10,7 @@
 { June 2003. The initial developer of the Pascal code is Andreas Hausladen     }
 { (ahuser@sourceforge.net).                                                    }
 {                                                                              }
-{ Portions created by Andreas Hausladen are Copyright (C) 2003                 }
+{ Portions created by Andreas Hausladen are Copyright (C) 2003,2004            }
 { Andreas Hausladen. All Rights Reserved.                                      }
 {                                                                              }
 { Obtained through: Project Nero API for Delphi                                }
@@ -46,11 +46,11 @@
 |*          medium as well as cache data if necessary.
 *****************************************************************************}
 unit FileSystemBlockReaderInterface;
-{$ALIGN 8}
-{$MINENUMSIZE 4}
-{$WEAKPACKAGEUNIT}
+
+{$INCLUDE NeroAPI.inc}
 
 interface
+
 uses
   Types;
 
@@ -75,38 +75,44 @@ type
 
   NeroFSTrackType = (
     vtData = 0,
+    {$IFDEF NERO_6}
+    vtAudio = 1,
+    vtReserved = 2 // track/partition hasn't been written yet,
+                   // returned for reserved fragments of DVD+R media (NeroAPI 6.0.0.11+)
+    {$ELSE}
     vtAudio
+    {$ENDIF NERO_6}
   );
   TNeroFSTrackType = NeroFSTrackType;
 
   NeroFSPartitionInfo = record
-	PartitionNum: Integer;           // The current partition number
-	PartitionStart: NeroFSSecNo;     // The start sector for this Partition
-	PartitionSize: NeroFSSecNo;      // The number of sectors this Partition contains
-	PartitionType: NeroFSTrackType;  // The type of Partition
-	sectorSize: DWORD;               // Sector size for this Partition
+    PartitionNum: Integer;           // The current partition number
+    PartitionStart: NeroFSSecNo;     // The start sector for this Partition
+    PartitionSize: NeroFSSecNo;      // The number of sectors this Partition contains
+    PartitionType: NeroFSTrackType;  // The type of Partition
+    sectorSize: DWORD;               // Sector size for this Partition
   end;
   PNeroFSPartitionInfo = ^NeroFSPartitionInfo;
   TNeroFSPartitionInfo = NeroFSPartitionInfo;
 
   INeroFileSystemBlockReader = class
   public
-	function GetNumPartitions(): Integer; virtual; cdecl; abstract;
+    function GetNumPartitions(): Integer; virtual; cdecl; abstract;
 {translation issue: NeroFSPartitionInfo or PNeroFSPartitionInfo from "NeroFSPartitionInfo &"}
-	function GetPartitionInfo(iNumPartition: Integer): NeroFSPartitionInfo; virtual; cdecl; abstract;
+    function GetPartitionInfo(iNumPartition: Integer): NeroFSPartitionInfo; virtual; cdecl; abstract;
 
-	// Returns the partition a given sector resides in
+    // Returns the partition a given sector resides in
 {translation issue: NeroFSPartitionInfo or PNeroFSPartitionInfo from "NeroFSPartitionInfo &"}
-	function GetPartitionForSector(secNo: NeroFSSecNo): NeroFSPartitionInfo; virtual; cdecl; abstract;
+    function GetPartitionForSector(secNo: NeroFSSecNo): NeroFSPartitionInfo; virtual; cdecl; abstract;
 
-	// Reading methods. The Buffered varient will use a cache to optimize filesystem access.
-	// It should be used when reading directory structures while the UnBuffered method should be
-	// used when reading file contents
-	// Both methods return error codes as described in NeroFSError
-	// Your read requests may not cross partition boundaries!
-	function ReadSectorsBuffered(var pData; startSector, noSectors: NeroFSSecNo;
+    // Reading methods. The Buffered varient will use a cache to optimize filesystem access.
+    // It should be used when reading directory structures while the UnBuffered method should be
+    // used when reading file contents
+    // Both methods return error codes as described in NeroFSError
+    // Your read requests may not cross partition boundaries!
+    function ReadSectorsBuffered(var pData; startSector, noSectors: NeroFSSecNo;
       var noSectorsRead: NeroFSSecNo): NeroFSError; virtual; cdecl; abstract;
-	function ReadSectorsUnBuffered(var pData; startSector, noSectors: NeroFSSecNo;
+    function ReadSectorsUnBuffered(var pData; startSector, noSectors: NeroFSSecNo;
       var noSectorsRead: NeroFSSecNo): NeroFSError; virtual; cdecl; abstract;
 
     procedure DestroyInterface(DeleteMode: Integer = 3); virtual; cdecl; { 2: stack destroy; 3: dynamic free }

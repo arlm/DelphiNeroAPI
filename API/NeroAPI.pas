@@ -2,14 +2,14 @@
 {                                                                              }
 { Nero API interface Unit for Object Pascal                                    }
 {                                                                              }
-{ Portions created by Ahead are Copyright (C) 1995-2003 Ahead Software AG.     }
+{ Portions created by Ahead are Copyright (C) 1995-2004 Ahead Software AG.     }
 { All Rights Reserved.                                                         }
 {                                                                              }
 { The original file is: NeroAPI.h/NeroAPIGlue.h, released March 2003. The      }
 { original Pascal code is: NeroAPI.pas, released June 2003. The initial        }
 { developer of the Pascal code is Andreas Hausladen (ahuser@sourceforge.net).  }
 {                                                                              }
-{ Portions created by Andreas Hausladen are Copyright (C) 2003                 }
+{ Portions created by Andreas Hausladen are Copyright (C) 2003,2004            }
 { Andreas Hausladen. All Rights Reserved.                                      }
 {                                                                              }
 { Obtained through: Project Nero API for Delphi                                }
@@ -33,24 +33,27 @@
 |*
 |* CREATOR: Andreas Hausladen
 |*
-|* 16/06/2003: Modifyied
+|* 16/06/2003: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    Identation
 |* 26/06/2003: Modified
 |*    Andreas Hausladen
 |*    translation error corrected, added default-value for "reserved: PVoid"
-|* 27/06/2003: Modifyied
+|* 27/06/2003: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    Identation
-|* 29/01/2004: Modifyied
+|* 29/01/2004: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    corrected NERO_STATUS_CALLBACK calling convention (now it is cdecl)
-|* 02/02/2004: Modifyied
+|* 02/02/2004: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    added PNERO_WRITE_IMAGE and PNeroWriteImage types
-|* 18/02/2004: Modifyied
+|* 18/02/2004: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    Identation
+|* 07/03/2004: Modified
+|*    Andreas Hausladen
+|*    Nero 6 (NeroAPI SDK v1.04)
 |*
 ******************************************************************************}
 
@@ -62,9 +65,9 @@
 |* PURPOSE: Main interface for Nero API DLL
 ******************************************************************************}
 unit NeroAPI;
-{$ALIGN 8}
-{$MINENUMSIZE 4}
-{$WEAKPACKAGEUNIT}
+
+{$DEFINE NEROAPI_UNIT}
+{$INCLUDE NeroAPI.inc}
 
 interface
 uses
@@ -77,6 +80,12 @@ type
 
   PVoid = Pointer; // for reserved pointer arguments
   size_t = Integer;
+  tm = record // from time.h
+    tm_sec, tm_min, tm_hour: Integer;
+    tm_mday, tm_mon, tm_year, tm_wday, tm_yday: Integer;
+    tm_isdst: Integer;
+  end;
+
 
 {
 // The NeroAPI never uses static memory. Instead, memory is allocated
@@ -111,6 +120,58 @@ var
   NeroGetLastError: function(): PChar; cdecl;
   NeroGetErrorLog: function(): PChar; cdecl;
 
+{$IFDEF NERO_6}
+{ NeroAPI >= 6.0.0.29: returns the last iNum errors }
+  NeroGetLastErrors: function(iNum: Integer; dwFlags: LongWord;
+                              reserved: PVoid = nil): PChar; cdecl;
+
+{ include also errors which does not contain a description to be shown in the GUI }
+const
+  NGLE_ALL = (1 shl 0);
+{ format the errors as in the NeroAPI error log }
+  NGLE_REPORT = (1 shl 1);
+
+{
+// NeroAPI >= 6.0.0.0:
+// Error code describing an error happened during communication with a drive.
+// This error code is returned by NeroIsDeviceReady. Other functions set an internal error
+// variable to one of these codes if an error occured. This error can be received with
+// NeroGetLastDriveError.
+}
+type
+  NERO_DRIVE_ERROR = (
+    NDE_NO_ERROR         = 0, // no error occured/ drive is ready
+    NDE_GENERIC_ERROR    = 1, // generic error, not handled with other enums
+    NDE_DRIVE_IN_USE     = 2, // drive cannot be locked, maybe a other application uses this drive at the moment
+    NDE_DRIVE_NOT_READY  = 3, // drive is not ready
+    NDE_NO_DRIVE         = 4, // The given device is not available . Probably removed by the user (USB/Firewire)
+    NDE_DISC_NOT_PRESENT = 5, // no medium in drive, status of tray unknown
+    NDE_DISC_NOT_PRESENT_TRAY_OPEN   = 6, // no medium - tray open
+    NDE_DISC_NOT_PRESENT_TRAY_CLOSED = 7  // no medium - tray closed
+  );
+
+// Check for all variations of 'disc not present'
+function {macro} DISC_NOT_PRESENT(x: NERO_DRIVE_ERROR): Boolean;
+
+{
+// NeroAPI >= 6.0.0.0:
+// get the last error occured during communication with a drive
+//
+// The following methods set this error value:
+//  - NeroGetCDInfo
+//  - NeroImportDataTrack
+//  - NeroEjectLoadCD
+//  - NeroGetCDRWErasingTime
+//  - NeroEraseDisc
+//
+// All these methods first reset the error value and if an error occured the value is set
+// accordingly.
+}
+var
+  NeroGetLastDriveError: procedure(var driveError: NERO_DRIVE_ERROR;
+                                   reserved: PVoid = nil); cdecl;
+
+{$ENDIF NERO_6}
 
 {
 // Clear errors and log (done automatically for every read or write function,
@@ -125,10 +186,17 @@ var
 
 // This file is the interface for this version of NeroAPI
 const
+  {$IFDEF NERO_6}
+  NEROAPI_VERSION_MAJOR_HIGH = 6;
+  NEROAPI_VERSION_MAJOR_LOW  = 3;
+  NEROAPI_VERSION_MINOR_HIGH = 0;
+  NEROAPI_VERSION_MINOR_LOW  = 0;
+  {$ELSE}
   NEROAPI_VERSION_MAJOR_HIGH = 5;
   NEROAPI_VERSION_MAJOR_LOW  = 5;
   NEROAPI_VERSION_MINOR_HIGH = 10;
   NEROAPI_VERSION_MINOR_LOW  = 15;
+  {$ENDIF NERO_6}
 
 { Fills the pointed numbers with version number and returns true for
    success. Extended in NeroAPI 5.5.9.9 to support multiple digits }
@@ -142,9 +210,13 @@ designed to work. NeroAPI will then tries to behave as this version as much as p
 ensures the binary compatibility with future versions of NeroAPI. If this function is not called,
 NeroAPI will behaves as NeroAPI 5.0.3.9. If your application uses NeroAPIGlue.c, this function
 will be automatically called. Extended in NeroAPI 5.5.9.9 to support multiple digits
+
+If pPrevExpectedVersion is not NULL, it must point onto an array of 4 WORDs that will be filled
+with the previously expected version number
+
 Returns true for success}
   NeroSetExpectedAPIVersionEx: function(majhi, majlo, minhi, minlo: Word;
-                                        reserved: PVoid = nil// Must be NULL
+                                        pPrevExpectedVersion: PWord = nil // for Nero < 6.0: Must be NULL
                                        ): BOOL; cdecl;
 
 
@@ -176,8 +248,7 @@ type
 // The NeroAPI needs some information:
 }
   tag_NERO_SETTINGS = record
-    nstNeroFilesPath: PChar;  {* directory name with trailing '\' of where to find the additional Nero DLL and text files
-                               * No trailing '\' or '/' is necessary on for NeroAPI Portable }
+    nstNeroFilesPath: PChar;  {* directory name with trailing '\' of where to find the additional Nero DLL and text files }
 
     nstVendor: PChar;
     nstSoftware: PChar;           { path for registry settings (use "ahead", "Nero - Burning Rom" for Nero application's settings) }
@@ -231,8 +302,12 @@ function NeroInit(NeroSettings: PNeroSettings; reserved: PChar = nil): NEROAPI_I
 // Call this function before closing the DLL. This is necessary because
 // some clean-up actions like stopping threads cannot be done in the
 // close function of the DLL.
+//
+// NeroDone returns TRUE if some memory blocks were not unallocated using NeroFreeMem. They are dumped in
+// the debug output.
+// NeroDone returns FALSE if it succeeded
 }
-  procedure NeroDone; cdecl;
+  function NeroDone: BOOL; cdecl;
 
 {
 Call this function to change a global option of NeroAPI
@@ -240,7 +315,27 @@ Call this function to change a global option of NeroAPI
 type
   NEROAPI_OPTION = (
     NEROAPI_OPTION_MSG_FILE_NAME,       // Set the language file. The value points to a string containing the file name. This adress will be kept.
-    NEROAPI_OPTION_WRITE_BUFFER_SIZE    // Set write buffer size. Value points onto an integer containing the size in byte
+    {$IFDEF NERO_6}
+    NEROAPI_OPTION_WRITE_BUFFER_SIZE,   // Set write buffer size. Value points onto an integer containing the size in byte
+
+    // NeroAPI>=6.0.0.0 Set the user dialog callback, overwriting nstUserDialog of the settings
+    // structure passed to NeroInit.
+    // Pass a pointer to a NERO_CALLBACK structure as value. After returning,
+    // the struct will contain the previous user callback.
+    NEROAPI_OPTION_USER_DLG_CALLBACK,
+    // NeroAPI>=6.0.0.0 Set the idle callback, overwriting nstIdle of the settings
+    // structure passed to NeroInit.
+    // Pass a pointer to a NERO_CALLBACK structure as value. After returning,
+    // the struct will contain the previous idle callback.
+    NEROAPI_OPTION_IDLE_CALLBACK,
+
+    // NeroAPI>=6.0.0.27: Enable/Disable overburning.
+    // Value points to a DWORD containing the overburn size in blocks. If the
+    // value is NULL, disable overburning.
+    NEROAPI_OPTION_OVERBURN
+    {$ELSE}
+    NEROAPI_OPTION_WRITE_BUFFER_SIZE   // Set write buffer size. Value points onto an integer containing the size in byte
+    {$ENDIF NERO_6}
   );
   TNeroApiOption = NEROAPI_OPTION;
 
@@ -276,38 +371,38 @@ type
 {$WARNINGS OFF}
   tag_NERO_MEDIA_TYPE = (
     MEDIA_NONE          = $00000,           // No media present (NeroAPI>=5.5.9.4)
-    MEDIA_CD            = $00001,					  // CD-R/RW
-    MEDIA_DDCD          = $00002,					  // DDCD-R/RW
-    MEDIA_DVD_M         = $00004,					  // DVD-R/RW
-    MEDIA_DVD_P         = $00008,					  // DVD+RW
+    MEDIA_CD            = $00001,           // CD-R/RW
+    MEDIA_DDCD          = $00002,           // DDCD-R/RW
+    MEDIA_DVD_M         = $00004,           // DVD-R/RW
+    MEDIA_DVD_P         = $00008,           // DVD+RW
+    MEDIA_DVD_RAM       = $00010,           // DVD-RAM
     MEDIA_DVD_ANY       = MEDIA_DVD_M or MEDIA_DVD_P,   // Any DVD-Recorder
-    MEDIA_DVD_RAM       = $00010,					  // DVD-RAM
-    MEDIA_ML            = $00020,					  // ML (Multi Level disc)
-    MEDIA_MRW           = $00040,					  // Mt. Rainier
+    MEDIA_ML            = $00020,           // ML (Multi Level disc)
+    MEDIA_MRW           = $00040,           // Mt. Rainier
 
     //NeroAPI>=5.5.9.4:
-    MEDIA_NO_CDR        = $00080,				    // Exclude CD-R
-    MEDIA_NO_CDRW       = $00100,					  // Exclude CD-RW
-    MEDIA_CDRW          = MEDIA_CD or MEDIA_NO_CDR, 	// CD-RW
-    MEDIA_CDR           = MEDIA_CD or MEDIA_NO_CDRW,	// CD-R
-    MEDIA_DVD_ROM       = $00200,					  // DVD-ROM (non writable)
+    MEDIA_NO_CDR        = $00080,           // Exclude CD-R
+    MEDIA_NO_CDRW       = $00100,           // Exclude CD-RW
+    MEDIA_CDRW          = MEDIA_CD or MEDIA_NO_CDR,     // CD-RW
+    MEDIA_CDR           = MEDIA_CD or MEDIA_NO_CDRW,    // CD-R
+    MEDIA_DVD_ROM       = $00200,           // DVD-ROM (non writable)
     MEDIA_CDROM         = $00400,           // CD-ROM (non writable)
 
     //NeroAPI>=5.5.9.10
-    MEDIA_NO_DVD_M_RW   = $00800,						// Exclude DVD-RW
-    MEDIA_NO_DVD_M_R    = $01000,						// Exclude DVD-R
-    MEDIA_NO_DVD_P_RW   = $02000,						// Exclude DVD+RW
-    MEDIA_NO_DVD_P_R    = $04000,						// Exclude DVD+R
-    MEDIA_DVD_M_R       = MEDIA_DVD_M or MEDIA_NO_DVD_M_RW,	// DVD-R
-    MEDIA_DVD_M_RW      = MEDIA_DVD_M or MEDIA_NO_DVD_M_R,	// DVD-RW
-    MEDIA_DVD_P_R       = MEDIA_DVD_P or MEDIA_NO_DVD_P_RW,	// DVD+R
-    MEDIA_DVD_P_RW      = MEDIA_DVD_P or MEDIA_NO_DVD_P_R,	// DVD+RW
-    MEDIA_FPACKET       = $08000,						// Fixed Packetwriting
-    MEDIA_VPACKET       = $10000,						// Variable Packetwriting
-    MEDIA_PACKETW       = MEDIA_MRW or MEDIA_FPACKET	// a bit mask for packetwriting
+    MEDIA_NO_DVD_M_RW   = $00800,           // Exclude DVD-RW
+    MEDIA_NO_DVD_M_R    = $01000,           // Exclude DVD-R
+    MEDIA_NO_DVD_P_RW   = $02000,           // Exclude DVD+RW
+    MEDIA_NO_DVD_P_R    = $04000,           // Exclude DVD+R
+    MEDIA_DVD_M_R       = MEDIA_DVD_M or MEDIA_NO_DVD_M_RW,   // DVD-R
+    MEDIA_DVD_M_RW      = MEDIA_DVD_M or MEDIA_NO_DVD_M_R,    // DVD-RW
+    MEDIA_DVD_P_R       = MEDIA_DVD_P or MEDIA_NO_DVD_P_RW,   // DVD+R
+    MEDIA_DVD_P_RW      = MEDIA_DVD_P or MEDIA_NO_DVD_P_R,    // DVD+RW
+    MEDIA_FPACKET       = $08000,           // Fixed Packetwriting
+    MEDIA_VPACKET       = $10000,           // Variable Packetwriting
+    MEDIA_PACKETW       = MEDIA_MRW or MEDIA_FPACKET    // a bit mask for packetwriting
                           or MEDIA_VPACKET,
-	  //NeroAPI>=5.5.10.4
-  	MEDIA_HDB           = $20000                        // HD-Burn
+      //NeroAPI>=5.5.10.4
+    MEDIA_HDB           = $20000            // HD-Burn
   );
 {$WARNINGS ON}
   NERO_MEDIA_TYPE = tag_NERO_MEDIA_TYPE;
@@ -331,6 +426,10 @@ const                                       { drive capabilities: }
   NSDI_RESERVED               = (1 shl 11); { Must not be used }
   NSDI_RESERVED2              = (1 shl 12); { Must not be used }
   NSDI_ALLOW_CHANGE_BOOKTYPE  = (1 shl 13); { NeroAPI >5.5.10.7: DVD recorder can change booktype of burned medium }
+  {$IFDEF NERO_6}
+  NSDI_DVDPLUSVR_SUPPORTED    = (1 shl 14); { NeroAPI >= 6.0.0.0: This recorder can write DVD+VR }
+  NSDI_RESERVED3              = (1 shl 15); { Must not be used }
+  {$ENDIF NERO_6}
 
 type
   tag_NERO_SCSI_DEVICE_INFO = record
@@ -351,11 +450,21 @@ type
     nsdiMandatoryBUPSpeed: DWORD;                      { it is highly recommanded to enable buffer
                                                          underrun protection protection when burning at this speed or
                                                          faster. Contains 0 if there is no recommandation }
-    nsdiMediaSupport: NERO_MEDIA_SET;                  { NeroAPI>=5.5.4.1: Bit field of supported media (constructed with the NERO_MEDIA_TYPE enum)}
+    nsdiMediaSupport: NERO_MEDIA_SET;                  { NeroAPI>=5.5.4.1: Bit field of supported writable media (constructed with the NERO_MEDIA_TYPE enum) }
 
     nsdiDriveBufferSize: DWORD;                        { NeroAPI>=5.5.9.4: Drive buffer size (internal) in KB }
 
+    {$IFDEF NERO_6}
+    nsdiDriveError: DWORD;                             { NeroAPI>=6.0.0.0: Contains a NERO_DRIVE_ERROR that occured during generating the information.
+                                                         If != NDE_NO_ERROR, some information like the drive capabilities or the speeds might be wrong.
+                                                         You can check with NeroIsDeviceReady if the drive is ready later
+                                                         and update the device information with NeroUpdateDeviceInfo.
+                                                         NDE_DISC_NOT_PRESENT* errors can be ignored. }
+    nsdiMediaReadSupport: NERO_MEDIA_SET;              { NeroAPI>=6.0.0.8: Bit field of supported readable media (constructed with the NERO_MEDIA_TYPE enum) }
+    nsdiReserved: array[0..61 - 1] of DWORD;           { Should be zero }
+    {$ELSE}
     nsdiReserved: array[0..63 - 1] of DWORD;           { Should be zero }
+    {$ENDIF NERO_6}
   end;
   NERO_SCSI_DEVICE_INFO = tag_NERO_SCSI_DEVICE_INFO;
   PNERO_SCSI_DEVICE_INFO = ^NERO_SCSI_DEVICE_INFO;
@@ -377,6 +486,14 @@ var
   NeroGetAvailableDrivesEx: function(mediaType: NERO_MEDIA_TYPE; // Provide speeds values for this kind of media
                                      reserved: PVoid = nil       // Must be NULL
                                      ): PNERO_SCSI_DEVICE_INFOS; cdecl;
+
+{$IFDEF NERO_6}
+{ NeroAPI>=6.0.0.0: Update the information about a drive. }
+  NeroUpdateDeviceInfo: function(devInfo: PNERO_SCSI_DEVICE_INFO; // the device info to update
+                                 mediaType: NERO_MEDIA_TYPE;      // the media type to update the speed infos with
+                                 reserved: PVoid = nil            // Must be NULL
+                                ): NERO_DRIVE_ERROR; cdecl;
+{$ENDIF NERO_6}
 
 { Get a string describing the given bit field of supported media
    Free with NeroFreeMem();
@@ -414,14 +531,30 @@ var
 }
 type
   NERO_DEVICEOPTION = (
-    // change booktype of a DVD+R and DVD+RW for subsequent writes until
-    // next power cycle to DVD-ROM.
-    // void* is a pointer to BOOL in Nero(Set|Get)DeviceOption.
-    // For setting the booktype to DVD-ROM, set parameter to TRUE, to reset
-    // changing the booktype set to FALSE.
-    // In NeroGetDeviceOption, TRUE is returned if the changing the booktype
-    // to DVD-ROM is enabled for both DVD+R and DVD+RW, FALSE otherwise.
+    {*
+     * change booktype of a DVD+R and DVD+RW for subsequent writes until
+     * next power cycle to DVD-ROM.
+     * void* is a pointer to BOOL in Nero(Set|Get)DeviceOption.
+     * For setting the booktype to DVD-ROM, set parameter to TRUE, to reset
+     * changing the booktype set to FALSE.
+     * In NeroGetDeviceOption, TRUE is returned if the changing the booktype
+     * to DVD-ROM is enabled for both DVD+R and DVD+RW, FALSE otherwise.
+     *}
+    {$IFDEF NERO_6}
+    NERO_DEVICEOPTION_BOOKTYPE_DVDROM = 0,
+
+    {
+     * NeroAPI >= 6.0.0.24:
+     * Set the booktype of the next DVD+R and DVD+RW that is written
+     * to DVD-ROM. This option is useful, if you do packetwriting. If you
+     * call NeroBurn you have to use the NBF_BOOKTYPE_DVDROM flag or
+     * NBF_NO_BOOKTYPE_CHANGE flag.
+     * void* is a pointer to BOOL in Nero(Set|Get)DeviceOption.
+     *}
+    NERO_DEVICEOPTION_BOOKTYPE_DVDROM_NEXT_WRITE = 2
+    {$ELSE}
     NERO_DEVICEOPTION_BOOKTYPE_DVDROM = 0
+    {$ENDIF NERO_6}
   );
   TNeroDevieOption = NERO_DEVICEOPTION;
 
@@ -463,7 +596,12 @@ type
     ntiArtist: array[0..65 - 1] of Char;
     ntiTitle: array[0..65 - 1] of Char;
     ntiISRC: array[0..13 - 1] of Char;      { NeroAPI > 5.5.8.3: if NGCDI_READ_ISRC is present: 12 chars ISRC code + terminator }
+    {$IFDEF NERO_6}
+    ntiBlockSize: DWORD;                    { NeroAPI >= 6.0.0.0: size of one block in bytes }
+    ntiReserved: array[0..28 - 1] of DWORD; { Should be zero }
+    {$ELSE}
     ntiReserved: array[0..29 - 1] of DWORD; { Should be zero }
+    {$ENDIF NERO_6}
   end;
   NERO_TRACK_INFO = tag_NERO_TRACK_INFO;
   TNeroTrackInfo = NERO_TRACK_INFO;
@@ -485,7 +623,13 @@ type
     ncdiAvailableEraseModes: DWORD;            { This bitfield can be decoded using the NCDI_IS_ERASE_MODE_AVAILABLE macro }
     ncdiUnusedBlocks: DWORD;                   { difference beetween Lead-Out position and last possible Lead-Out position }
     ncdiMediaType: NERO_MEDIA_TYPE;            { NeroAPI>=5.5.9.4: type of media }
+
+    {$IFDEF NERO_6}
+    ncdiMediumFlags: DWORD;                    { NeroAPI>6.0.0.10: various medium flags (Virtual multisession, ...) }
+    ncdiReserved: array[0..28 - 1] of DWORD;   { Should be zero }
+    {$ELSE}
     ncdiReserved: array[0..29 - 1] of DWORD;   { Should be zero }
+    {$ENDIF NERO_6}
     ncdiNumTracks: DWORD;
     ncdiTrackInfos: array[0..0] of NERO_TRACK_INFO;
   end;
@@ -494,8 +638,12 @@ type
   TNeroCDInfo = NERO_CD_INFO;
   PNeroCDInfo = PNERO_CD_INFO;
 
+const // tag_NERO_CD_INFO.ncdiMediumFlags flags:
+  NCDIMF_VIRTUALMULTISESSION = (1 shl 0);  { The medium is a virtual multisession medium, use VMS API to retrieve session information }
+  NCDIMF_HDB_SUPPORTED       = (1 shl 1);  { The medium supports HD-BURN }
 
-// #define NCDI_IS_ERASE_MODE_AVAILABLE(cdInfo,eraseMode)	((cdInfo).ncdiAvailableEraseModes & (1<<(eraseMode)))
+
+// #define NCDI_IS_ERASE_MODE_AVAILABLE(cdInfo,eraseMode)    ((cdInfo).ncdiAvailableEraseModes & (1<<(eraseMode)))
 function {macro} NCDI_IS_ERASE_MODE_AVAILABLE(const cdInfo: NERO_CD_INFO; eraseMode: DWORD): BOOL;
 
 {
@@ -508,9 +656,58 @@ function {macro} NCDI_IS_ERASE_MODE_AVAILABLE(const cdInfo: NERO_CD_INFO; eraseM
 }
 var
   NeroGetCDInfo: function(aDeviceHandle: NERO_DEVICEHANDLE; dwFlags: DWORD): PNERO_CD_INFO; cdecl;
+
 const
   NGCDI_READ_CD_TEXT     = (1 shl 0); { also try to fill in }
   NGCDI_READ_ISRC        = (1 shl 1); { NeroAPI>=5.5.8.4 }
+{$IFDEF NERO_6}
+{* NeroAPI>=6.0.0.25:
+ * If the recorder and the current medium support HD-BURN, give the capacity and
+ * the unused blocks for the HD-BURN mode
+ * Note, that if the medium is already written in HD-BURN mode, this flag is not necessary.
+ *}
+  NGCDI_USE_HDB          = (1 shl 2);
+
+type
+  tag_NERO_VMSSESSION = record
+    nvmssSessionName: array[0..256 - 1] of Char; { The name of the session (volume name) }
+    nvmssCreationTime: tm;                       { The creation time of the session }
+    nvmssNextWritableAddress: DWORD;             { The first block that is not occupied by this session }
+    nvmssReserved: array[0..32 - 1] of DWORD     { Should be zero }
+  end;
+  NERO_VMSSESSION = tag_NERO_VMSSESSION;
+  PNERO_VMSSESSION = ^NERO_VMSSESSION;
+  TNeroVmsSession = NERO_VMSSESSION;
+  PNeroVmsSession = PNERO_VMSSESSION;
+
+  tag_NERO_VMS_INFO = record
+    nvmsiNextWritableAddress: DWORD;                  { The next writable address of the medium, may be used for free space calculation }
+    nvmsiNumSessions: DWORD;                          { Number of sessions stored on the VMS medium }
+    nvmsiReserved: array[0..32 - 1] of DWORD;         { Should be zero }
+    nvmsiSessionInfo: array[0..0] of NERO_VMSSESSION; { One entry per session }
+  end;
+  NERO_VMS_INFO = tag_NERO_VMS_INFO;
+  PNERO_VMS_INFO = ^NERO_VMS_INFO;
+  TNeroVmsInfo = NERO_VMS_INFO;
+  PNeroVmsInfo = PNERO_VMS_INFO;
+
+
+{
+// NeroAPI>6.0.0.10: Retrieve virtual multisession information for media supporting it.
+// This function may be called for media having the NCDIMF_VIRTUALMULTISESSION flag
+// set in their NERO_CD_INFO structure. Free result with NeroFreeMem()
+//
+// aDeviceHandle: result of NeroOpenDevice()
+//         flags: currently unused, reserved for future extensions
+//
+// Returns NULL in case of error (e.g. non-VMS medium inserted)
+//
+// Virtual multisession is a technique to allow writing multisession discs on
+// medium types that does not support normal multisession, e.g. DVD-+RW.
+}
+var
+  NeroGetVMSInfo: function(aDeviceHandle: NERO_DEVICEHANDLE; dwFlags: DWORD): PNERO_VMS_INFO; cdecl;
+{$ENDIF NERO_6}
 
 {
 // NeroAPI>=5.5.9.16: Get information about a disc image. Result must be released using NeroFreeMem().
@@ -568,21 +765,63 @@ type
     NERO_PHASE_UNSPECIFIED                  = -1,
     NERO_PHASE_START_CACHE                  = 24,
     NERO_PHASE_DONE_CACHE                   = 25,
+    {$IFDEF NERO_6}
+    NERO_PHASE_FAIL_CACHE                   = 26,
+    NERO_PHASE_ABORT_CACHE                  = 27,
+    {$ENDIF NERO_6}
     NERO_PHASE_START_TEST                   = 28,
     NERO_PHASE_DONE_TEST                    = 29,
+    {$IFDEF NERO_6}
+    NERO_PHASE_FAIL_TEST                    = 30,
+    NERO_PHASE_ABORT_TEST                   = 31,
+    {$ENDIF NERO_6}
     NERO_PHASE_START_SIMULATE               = 32,
     NERO_PHASE_DONE_SIMULATE                = 33,
+    {$IFDEF NERO_6}
+    NERO_PHASE_FAIL_SIMULATE                = 34,
+    NERO_PHASE_ABORT_SIMULATE               = 35,
+    {$ENDIF NERO_6}
     NERO_PHASE_START_WRITE                  = 36,
     NERO_PHASE_DONE_WRITE                   = 37,
+    {$IFDEF NERO_6}
+    NERO_PHASE_FAIL_WRITE                   = 38,
+    NERO_PHASE_ABORT_WRITE                  = 39,
+    {$ENDIF NERO_6}
     NERO_PHASE_START_SIMULATE_NOSPD         = 61,
     NERO_PHASE_DONE_SIMULATE_NOSPD          = 62,
+    {$IFDEF NERO_6}
+    NERO_PHASE_FAIL_SIMULATE_NOSPD          = 63,
+    NERO_PHASE_ABORT_SIMULATE_NOSPD         = 64,
+    {$ENDIF NERO_6}
     NERO_PHASE_START_WRITE_NOSPD            = 65,
     NERO_PHASE_DONE_WRITE_NOSPD             = 66,
+    {$IFDEF NERO_6}
+    NERO_PHASE_FAIL_WRITE_NOSPD             = 67,
+    NERO_PHASE_ABORT_WRITE_NOSPD            = 68,
+    NERO_PHASE_PREPARE_ITEMS                = 73,
+    NERO_PHASE_VERIFY_COMPILATION           = 78,
+    NERO_PHASE_VERIFY_ABORTED               = 79,
+    NERO_PHASE_VERIFY_END_OK                = 80,
+    NERO_PHASE_VERIFY_END_FAIL              = 81,
+    {$ENDIF NERO_6}
     NERO_PHASE_ENCODE_VIDEO                 = 82,
+    {$IFDEF NERO_6}
+    NERO_PHASE_SEAMLESSLINK_ACTIVATED       = 87,  // deprecated, use NERO_PHASE_BUP_ACTIVATED below
+    NERO_PHASE_BUP_ACTIVATED                = 90,  // Generic: Buffer underun protection activated
+    NERO_PHASE_START_FORMATTING             = 98,
+    {$ELSE}
     NERO_PHASE_SEAMLESSLINK_ACTIVATED       = 87,
     NERO_PHASE_BUP_ACTIVATED                = 90,
+    {$ENDIF NERO_6}
     NERO_PHASE_CONTINUE_FORMATTING          = 99,
     NERO_PHASE_FORMATTING_SUCCESSFUL        = 100,
+    {$IFDEF NERO_6}
+    NERO_PHASE_FORMATTING_FAILED            = 101,
+    NERO_PHASE_PREPARE_CD                   = 105,
+    NERO_PHASE_DONE_PREPARE_CD              = 106,
+    NERO_PHASE_FAIL_PREPARE_CD              = 107,
+    NERO_PHASE_ABORT_PREPARE_CD             = 108,
+    {$ENDIF NERO_6}
     NERO_PHASE_DVDVIDEO_DETECTED            = 111,
     NERO_PHASE_DVDVIDEO_REALLOC_STARTED     = 112,
     NERO_PHASE_DVDVIDEO_REALLOC_COMPLETED   = 113,
@@ -622,6 +861,16 @@ type
   TNeroProgress = NERO_PROGRESS;
   PNeroProgress = PNERO_PROGRESS;
 
+{$IFDEF NERO_6}
+{
+// NeroAPI >= 6.0.0.0
+// creates a NERO_PROGRESS structure correctly initialised.
+// Must be freed with NeroFreeMem when no longer needed.
+}
+var
+  NeroCreateProgress: function(): PNERO_PROGRESS; cdecl;
+{$ENDIF NERO_6}
+
 {
 // Data exchange between application and NeroAPI is done with
 // a function that gets a pointer to its own structure, a buffer
@@ -630,7 +879,7 @@ type
 // functions indicate that the EOF file has been reached when
 // reading or a serious error occured.
 }
-// typedef DWORD (NERO_CALLBACK_ATTR *NERO_IO_CALLBACK)(void *pUserData, BYTE *pBuffer, DWORD dwLen);
+type
   NERO_IO_CALLBACK = function(pUserData: Pointer; pBuffer: PByte; dwLen: DWORD): DWORD; cdecl;
   TNeroIOCallback = NERO_IO_CALLBACK;
 // typedef BOOL (NERO_CALLBACK_ATTR *NERO_STATUS_CALLBACK)(void *pUserData);
@@ -666,12 +915,23 @@ type
 
   PNERO_ISO_ITEM = ^NERO_ISO_ITEM;
   tag_NERO_ISO_ITEM = record
+    {$IFDEF NERO_6}
+    fileName: array[0..256 - 1] of Char;    // Deprecated, use longFileName instead
+    longFileName: PChar;                    // File name on the burnt CD
+                                            // (will be freed in NeroFreeIsoItem if this item is a reference)
+    {$ELSE}
     fileName: array[0..256 - 1] of Char;    // File name on the burnt CD
-    isDirectory: BOOL;						          // Is this item a directory ?
-    isReference: BOOL;					          	// Is this item a reference to a file/directory of a previous session
+    {$ENDIF NERO_6}
+    isDirectory: BOOL;                      // Is this item a directory ?
+    isReference: BOOL;                      // Is this item a reference to a file/directory of a previous session
                                             // when recording RockRidge, you can set the name of a directory to be used for
                                             // retrieving rockridge informations here
+    {$IFDEF NERO_6}
+    sourceFilePath: array[0..256 - 1] of Char;  // Deprecated, use longSourceFilePath instead
+    longSourceFilePath: PChar;                  // Path to the file, including file name (ignored for a directory)
+    {$ELSE}
     sourceFilePath: array[0..256 - 1] of Char;  // Path to the file, including file name (ignored for a directory)
+    {$ENDIF NERO_6}
     subDirFirstItem: PNERO_ISO_ITEM;        // Point on the first item of the sub directory if the item is a directory
                                             // Can be NULL if the directory is empty
                                             // (ignored for a file)
@@ -688,22 +948,41 @@ type
   TNeroIsoItem = NERO_ISO_ITEM;
   PNeroIsoItem = PNERO_ISO_ITEM;
 
+{$IFDEF NERO_6}
+  tag_NERO_IMPORT_DATA_TRACK_INFO = record
+    nidtiSize: DWORD;        // Must contain the size of the structure
+    nidtipVolumeName: PChar; // This must be released using NeroFreeMem
+  end;
+  NERO_IMPORT_DATA_TRACK_INFO = tag_NERO_IMPORT_DATA_TRACK_INFO;
+  PNERO_IMPORT_DATA_TRACK_INFO = ^NERO_IMPORT_DATA_TRACK_INFO;
+  TNeroImportDataTrackInfo = NERO_IMPORT_DATA_TRACK_INFO;
+  PNeroImportDataTrackInfo = PNERO_IMPORT_DATA_TRACK_INFO;
+{$ENDIF NERO_6}
+
 // NeroCreateIsoItem: Allocate an instance from the NERO_ISO_ITEM structure
 //    The itemSize member of the structure will be automatically be filled by this
 //    function
-function NeroCreateIsoItem(): PNERO_ISO_ITEM; cdecl;
+function {macro} NeroCreateIsoItem(): PNERO_ISO_ITEM;
 
 var
   NeroCreateIsoItemOfSize: function(size: size_t): PNERO_ISO_ITEM; cdecl;
 
 // Free an instance from the NERO_ISO_ITEM structure
+// for Nero >= 6: longFilename is only freed if this item is a reference, because only then is longFilename allocated by NeroAPI
   NeroFreeIsoItem: procedure(item: PNERO_ISO_ITEM); cdecl;
+
+{
+// NeroAPI >= 6.0.0.0:
+// Free an NERO_ISO_ITEM including all linked items
+}
+  NeroFreeIsoItemTree: procedure(item: PNERO_ISO_ITEM); cdecl;
 
 
 // NeroCopyIsoItem: Create a copy of an existing NERO_ISO_ITEM object.
 //    This is a safe way to obtain an exact copy of NERO_ISO_ITEM objects imported
 //    from a previous session
 //    Note that the new NERO_ISO_ITEM's nextItem,userData and subDirFirstItem members are set to NULL
+//    longFilename is only copied if this item is a reference, because only then is longFilename allocated by NeroAPI
 //    Available for NeroAPI versions >5.5.9.9
   NeroCopyIsoItem: function(iso_item: PNERO_ISO_ITEM): PNERO_ISO_ITEM; cdecl;
 
@@ -724,7 +1003,7 @@ type
 // - If a CD shall have two different filesystems (e.g. HFS+ CDs), you can give
 // the second filesystem with firstRootItem_wrapper.
 // - give some information to be written to the volume descriptor
-  NeroCITEArgs = record
+  tag_NERO_CITE_ARGS = record
     size: Integer;   // ignored. Initialise whole struct with 0. The version of the
                      // struct will be taken from expected version of NeroAPI
     firstRootItem: PNERO_ISO_ITEM;
@@ -741,7 +1020,10 @@ type
     _abstract: PChar;       // abstract file
     bibliographic: PChar;   // bibliographic file
   end;
-  TNeroCITEArgs = NeroCITEArgs;
+  NERO_CITE_ARGS = tag_NERO_CITE_ARGS;
+  PNERO_CITE_ARGS = ^NERO_CITE_ARGS;
+  TNeroCITEArgs = NERO_CITE_ARGS;
+  PNeroCITEArgs = PNERO_CITE_ARGS;
 
 const
   NCITEF_USE_JOLIET       = (1 shl 0);
@@ -757,25 +1039,60 @@ const
   NCITEF_RESERVED2        = (1 shl 10); // Reserved
   NCITEF_RESERVED3        = (1 shl 11); // Reserved
   NCITEF_RESERVED4        = (1 shl 12); // Reserved
+  {$IFDEF NERO_6}
+  NCITEF_RELAX_JOLIET     = (1 shl 13); // NeroAPI>=6.0.0.0:Relax joliet filename length limitations -> allow a maximum of 109 characters per filename
+  NCITEF_DVDVIDEO_CMPT    = (1 shl 14); // NeroAPI>6.0.0.13:  Create DVD-Video compatible medium, NCITEF_CREATE_ISO_FS and NCITEF_CREATE_UDF_FS must be set,
+                                        //                    NCITEF_DVDVIDEO_REALLOC may be set to reallocate DVD-Video .IFO pointers
+                                        //                    Note that NeroAPI versions prior or equal to 6.0.0.13 will implicitly enable DVD-Video compatibility
+                                        //                    when DVD-Video content is found within your compilation
+  NCITEF_RESERVED5        = (1 shl 15);  // Reserved
+  {$ENDIF NERO_6}
 
 // Free an ISO track previously allocated with NeroCreateIsoTrackEx
 var
   NeroFreeIsoTrack: procedure(track: CNeroIsoTrack); cdecl;
 
+{$IFDEF NERO_6}
+type
+  PNERO_IMPORT_DATA_TRACK_RESULT = ^NERO_IMPORT_DATA_TRACK_RESULT;
+  NERO_IMPORT_DATA_TRACK_RESULT = (
+    NIDTR_NO_ERROR = 0,
+    NIDTR_GENERIC_ERROR, // undefined error
+    NIDTR_DRIVE_ERROR,   // get more details with NeroGetLastDriveError
+    // filesystem errors below, maybe a corrupted filesystem etc.
+    // If one of these is returned, parts of the filesystem may have
+    // been imported nevertheless
+    NIDTR_READ_ERROR,    // error while reading from the disc
+    NIDTR_INVALID_FS     // errors in the filesystem on the disc
+  );
+
+{
 // Create a NERO_ISO_ITEM tree from an already existing ISO track in order to create a new session
 // with reference to files from older sessions
 // *ppCDStamp will be filled with a pointer on a CDStamp object which will have to be freed later
-
-  NeroImportIsoTrackEx: function(pRecorder: NERO_DEVICEHANDLE;
-                                 trackNumber: DWORD;
-                                 var ppCDStamp: Pointer;
-                                 flags: DWORD): PNERO_ISO_ITEM; cdecl;
+// *pInfo will be filled with information about the imported track
+// *result will contain a result flag, may be NULL
+// (NeroAPI>=6.0.0.0)
+}
+var
+  NeroImportDataTrack: function(pRecorder: NERO_DEVICEHANDLE;
+                                trackNumber: DWORD;
+                                ppCDStamp: PPointer;
+                                pInfo: PNERO_IMPORT_DATA_TRACK_INFO;
+                                flags: DWORD;
+                                result: PNERO_IMPORT_DATA_TRACK_RESULT;
+                                reserved: PVoid = nil // Must be NULL
+                               ): PNERO_ISO_ITEM; cdecl;
+{$ENDIF NERO_6}
 
 const
-  NIITEF_IMPORT_ROCKRIDGE = (1 shl 0); // Will be ignored, RockRidge is now always imported if present
-  NIITEF_IMPORT_ISO_ONLY  = (1 shl 1);
-  NIITEF_PREFER_ROCKRIDGE = (1 shl 2); // Will be ignored
-  NIITEF_IMPORT_UDF       = (1 shl 3); // Import UDF Session
+  NIITEF_IMPORT_ROCKRIDGE   = (1 shl 0); // Will be ignored, RockRidge is now always imported if present
+  NIITEF_IMPORT_ISO_ONLY    = (1 shl 1);
+  NIITEF_PREFER_ROCKRIDGE   = (1 shl 2); // Will be ignored
+  NIITEF_IMPORT_UDF         = (1 shl 3); // Import UDF Session
+  {$IFDEF NERO_6}
+  NIITEF_IMPORT_VMS_SESSION = (1 shl 4); // treat trackNumber as the virtual multisession session specifier
+  {$ENDIF NERO_6}
 
 // Free a CD stamp allocated by NeroImportIsoTrackEx
 var
@@ -831,7 +1148,15 @@ type
     ndeType: NERO_DATA_EXCHANGE_TYPE;
     ndeData: record
       case Integer of
-        0: (ndeFileName: array[0..256 - 1] of Char);  // NERO_WAV_FILE
+        {$IFDEF NERO_6}
+        0: (ndeFileName: array[0..256 - 1] of Char); // Deprecated, use ndeLongFileName.ptr instead
+        3: (ndeLongFileName: record
+              reserved: DWORD;      { must be 0 }
+              ptr: PChar;
+            end);
+        {$ELSE}
+        0: (ndeFileName: array[0..256 - 1] of Char); // NERO_WAV_FILE
+        {$ENDIF NERO_6}
         1: (ndeIO: NERO_IO);                          // NERO_IO/EOF/ERROR_CALLBACK
         2: (ndeAudioItemInfo: NERO_AUDIO_ITEM_INFO);
     end;
@@ -845,6 +1170,8 @@ type
   tag_NERO_AUDIO_TRACK = record
     natPauseInBlksBeforeThisTrack: DWORD;
     natNumIndexPositions: DWORD;
+    { NOTE: values of index positions has to be given in bytes,
+      whereby the values have to be a multiple of 2352 }
     natRelativeIndexBlkPositions: array[0..98 - 1] of DWORD;  { offsets between one index position and the next one }
     natTitle, natArtist: PChar;              { set to NULL if unknown or to be taken from source }
     natSourceDataExchg: NERO_DATA_EXCHANGE;
@@ -879,12 +1206,21 @@ type
   NERO_VIDEO_ITEM_TYPE = (
     NERO_MPEG_ITEM,
     NERO_JPEG_ITEM,
+    {$IFDEF NERO_6}
+    NERO_NONENCODED_VIDEO_ITEM  // The source file name will be an AVI file which will be encoded into MPG by NeroAPI
+    {$ELSE}
     NERO_NONENCODED_VIDEO_ITEM, // The source file name will be an AVI file which will be encoded into MPG by NeroAPI
     NERO_DIB_ITEM               // NeroAPI>=5.5.7.6: The source is a DIB picture. Informations about it must be given in nviData.nviDIB
+    {$ENDIF NERO_6}
   );
   TNeroVideoItemType = NERO_VIDEO_ITEM_TYPE;
 
   tag_NERO_VIDEO_ITEM = record
+    {$IFDEF NERO_6}
+    nviPauseAfterItem: DWORD;                     // value is number of blocks (75 blocks = 1 second)
+    nviSourceFileName: array[0..250 - 1] of Char; // Deprecated, use nviLongSourceFileName instead
+    nviLongSourceFileName: PChar;                 // MPG, JPG or AVI file
+    {$ELSE}
     nviPauseAfterItem: DWORD;
     nviSourceFileName: array[0..236 - 1] of Char; // MPG, JPG or AVI file
     nviData: record // NeroAPI>=5.5.7.6
@@ -894,13 +1230,16 @@ type
           1: (size: size_t);       // DIB size
           2: (pixelRatio: Double); // Pixel ratio of the given picture (height/width). 1 means square pixels
       end;
-	end;
+    end;
 
     reserved: DWORD;
+    {$ENDIF NERO_6}
     nviItemType: NERO_VIDEO_ITEM_TYPE;
   end;
   NERO_VIDEO_ITEM = tag_NERO_VIDEO_ITEM;
+  PNERO_VIDEO_ITEM = ^NERO_VIDEO_ITEM;
   TNeroVideoItem = NERO_VIDEO_ITEM;
+  PNeroVideoItem = PNERO_VIDEO_ITEM;
 
   NERO_CD_FORMAT = (
     NERO_ISO_AUDIO_MEDIA             = 0, // Burn either a CD or a DVD, depending on the nwcdMediaType member
@@ -910,8 +1249,8 @@ type
     NERO_FILE_SYSTEM_CONTAINER_MEDIA = 4, // Burn an IFileSystemDescContainer (see NeroFileSystemContainer.h)
 
     // For compatibility
-    NERO_ISO_AUDIO_CD  = 0,
-    NERO_BURN_IMAGE_CD = 2
+    NERO_ISO_AUDIO_CD                = 0,
+    NERO_BURN_IMAGE_CD               = 2
   );
 
   tag_NERO_WRITE_CD = record
@@ -936,12 +1275,36 @@ type
   TNeroWriteCD = NERO_WRITE_CD;
   PNeroWriteCD = ^TNeroWriteCD;
 
+
+{$IFDEF NERO_6}
+  NERO_VIDEO_RESOLUTION = (
+    NERO_VIDEO_RESOLUTION_PAL = 0,
+    NERO_VIDEO_RESOLUTION_NTSC = 1
+  );
+{$ENDIF NERO_6}
+
   tag_NERO_WRITE_VIDEO_CD = record
     nwvcdSVCD: BOOL;                        // If TRUE, write a SVCD
     nwvcdNumItems: DWORD;
     nwvcdIsoTrack: CNeroIsoTrack;
+    {$IFDEF NERO_6}
+    nwvcdTempPath: array[0..252 - 1] of Char; { Deprecated, use nwvcdLongTempPath instead }
+    nwvcdLongTempPath: PChar;                 { NeroAPI>=5.5.5.3: where the encoded files will be temporary stored }
+
+//    #ifdef __cplusplus { NeroAPI>=5.5.7.6 }
+//    nwvcdCustomVCDEngine: function(desc: IVCDMediaDescription;
+//                                   pFSDC: IFileSystemDescContainer
+//                                  ): IVCDFSContentGenerator;
+//    VCDEngine::IVCDFSContentGenerator *(*nwvcdCustomVCDEngine)(VCDEngine::IVCDMediaDescription *desc,FileSystemContent::IFileSystemDescContainer *pFSDC);
+//    #else
+    nwvcdCustomVCDEngine: Pointer;
+//    #endif
+    nwvcdEncodingResolution: NERO_VIDEO_RESOLUTION; { NeroAPI >= 6.0.0.17: select the encoding resolution for the video.
+                                                      This option only has effects for video items of type NERO_NONENCODED_VIDEO_ITEM. }
+    {$ELSE}
     nwvcdTempPath: array[0..256 - 1] of Char; { where the encoded files will be temporary stored }
     nwvcdCustomVCDEngine: Pointer;            { For internal usage }
+    {$ENDIF NERO_6}
     nwvcdReserved: array[0..31 - 1] of DWORD; { Should be zero }
     nwvcdItems: array[0..0] of NERO_VIDEO_ITEM;
   end;
@@ -951,8 +1314,14 @@ type
   PNeroWriteVideoCD = ^TNeroWriteVideoCD;
 
   tag_NERO_WRITE_IMAGE = record
+    {$IFDEF NERO_6}
+    nwiImageFileName: array[0..252 - 1] of Char; { Deprecated, use nwiLongImageFileName instead }
+    nwiLongImageFileName: PChar;                 { Name of the NRG file to burn
+                                                   ISO and CUE files can also be burnt this way }
+    {$ELSE}
     nwiImageFileName: array[0..256 - 1] of Char; { Name of the NRG file to burn
                                                    ISO and CUE files can also be burnt this way }
+    {$ENDIF NERO_6}
   end;
   NERO_WRITE_IMAGE = tag_NERO_WRITE_IMAGE;
   PNERO_WRITE_IMAGE = ^NERO_WRITE_IMAGE;
@@ -1010,7 +1379,12 @@ type
     NEROAPI_BURN_FAILED,
     NEROAPI_BURN_FUNCTION_NOT_ALLOWED,
     NEROAPI_BURN_DRIVE_NOT_ALLOWED,
+    {$IFDEF NERO_6}
+    NEROAPI_BURN_USER_ABORT,
+    NEROAPI_BURN_BAD_MESSAGE_FILE     // message file invalid or missing
+    {$ELSE}
     NEROAPI_BURN_USER_ABORT
+    {$ENDIF NERO_6}
   );
   TNeroApiBurnError = NEROAPI_BURN_ERROR;
 
@@ -1037,10 +1411,58 @@ const
   NBF_SPEED_IN_KBS            = (1 shl 11); { NeroAPI>=5.5.5.5: Interpret the dwSpeed as KB/s instead of multiple of 150 KB/s }
   NBF_DVDP_BURN_30MM_AT_LEAST = (1 shl 12); { NeroAPI>=5.5.8.0: DVD+R/RW high compability mode (at least 1GB will be written) }
   NBF_CD_TEXT_IS_JAPANESE     = (1 shl 13); { NeroApi>=5.5.9.17: If NBF_CD_TEXT and NBF_CD_TEXT_IS_JAPANESE are set, then the CD Text is treated as japanese CD Text }
-  NBF_BOOKTYPE_DVDROM         = (1 shl 14); { NeroAPI>5.5.10.7: If NBF_BOOKTYPE_DVDROM the booktype of a burned DVD will be set to DVDROM }
+  NBF_BOOKTYPE_DVDROM         = (1 shl 14); { NeroAPI>5.5.10.7: If NBF_BOOKTYPE_DVDROM the booktype of a burned DVD will be set to DVD-ROM }
+  {$IFDEF NERO_6}
+  NBF_NO_BOOKTYPE_CHANGE      = (1 shl 15); { NeroAPI>=6.0.0.24: Don't change the booktype of DVD, even if the default setting of NeroAPI is to change the booktype to DVD-ROM }
+  {$ENDIF NERO_6}
   NBF_RESERVED2               = (1 shl 30); { Reserved }
   NBF_RESERVED                = (1 shl 31); { Reserved }
 
+{$IFDEF NERO_6}
+type
+  tag_NERO_FILESYSTEMTRACK_OPTIONS = record
+    netsStructureSize: DWORD;  { fill this with sizeof(NERO_FILESYSTEMTRACK_OPTIONS) }
+    {
+    // The following three entries need to be filled out whenever the file system size is to be calculated
+    // accurately.
+    }
+
+    netspCDStamp: Pointer;                     { Point on a CDStamp object when appending to an existing medium, otherwise NULL }
+    netsMediaType: NERO_MEDIA_TYPE;            { The media type the file system is to be written to }
+    netsDeviceHandle: NERO_DEVICEHANDLE;       { device handle representing the drive the file system is to be written to }
+    netsFlags: DWORD;                          { NBF_XXXX that will be used for the recording process }
+    netsFSContainer: IFileSystemDescContainer; { if not NULL, the file system will be created from this
+                                                 object instead of the passed CNeroIsoTrack object. pIsoTrack must be NULL in this case }
+    netsFSContainerFlags: DWORD;               { NCITEF_XXXX flags to be used for filesystem creation. Used only when netsFSContainer
+                                                 is used to create the file system }
+    netsReserved: array[0..32 - 1] of DWORD;   { Should be zero }
+  end;
+  NERO_FILESYSTEMTRACK_OPTIONS = tag_NERO_FILESYSTEMTRACK_OPTIONS;
+  PNERO_FILESYSTEMTRACK_OPTIONS = ^NERO_FILESYSTEMTRACK_OPTIONS;
+  TNeroFileSystemTrackOptions = NERO_FILESYSTEMTRACK_OPTIONS;
+  PNeroFileSystemTrackOptions = PNERO_FILESYSTEMTRACK_OPTIONS;
+
+
+
+{* NeroAPI >= 6.0.0.14: Estimate the total size of a track including data and overhead
+ * for the filesystem. The method returns the size in blocks.
+ * Use the flags below to specify what exactly has to be taken into account for the
+ * calculation.
+ *
+ * Warning: Depending on the parameters passed, the returned size might only be an estimation!
+ *}
+var
+  NeroEstimateTrackSize: function(pIsoTrack: CNeroIsoTrack; // the iso track for which to calculate the size
+                                  dwFlags: DWORD; // combination of the flags below
+                                  pOptions: PNERO_FILESYSTEMTRACK_OPTIONS
+                                 ): Cardinal; cdecl;
+const
+  NETS_FILESYSTEM_OVERHEAD = (1 shl 0); { calculate filesystem overhead }
+  NETS_DATA                = (1 shl 1); { calculate size of the data }
+  NETS_EXACT_SIZE          = (1 shl 2); { Nero >= 6.0.0.21 calculate exactly.
+                                          If this option is specified, filesystem overhead as well as file data is taken into account
+                                          the optional fields of the NERO_ESTIMATETRACKSIZE_OPTIONS structure need to be filled out }
+{$ENDIF NERO_6}
 {
 // Digital Audio Extraction functions:
 // - aborting will not be reported by NeroGetLastError()
@@ -1059,22 +1481,45 @@ var
 //
 // Utility functions:
 //
+{$IFDEF NERO_6}
+  NeroIsDeviceReady: function(aDeviceHandle: NERO_DEVICEHANDLE): NERO_DRIVE_ERROR; cdecl; // returns a value of NERO_DRIVE_ERROR
+  NeroEjectLoadCD: function(aDeviceHandle: NERO_DEVICEHANDLE; eject: BOOL): NERO_DRIVE_ERROR; cdecl;	// returns a value of NERO_DRIVE_ERROR
 
+// NeroAPI >= 6.0.0.25:
+// Set the image file for the image recorder. This can be used to initialize
+// the image recorder for packet writing.
+// If imageFilePath is NULL, the last opened file is closed.
+  NeroInitImageRecorder: function(aDeviceHandle: NERO_DEVICEHANDLE;
+                                  imageFilePath: PChar;
+                                  dwFlags: DWORD;
+                                  mediaType: NERO_MEDIA_TYPE;
+                                  reserved: PVoid = nil
+                                 ): Integer; cdecl;
+{$ELSE}                                 
   NeroIsDeviceReady: function(aDeviceHandle: NERO_DEVICEHANDLE): Integer; cdecl; // 0 for ready, else error!
   NeroEjectLoadCD: function(aDeviceHandle: NERO_DEVICEHANDLE; eject: BOOL): Integer; cdecl; // 0 for success, else error!
-
-// NeroAPI>=5.5.9.4: Use the nstUserDialog callback functions to request a CD
-// Returns FALSE if the burn process should be aborted
-  NeroWaitForMedia: function(aDeviceHandle: NERO_DEVICEHANDLE;
-                             nms: NERO_MEDIA_SET;             // media types requested
-                             dwFlags: DWORD;                  // Set of NBF_ flags
-                             pCDStamp: Pointer                // Optional stamp of requested media
-                            ): Integer; cdecl;
+{$ENDIF NERO_6}
 
 // NeroAPI>=5.5.9.10: Get localized WAIT_CD text
-//	Returned string must be released using NeroFreeMem()
-//	Function may return NULL if type is out of range
+//    Returned string must be released using NeroFreeMem()
+//    Function may return NULL if type is out of range
   NeroGetLocalizedWaitCDTexts: function(_type: NERO_WAITCD_TYPE): PChar; cdecl;
+
+
+{$IFDEF NERO_6}
+// NeroAPI >= 6.0.0.25: Use the nstUserDialog callback functions to request a CD
+// Returns FALSE if the burn process should be aborted
+  NeroWaitForDisc: function(aDeviceHandle: NERO_DEVICEHANDLE;
+                            nmt: NERO_MEDIA_SET;  // media types requested
+                            dwBurnFlags: DWORD;   // Set of NBF_ flags
+                            pCDStamp: Pointer;    // Optional stamp of requested media
+                            dwFlags: DWORD;       // Set of NWFD_ flags
+                            reserved: PVoid = nil // must be NULL
+                           ): BOOL; cdecl;
+const
+  NWFD_REQUIRE_EMPTY_DISC = (1 shl 0);
+{$ENDIF NERO_6}
+
 
 
 // CDRW erasing functions
@@ -1093,9 +1538,125 @@ var
                     // -1 if no CD inserted,
                     // -2 if recorder doesn't support CDRW
                     // -3 if the inserted media is not rewritable
+{$IFDEF NERO_6}
+// Erase the disc inserted in the given recorder
+  NeroEraseDisc: function(aDeviceHandle: NERO_DEVICEHANDLE; mode: NEROAPI_CDRW_ERASE_MODE;
+                          dwFlags: DWORD; reserved: PVoid = nil): Integer; cdecl;
+const
+  NEDF_DISABLE_EJECT     = (1 shl 0); { NeroAPI>=6.0.0.0: CD will not be ejected at the end of the
+                                        erasing, even if this is recommanded for the selected recorder}
+  NEDF_EJECT_AFTER_ERASE = (1 shl 1);  { NeroAPI > 6.0.0.0: eject disc after erasing, no matter if this is
+                                         recommended for the recorder or not }
+type
+  NERO_DRIVESTATUS_RESULT = (
+    NDR_DRIVE_IN_USE = 0,
+    NDR_DRIVE_NOT_IN_USE,
+    NDR_DISC_REMOVED,
+    NDR_DISC_INSERTED,
+    NDR_DRIVE_REMOVED,
+    NDR_DRIVE_ADDED
+  );
 
-  NeroEraseCDRW: function(aDeviceHandle: NERO_DEVICEHANDLE; mode: NEROAPI_CDRW_ERASE_MODE): Integer; cdecl;// Erase the loaded CD
+{
+// callback that is called to tell the application about a status change of a drive
+// hostID corresponds to the nsdiHostAdapterNo and targetID corresponds
+// to the nsdiDeviceID of NERO_SCSI_DEVICE_INFO
+// Note: The callback need to be thread safe, since it might be called from a different thread
+}
+  NERO_DRIVESTATUS_CALLBACK = procedure(hostID, targetID: Integer;
+                                        result: NERO_DRIVESTATUS_RESULT;
+                                        pUserData: Pointer); cdecl;
 
+  NERO_DRIVESTATUS_TYPE = (
+    // the disc in the drive has been changed
+    // Warning: This change notification is based on Windows notifying about
+    // medium changes. If an application has disabled this notification, the
+    // callback will not be called. If you want to be sure to recognize all
+    // medium changes, you should use timer events and use NeroIsDeviceReady
+    // to ask for the drive status.
+    NDT_DISC_CHANGE,
+    NDT_IN_USE_CHANGE  // the in-use status of the drive has been changed
+  );
+
+{ NeroAPI >= 6.0.0.0:
+// Register a callback which is called whenever the specified status
+// of a drive is changed.
+//
+// Please see documentation of NERO_DRIVE_STATUS_TYPE for restrictions of the
+// notifications.
+//
+//
+// Parameters:
+// status: the status the application is interested in
+// pDeviceInfo: the drive for which the status change should be notified.
+//              The pointer can be freed afterwards.
+// callback: the callback to be called if the status changed.
+// Note: The callback need to be thread safe, since it might be called from a different thread
+// pUserData: data passed to the callback
+//
+// returns 0 on success
+}
+var
+  NeroRegisterDriveStatusCallback: function(status: NERO_DRIVESTATUS_TYPE;
+                                            pDeviceInfoconst: PNERO_SCSI_DEVICE_INFO;
+                                            callback: NERO_DRIVESTATUS_CALLBACK;
+                                            pUserData: Pointer): Integer; cdecl;
+
+{
+// NeroAPI >= 6.0.0.0:
+// Unregister a callback
+//
+// Parameters:
+// status: the status for which the callback has been registered
+// pDeviceInfo: the drive for which the status was notified
+//              The pointer does not need to be the same as in
+//              NeroRegisterDrivestatusCallback, but has to represent
+//              the same drive.
+// callback: the callback to be called if the status changed.
+// pUserData: data passed to the callback
+//
+// returns 0 on success
+}
+  NeroUnregisterDriveStatusCallback: function(
+      status: NERO_DRIVESTATUS_TYPE;        // the status the application is interested in
+      pDeviceInfo: PNERO_SCSI_DEVICE_INFO;  // the drive for which the status should be acknowledged
+      callback: NERO_DRIVESTATUS_CALLBACK;  // the callback to be called if the status changed
+      pUserData: Pointer                    // data passed to the callback
+      ): Integer; cdecl;
+
+{
+// NeroAPI >= 6.0.0.0:
+// Register a callback which is called whenever a drive was removed or added in the system
+// Use NeroGetAvailableDrivesEx to get the current list of drives in the system.
+//
+// NOTE: In some rare cases NeroAPI does not get this information from the OS and will therefore
+//       never notify the callback if a drive has been added/removed.
+//
+// Parameters:
+// callback: the callback to be called when a drive is removed or added
+//    Note: The callback need to be thread safe, since it might be called from a different thread
+// pUserData: data passed to the callback
+//
+// returns 0 on success
+}
+  NeroRegisterDriveChangeCallback: function(callback: NERO_DRIVESTATUS_CALLBACK;
+                                            pUserData: Pointer
+                                           ): Integer; cdecl;
+
+{
+// NeroAPI >= 6.0.0.0:
+// Unregister a callback which was registered with NeroRegisterDriveChangeCallback
+//
+// Parameters:
+// callback: the callback to be called when a drive is removed or added
+// pUserData: data passed to the callback
+//
+// returns 0 on success
+}
+  NeroUnregisterDriveChangeCallback: function(callback: NERO_DRIVESTATUS_CALLBACK;
+                                              pUserData: Pointer
+                                             ): Integer; cdecl;
+{$ENDIF NERO_6}
 
 // AUDIO SUPPORT
 
@@ -1151,6 +1712,23 @@ var
 
   NeroSetExpectedAPIVersion: function(iExpectedVersion: DWORD): BOOL; cdecl;
 
+// Create a NERO_ISO_ITEM tree from an already existing ISO track in order to create a new session
+// with reference to files from older sessions
+// *ppCDStamp will be filled with a pointer on a CDStamp object which will have to be freed later
+  NeroImportIsoTrackEx: function(pRecorder: NERO_DEVICEHANDLE;
+                                 trackNumber: DWORD;
+                                 var ppCDStamp: Pointer;
+                                 flags: DWORD): PNERO_ISO_ITEM; cdecl;
+
+  NeroEraseCDRW: function(aDeviceHandle: NERO_DEVICEHANDLE; mode: NEROAPI_CDRW_ERASE_MODE): Integer; cdecl; // Erase the loaded CD
+
+// NeroAPI>=5.5.9.4: Use the nstUserDialog callback functions to request a CD
+// Returns FALSE if the burn process should be aborted
+  NeroWaitForMedia: function(aDeviceHandle: NERO_DEVICEHANDLE;
+                             nms: NERO_MEDIA_SET;             // media types requested
+                             dwFlags: DWORD;                  // Set of NBF_ flags
+                             pCDStamp: Pointer                // Optional stamp of requested media
+                            ): Integer; cdecl;
 
 
 { NeroAPIGlue.h }
@@ -1160,7 +1738,7 @@ var
 |* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 |* PARTICULAR PURPOSE.
 |*
-|* Copyright 1995-2003 Ahead Software AG. All Rights Reserved.
+|* Copyright 1995-2004 Ahead Software AG. All Rights Reserved.
 |*-----------------------------------------------------------------------------
 |* NeroSDK / NeroAPI
 |*
@@ -1181,6 +1759,23 @@ function NeroAPIGlueConnect(reserved: PVoid = nil): Boolean;
 procedure NeroAPIGlueDone;
 
 
+// Returns the module handle of the loaded NeroAPI
+function NeroAPIGlueGetModuleHandle(): HMODULE;
+
+
+// Attach an already loaded NeroAPI module
+// Do NOT call NeroAPIGlueDone after this method. This should only be called
+// from the part of the application that called NeroAPIGlueInitEx or
+// NeroAPIGlueConnect
+//
+// NOTE: This method does not set the expected version of the NeroAPI.
+// This is only done when the glue layer is initialized with NeroAPIGlueConnect
+// or NeroAPIGlueInitEx
+// Therefore, if you attach a NeroAPI module you should always set the
+// expected version of NeroAPI before calling a NeroAPI method and restore the
+// previously set version afterwards.
+function NeroAPIGlueAttachModule(hNeroAPI: HMODULE; reserved: PVoid = nil): BOOL;
+
 
 
 { NeroAPIGlue.lib }
@@ -1190,6 +1785,7 @@ var
   NeroAPIPath: AnsiString;
 
 implementation
+
 uses
   NeroPacketWriting;
 
@@ -1200,11 +1796,12 @@ const
 var
   LibNeroAPI: HMODULE; // NeroAPI.dll module handle
   FNeroDone: Boolean;
+  OwnLibNeroAPI: Boolean;
 
 // overloaded or extended functions
 var
   _NeroInit: function(pNeroSettings: PNERO_SETTINGS; reserved: PChar): NEROAPI_INIT_ERROR; cdecl;
-  _NeroDone: procedure(); cdecl;
+  _NeroDone: function(): BOOL; cdecl;
 
 procedure NeroNotImplemented; cdecl;
 begin
@@ -1268,6 +1865,26 @@ begin
   NeroCreateBlockReaderInterface := GetNeroProc('NeroCreateBlockReaderInterface');
   NeroCreateBlockAccessFromImage := GetNeroProc('NeroCreateBlockAccessFromImage');
   NeroGetSupportedAccessModesForDevice := GetNeroProc('NeroGetSupportedAccessModesForDevice');
+
+  {$IFDEF NERO_6}
+  { NeroAPI.h v1.04}
+  NeroGetLastErrors              := GetNeroProc('NeroGetLastErrors');
+  NeroGetLastDriveError          := GetNeroProc('NeroGetLastDriveError');
+  NeroUpdateDeviceInfo           := GetNeroProc('NeroUpdateDeviceInfo');
+  NeroGetVMSInfo                 := GetNeroProc('NeroGetVMSInfo');
+  NeroCreateProgress             := GetNeroProc('NeroCreateProgress');
+  NeroFreeIsoItemTree            := GetNeroProc('NeroFreeIsoItemTree');
+  NeroEstimateTrackSize          := GetNeroProc('NeroEstimateTrackSize');
+  NeroIsDeviceReady              := GetNeroProc('NeroIsDeviceReady');
+  NeroEjectLoadCD                := GetNeroProc('NeroEjectLoadCD');
+  NeroInitImageRecorder          := GetNeroProc('NeroInitImageRecorder');
+  NeroWaitForDisc                := GetNeroProc('NeroWaitForDisc');
+  NeroEraseDisc                  := GetNeroProc('NeroEraseDisc');
+  NeroRegisterDriveStatusCallback   := GetNeroProc('NeroRegisterDriveStatusCallback');
+  NeroUnregisterDriveStatusCallback := GetNeroProc('NeroUnregisterDriveStatusCallback');
+  NeroRegisterDriveChangeCallback   := GetNeroProc('NeroRegisterDriveChangeCallback');
+  NeroUnregisterDriveChangeCallback := GetNeroProc('NeroUnregisterDriveChangeCallback');
+  {$ENDIF NERO_6}
 end;
 
 {*******************************************************************************}
@@ -1284,6 +1901,16 @@ begin
   Result := NeroCreateIsoItemOfSize(SizeOf(NERO_ISO_ITEM));
 end;
 
+{$IFDEF NERO_6}
+function {macro} DISC_NOT_PRESENT(x: NERO_DRIVE_ERROR): Boolean;
+begin
+  Result := (x = NDE_DISC_NOT_PRESENT) or
+            (x = NDE_DISC_NOT_PRESENT_TRAY_CLOSED) or
+            (x = NDE_DISC_NOT_PRESENT_TRAY_OPEN);
+end;
+{$ENDIF NERO_6}
+
+
 {*******************************************************************************}
 
 function NeroInit(var NeroSettings: TNeroSettings; reserved: PChar): NEROAPI_INIT_ERROR; overload;
@@ -1297,9 +1924,12 @@ begin
 end;
 
 
-procedure NeroDone();
+function NeroDone(): BOOL;
 begin
-  if not FNeroDone then _NeroDone;
+  if not FNeroDone then
+    Result := _NeroDone
+  else
+    Result := True;
   FNeroDone := True;
 end;
 
@@ -1338,6 +1968,7 @@ begin
    // load NeroAPI.dll
     LibNeroAPI := SafeLoadLibrary(IncludeTrailingPathDelimiter(NeroAPIPath) + NeroAPI_dll);
     Result := LibNeroAPI <> 0;
+    OwnLibNeroAPI := Result;
 
     if Result then
     begin
@@ -1358,14 +1989,33 @@ begin
   if LibNeroAPI <> 0 then
   begin
     NeroDone;
-    if FreeLibrary(LibNeroAPI) then LibNeroAPI := 0;
+    if FreeLibrary(LibNeroAPI) then
+      LibNeroAPI := 0;
   end;
+end;
+
+function NeroAPIGlueGetModuleHandle(): HMODULE;
+begin
+  Result := LibNeroAPI;
+end;
+
+function NeroAPIGlueAttachModule(hNeroAPI: HMODULE; reserved: PVoid): BOOL;
+begin
+  if hNeroAPI <> LibNeroAPI then
+  begin
+    if LibNeroAPI <> 0 then
+      NeroAPIGlueDone;
+    LibNeroAPI := hNeroAPI;
+    OwnLibNeroAPI := False;
+    InitNeroAPIFunctions;
+  end;
+  Result := True;
 end;
 
 initialization
 
 finalization
-  if LibNeroAPI <> 0 then
+  if (LibNeroAPI <> 0) and OwnLibNeroAPI then
     NeroAPIGlueDone;
 
 end.

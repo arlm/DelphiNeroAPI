@@ -2,7 +2,7 @@
 {                                                                              }
 { Nero API interface Unit for Object Pascal                                    }
 {                                                                              }
-{ Portions created by Ahead are Copyright (C) 1995-2003 Ahead Software AG.     }
+{ Portions created by Ahead are Copyright (C) 1995-2004 Ahead Software AG.     }
 { All Rights Reserved.                                                         }
 {                                                                              }
 { The original file is: FileSystemBlockAccessInterface.h, released May 2003.   }
@@ -10,7 +10,7 @@
 { June 2003. The initial developer of the Pascal code is Andreas Hausladen     }
 { (ahuser@sourceforge.net).                                                    }
 {                                                                              }
-{ Portions created by Andreas Hausladen are Copyright (C) 2003                 }
+{ Portions created by Andreas Hausladen are Copyright (C) 2003,2004            }
 { Andreas Hausladen. All Rights Reserved.                                      }
 {                                                                              }
 { Obtained through: Project Nero API for Delphi                                }
@@ -46,11 +46,11 @@
 |* can be used to have block access to a file system.
 ******************************************************************************}
 unit FileSystemBlockAccessInterface;
-{$ALIGN 8}
-{$MINENUMSIZE 4}
-{$WEAKPACKAGEUNIT}
+
+{$INCLUDE NeroAPI.inc}
 
 interface
+
 uses
   Types, FileSystemBlockWriterInterface, FileSystemBlockAccessExtensions;
 
@@ -62,7 +62,7 @@ type
 }
   INeroFileSystemBlockAccess = class(INeroFileSystemBlockWriter)
   public
-	// Returns the number of supported extension fields
+    // Returns the number of supported extension fields
     function GetNumSupportedExtensions(): DWORD; virtual; cdecl; abstract;
     // In combination with the method above, this method can be used to copy a set of extensions
     // without knowing which ones are actually there. Extensions have to be passed through to

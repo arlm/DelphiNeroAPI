@@ -2,7 +2,7 @@
 {                                                                              }
 { Nero API interface Unit for Object Pascal                                    }
 {                                                                              }
-{ Portions created by Ahead are Copyright (C) 1995-2003 Ahead Software AG.     }
+{ Portions created by Ahead are Copyright (C) 1995-2004 Ahead Software AG.     }
 { All Rights Reserved.                                                         }
 {                                                                              }
 { The original file is: FileSystemBlockAcccessExtension.h, released May 2003.  }
@@ -10,7 +10,7 @@
 { June 2003. The initial developer of the Pascal code is Andreas Hausladen     }
 { (ahuser@sourceforge.net).                                                    }
 {                                                                              }
-{ Portions created by Andreas Hausladen are Copyright (C) 2003                 }
+{ Portions created by Andreas Hausladen are Copyright (C) 2003,2004            }
 { Andreas Hausladen. All Rights Reserved.                                      }
 {                                                                              }
 { Obtained through: Project Nero API for Delphi                                }
@@ -34,6 +34,10 @@
 |*
 |* CREATOR: Andreas Hausladen
 |*
+|* 07/03/2004: Modified
+|*    Andreas Hausladen
+|*    Nero 6 (NeroAPI SDK v1.04)
+|*
 ******************************************************************************}
 
 {*****************************************************************************
@@ -45,9 +49,8 @@
 |*
 ******************************************************************************}
 unit FileSystemBlockAccessExtensions;
-{$ALIGN 8}
-{$MINENUMSIZE 4}
-{$WEAKPACKAGEUNIT}
+
+{$INCLUDE NeroAPI.inc}
 
 interface
 
@@ -61,13 +64,25 @@ type
     etDVDPRWFormatExtension,
     etSectorMappingControlExtension,
     etBlankAreaControlExtension,
+    {$IFDEF NERO_6}
+    etIllegalBlockAccessExtension,
+    etHDPartitionInfo,
+    etHDUsedBlockAccessExtention,
+    etSectorPatchControlExtension,
+    etHDPartitionLocker,
+    etMediumCDStamp,
+    etFragmentReservation,
+    etUDFImageEditExtension,
+    etSessionControl
+    {$ELSE}
     etIllegalBlockAccessExtension
+    {$ENDIF NERO_6}
   );
   TNeroFSBlockAccessExtensionsType = NeroFSBlockAccessExtensionsType;
 
   INeroFileSystemBlockAccessExtension = class
   public
-	function GetExtensionType(): NeroFSBlockAccessExtensionsType; virtual; cdecl; abstract;
+    function GetExtensionType(): NeroFSBlockAccessExtensionsType; virtual; cdecl; abstract;
     procedure DestroyInterface(DeleteMode: Integer = 3); virtual; cdecl; { 2: stack destroy; 3: dynamic free }
   end;
 
