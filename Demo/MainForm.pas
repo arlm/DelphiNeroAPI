@@ -47,6 +47,9 @@
 |*    added CD-DA writing
 |*    corrected memory allocation on NeroWriteCD structure (CD-DA)
 |*    corrected general memory deallocation routines (ReallocMem instead of FreeMem)
+|* 02/02/2004: Modified
+|*    Alexandre Rocha Lima e Marcondes
+|*    added Image writing
 |*
 ******************************************************************************}
 
@@ -64,7 +67,7 @@ interface
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
   Dialogs, NeroAPI, NeroUserDialog, ComCtrls, StdCtrls, AppEvnts, ExtCtrls,
-  JvImage, ShellAPI;
+  JvImage, ShellAPI, ShellCtrls;
 
 type
   TFMainForm = class(TForm)
@@ -90,7 +93,6 @@ type
     tsUDF: TTabSheet;
     tsISOUDF: TTabSheet;
     tsVCD: TTabSheet;
-    tsSVCD: TTabSheet;
     tsImage: TTabSheet;
     lbxCDDATracks: TListBox;
     lbCDDATracks: TLabel;
@@ -118,6 +120,17 @@ type
     cbxCloseSession: TCheckBox;
     cbWritingMethod: TComboBox;
     lbWritingMethod: TLabel;
+    lbxVCDTracks: TListBox;
+    pcVCD: TPageControl;
+    tsVCDTemp: TTabSheet;
+    tsVCDIsoTrack: TTabSheet;
+    stvVCDTemp: TShellTreeView;
+    pcdVCDOptions: TTabSheet;
+    rgType: TRadioGroup;
+    lbVCDTracks: TLabel;
+    lbImageName: TLabel;
+    edImageName: TEdit;
+    btnBurnImage: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ApplicationEventsShowHint(var HintStr: String;
@@ -135,6 +148,9 @@ type
     procedure edCDDAArtistChange(Sender: TObject);
     procedure edCDDATitleChange(Sender: TObject);
     procedure btnBurnCDDAClick(Sender: TObject);
+    procedure rgTypeClick(Sender: TObject);
+    procedure stvVCDTempClick(Sender: TObject);
+    procedure btnBurnImageClick(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -145,6 +161,9 @@ type
     NeroProgress: NERO_PROGRESS;
     NeroCDInfo: PNeroCDInfo;
     NeroWriteCD: PNeroWriteCD;
+    NeroWriteVideoCD: PNeroWriteVideoCD;
+    NeroWriteFreestyleCD: PNeroWriteFreestyleCD;
+    NeroWriteImage: PNeroWriteImage;
     NeroDeviceInfos: PNeroSCSIDeviceInfos;
 
     procedure NeroError(Action: String);
@@ -283,6 +302,9 @@ begin
   NeroDeviceInfos := nil;
   NeroCDInfo := nil;
   NeroWriteCD := nil;
+  NeroWriteVideoCD := nil;
+  NeroWriteImage := nil;
+  NeroWriteFreestyleCD := nil;
   NeroSettings := nil;
   sbMain.SimplePanel := true;
 
@@ -409,6 +431,15 @@ begin
 
   if Assigned(NeroWriteCD) then
   	ReallocMem(NeroWriteCD, 0);
+
+  if Assigned(NeroWriteVideoCD) then
+  	ReallocMem(NeroWriteVideoCD, 0);
+
+  if Assigned(NeroWriteFreestyleCD) then
+  	ReallocMem(NeroWriteFreestyleCD, 0);
+
+  if Assigned(NeroWriteImage) then
+  	ReallocMem(NeroWriteImage, 0);
 
   if Assigned(NeroCDInfo) then
   	NeroFreeMem(NeroCDInfo);
@@ -606,11 +637,6 @@ begin
       end;
     end;
 
-    if Assigned(NeroWriteCD) then
-      ReallocMem(NeroWriteCD, SizeOf(NeroWriteCD) + SizeOf(NERO_AUDIO_TRACK) * WhichFiles.Count)
-    else
-    	NeroWriteCD :=AllocMem(SizeOf(NERO_WRITE_CD) + SizeOf(NERO_AUDIO_TRACK) * WhichFiles.Count);
-
     if WhichFiles.Count > 0 then
     begin
       Screen.Cursor := crHourGlass;
@@ -619,6 +645,23 @@ begin
         case pcWrite.TabIndex of
           0:
           begin
+            if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.nrg') then
+            begin
+              if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.iso') then
+              begin
+                if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.bin') then
+                begin
+                  if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.cue') then
+                  begin
+                    continue;
+                  end;
+                end;
+              end;
+            end;
+
+            StrPCopy(NeroWriteImage.nwiImageFileName, WhichFiles.Strings[i]);
+            NeroWriteImage.nwiImageFileName[SizeOf(NeroWriteImage.nwiImageFileName) - 1] := #00;
+            edImageName.Text := WhichFiles.Strings[i];
           end;
           1:
           begin
@@ -631,6 +674,11 @@ begin
           end;
           4:
           begin
+            if Assigned(NeroWriteCD) then
+              ReallocMem(NeroWriteCD, SizeOf(NeroWriteCD) + SizeOf(NERO_AUDIO_TRACK) * (WhichFiles.Count - 1))
+            else
+              NeroWriteCD :=AllocMem(SizeOf(NERO_WRITE_CD) + SizeOf(NERO_AUDIO_TRACK) * (WhichFiles.Count - 1));
+
             if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.wav') then
             begin
               if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.mp3') then
@@ -649,6 +697,9 @@ begin
             index := lbxCDDATracks.Items.Add('');
             lbxCDDATracks.Items[index] := '[' + IntToStr(index + 1) + '] ' + TrackName + ' [Pause 00s]';
 
+            StrPCopy(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName, WhichFiles.Strings[i]);
+            NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName[SizeOf(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName) - 1] := #00;
+
             if index = 0 then
             begin
               NeroWriteCD.nwcdTracks[index].natPauseInBlksBeforeThisTrack := 2 * 75;
@@ -658,24 +709,18 @@ begin
             if LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.wav' then
             begin
               NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeType := NERO_ET_FILE;
-              StrPCopy(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName, WhichFiles.Strings[i]);
-              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName[SizeOf(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName) - 1] := #00;
               continue;
             end;
 
             if LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.mp3' then
             begin
               NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeType := NERO_ET_FILE_MP3;
-              StrPCopy(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName, WhichFiles.Strings[i]);
-              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName[SizeOf(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName) - 1] := #00;
               continue;
             end;
 
             if LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.wma' then
             begin
               NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeType := NERO_ET_FILE_WMA;
-              StrPCopy(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName, WhichFiles.Strings[i]);
-              NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName[SizeOf(NeroWriteCD.nwcdTracks[i].natSourceDataExchg.ndeData.ndeFileName) - 1] := #00;
               continue;
             end;
 
@@ -699,9 +744,57 @@ begin
           end;
           5:
           begin
-          end;
-          6:
-          begin
+            if Assigned(NeroWriteVideoCD) then
+              ReallocMem(NeroWriteVideoCD, SizeOf(NeroWriteVideoCD) + SizeOf(NERO_VIDEO_ITEM) * (WhichFiles.Count - 1))
+            else
+              NeroWriteVideoCD :=AllocMem(SizeOf(NERO_WRITE_VIDEO_CD) + SizeOf(NERO_VIDEO_ITEM) * (WhichFiles.Count - 1));
+
+            if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.jpg') then
+            begin
+              if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.jpeg') then
+              begin
+                if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.avi') then
+                begin
+                  if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.mpg') then
+                  begin
+                    if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) <> '.mpeg') then
+                    begin
+                      continue;
+                    end;
+                  end;
+                end;
+              end;
+            end;
+
+            TrackName := ExtractFileName(WhichFiles.Strings[i]);
+            index := lbxVCDTracks.Items.Add('');
+            lbxVCDTracks.Items[index] := '[' + IntToStr(index + 1) + '] ' + TrackName;
+
+            StrPCopy(NeroWriteVideoCD.nwvcdItems[i].nviSourceFileName, WhichFiles.Strings[i]);
+            NeroWriteVideoCD.nwvcdItems[i].nviSourceFileName[SizeOf(NeroWriteVideoCD.nwvcdItems[i].nviSourceFileName) - 1] := #00;
+
+            if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.jpg') or
+              (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.jpeg') then
+            begin
+              NeroWriteVideoCD.nwvcdItems[i].nviItemType := NERO_JPEG_ITEM;
+              NeroWriteVideoCD.nwvcdItems[i].nviPauseAfterItem := $FFFFFFFF;
+              continue;
+            end;
+
+            if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.avi') then
+            begin
+              NeroWriteVideoCD.nwvcdItems[i].nviItemType := NERO_NONENCODED_VIDEO_ITEM;
+              NeroWriteVideoCD.nwvcdItems[i].nviPauseAfterItem := 0;
+              continue;
+            end;
+
+            if (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.mpg') or
+              (LowerCase(ExtractFileExt(WhichFiles.Strings[i])) = '.mpeg') then
+            begin
+              NeroWriteVideoCD.nwvcdItems[i].nviItemType := NERO_MPEG_ITEM;
+              NeroWriteVideoCD.nwvcdItems[i].nviPauseAfterItem := 0;
+              continue;
+            end;
           end;
         end;
       end;
@@ -722,27 +815,24 @@ end;
 
 procedure TFMainForm.pcWriteChange(Sender: TObject);
 begin
-  if pcWrite.TabIndex < 7 then
+  if pcWrite.TabIndex < 6 then
   begin
-    if Assigned(NeroWriteCD) then
-    	ZeroMemory(NeroWriteCD, SizeOf(NeroWriteCD))
-    else
-    	NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NERO_WRITE_CD)));
-
-
-    if Assigned(NeroCDInfo) then
-    begin
-      if NeroCDInfo.ncdiMediumType = NMT_UNKNOWN then
-    		NeroWriteCD.nwcdMediaType := MEDIA_DVD_ANY
-      else
-  		  NeroWriteCD.nwcdMediaType := MEDIA_CD;
-    end
-    else
-  		  NeroWriteCD.nwcdMediaType := MEDIA_CD;
-
     case pcWrite.TabIndex of
       0:
       begin
+        if Assigned(NeroWriteImage) then
+          ZeroMemory(NeroWriteImage, SizeOf(NeroWriteImage))
+        else
+          NeroWriteImage := PNeroWriteImage(AllocMem(SizeOf(NERO_WRITE_IMAGE)));
+
+        if Assigned(NeroWriteCD) then
+          ReallocMem(NeroWriteCD, 0);
+
+        if Assigned(NeroWriteFreestyleCD) then
+          ReallocMem(NeroWriteFreestyleCD, 0);
+
+       if Assigned(NeroWriteVideoCD) then
+          ReallocMem(NeroWriteVideoCD, 0);
       end;
       1:
       begin
@@ -755,6 +845,30 @@ begin
       end;
       4:
       begin
+        if Assigned(NeroWriteCD) then
+          ZeroMemory(NeroWriteCD, SizeOf(NeroWriteCD))
+        else
+          NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NERO_WRITE_CD)));
+
+        if Assigned(NeroWriteVideoCD) then
+          ReallocMem(NeroWriteVideoCD, 0);
+
+        if Assigned(NeroWriteFreestyleCD) then
+          ReallocMem(NeroWriteFreestyleCD, 0);
+
+        if Assigned(NeroWriteImage) then
+          ReallocMem(NeroWriteImage, 0);
+
+        if Assigned(NeroCDInfo) then
+        begin
+          if NeroCDInfo.ncdiMediumType = NMT_UNKNOWN then
+            NeroWriteCD.nwcdMediaType := MEDIA_DVD_ANY
+          else
+            NeroWriteCD.nwcdMediaType := MEDIA_CD;
+        end
+        else
+            NeroWriteCD.nwcdMediaType := MEDIA_CD;
+
         edCDDAArtist.Text := '';
         edCDDATitle.Text := '';
         lbxCDDATracks.Items.Clear;
@@ -765,9 +879,24 @@ begin
       end;
       5:
       begin
-      end;
-      6:
-      begin
+        if Assigned(NeroWriteVideoCD) then
+          ZeroMemory(NeroWriteVideoCD, SizeOf(NeroWriteVideoCD))
+        else
+          NeroWriteVideoCD := PNeroWriteVideoCD(AllocMem(SizeOf(NERO_WRITE_VIDEO_CD)));
+
+        if Assigned(NeroWriteCD) then
+          ReallocMem(NeroWriteCD, 0);
+
+        if Assigned(NeroWriteFreestyleCD) then
+          ReallocMem(NeroWriteFreestyleCD, 0);
+
+        if Assigned(NeroWriteImage) then
+          ReallocMem(NeroWriteImage, 0);
+
+        NeroWriteVideoCD.nwvcdSVCD := False;
+        NeroWriteVideoCD.nwvcdNumItems := 0;
+        NeroWriteVideoCD.nwvcdIsoTrack := nil;
+        NeroWriteVideoCD.nwvcdTempPath := '';
       end;
     end;
   end;
@@ -834,7 +963,85 @@ begin
     btnRefreshClick(Self);
   end;
 
+  lbxCDDATracks.Clear;
+  edCDDAArtist.Clear;
+  edCDDATitle.Clear;
+
   pcWrite.TabIndex := pcWrite.PageCount - 1;
 end;
+
+procedure TFMainForm.rgTypeClick(Sender: TObject);
+begin
+  NeroWriteVideoCD.nwvcdSVCD := (rgType.ItemIndex = 1);
+end;
+
+procedure TFMainForm.stvVCDTempClick(Sender: TObject);
+begin
+  if stvVCDTemp.SelectedFolder.IsFolder then
+  begin
+    if (fpFileSystem in stvVCDTemp.SelectedFolder.Properties) then
+    begin
+      StrPCopy(NeroWriteVideoCD.nwvcdTempPath, stvVCDTemp.SelectedFolder.PathName);
+      NeroWriteVideoCD.nwvcdTempPath[SizeOf(NeroWriteVideoCD.nwvcdTempPath) - 1] := #00;
+    end;
+  end;
+end;
+
+procedure TFMainForm.btnBurnImageClick(Sender: TObject);
+var
+  Flags: Cardinal;
+begin
+  if cbxSimulateBurn.Checked then
+    Flags := NBF_SIMULATE
+  else
+    Flags := NBF_WRITE;
+
+  Flags := Flags + NBF_DISABLE_ABORT + NBF_DETECT_NON_EMPTY_CDRW +
+    NBF_SPEED_IN_KBS + NBF_CD_TEXT;
+
+  if cbxCloseSession.Checked then
+    Flags := Flags + NBF_CLOSE_SESSION;
+
+  if cbxTestSpeed.Checked then
+    Flags := Flags + NBF_SPEED_TEST;
+
+  if cbxBufferUnderrun.Checked then
+    Flags := Flags + NBF_BUF_UNDERRUN_PROT;
+
+  if cbxVerifyData.Checked then
+    Flags := Flags + NBF_VERIFY;
+
+  if not cbxEjectCD.Checked then
+    Flags := Flags + NBF_DISABLE_EJECT;
+
+  case cbWritingMethod.ItemIndex of
+    0: // TAO
+    begin
+      //TAO is the default, do nothing
+    end;
+    1: //DAO
+    begin
+      Flags := Flags + NBF_DAO;
+    end;
+  end;
+
+  NeroBurn(NeroDeviceHandle, NERO_BURN_IMAGE_CD, NeroWriteImage, Flags,
+    NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
+    @NeroProgress);
+
+  if Assigned(NeroWriteImage) then
+    ReallocMem(NeroWriteImage, 0);
+
+  if cbxEjectCD.Checked then
+  begin
+    btnLoad.Enabled := True;
+    btnRefreshClick(Self);
+  end;
+
+  edImageName.Clear;
+
+  pcWrite.TabIndex := pcWrite.PageCount - 1;
+end;
+
 
 end.

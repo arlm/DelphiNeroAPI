@@ -45,6 +45,9 @@
 |* 29/01/2004: Modifyied
 |*    Alexandre Rocha Lima e Marcondes
 |*    corrected NERO_STATUS_CALLBACK calling convention (now it is cdecl)
+|* 02/02/2004: Modifyied
+|*    Alexandre Rocha Lima e Marcondes
+|*    added PNERO_WRITE_IMAGE and PNeroWriteImage types
 |*
 ******************************************************************************}
 
@@ -951,7 +954,9 @@ type
                                                    ISO and CUE files can also be burnt this way }
   end;
   NERO_WRITE_IMAGE = tag_NERO_WRITE_IMAGE;
+  PNERO_WRITE_IMAGE = ^NERO_WRITE_IMAGE;
   TNeroWriteImage = NERO_WRITE_IMAGE;
+  PNeroWriteImage = ^TNeroWriteImage;
 
 {* This structure will allow you to write any type of
  * CD Layout, e.g. containing a raw data track at the beginning of the

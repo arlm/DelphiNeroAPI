@@ -213,6 +213,30 @@ object FMainForm: TFMainForm
     object tsImage: TTabSheet
       Caption = 'Image'
       ImageIndex = 6
+      object lbImageName: TLabel
+        Left = 8
+        Top = 8
+        Width = 60
+        Height = 13
+        Caption = 'Image Name'
+        FocusControl = edImageName
+      end
+      object edImageName: TEdit
+        Left = 8
+        Top = 24
+        Width = 521
+        Height = 21
+        TabOrder = 0
+      end
+      object btnBurnImage: TButton
+        Left = 448
+        Top = 144
+        Width = 75
+        Height = 25
+        Caption = 'Burn Image'
+        TabOrder = 1
+        OnClick = btnBurnImageClick
+      end
     end
     object tsISO: TTabSheet
       Caption = 'ISO (CD-ROM)'
@@ -289,12 +313,77 @@ object FMainForm: TFMainForm
       end
     end
     object tsVCD: TTabSheet
-      Caption = 'VCD'
+      Caption = '(S)VCD'
       ImageIndex = 4
-    end
-    object tsSVCD: TTabSheet
-      Caption = 'SVCD'
-      ImageIndex = 5
+      object lbVCDTracks: TLabel
+        Left = 8
+        Top = 0
+        Width = 33
+        Height = 13
+        Caption = 'Tracks'
+        FocusControl = lbxVCDTracks
+      end
+      object lbxVCDTracks: TListBox
+        Left = 0
+        Top = 13
+        Width = 257
+        Height = 160
+        IntegralHeight = True
+        ItemHeight = 13
+        MultiSelect = True
+        TabOrder = 0
+      end
+      object pcVCD: TPageControl
+        Left = 264
+        Top = 0
+        Width = 267
+        Height = 173
+        ActivePage = pcdVCDOptions
+        TabOrder = 1
+        object pcdVCDOptions: TTabSheet
+          Caption = 'Options'
+          ImageIndex = 2
+          object rgType: TRadioGroup
+            Left = 136
+            Top = 0
+            Width = 113
+            Height = 33
+            Caption = ' Type '
+            Columns = 2
+            ItemIndex = 0
+            Items.Strings = (
+              'VCD'
+              'SVCD')
+            TabOrder = 0
+            OnClick = rgTypeClick
+          end
+        end
+        object tsVCDTemp: TTabSheet
+          Caption = 'Temporary Folder'
+          object stvVCDTemp: TShellTreeView
+            Left = 0
+            Top = 0
+            Width = 259
+            Height = 145
+            ObjectTypes = [otFolders]
+            Root = 'rfMyComputer'
+            UseShellImages = True
+            Align = alClient
+            AutoRefresh = False
+            HideSelection = False
+            Indent = 19
+            ParentColor = False
+            RightClickSelect = True
+            ShowRoot = False
+            TabOrder = 0
+            OnClick = stvVCDTempClick
+          end
+        end
+        object tsVCDIsoTrack: TTabSheet
+          Caption = 'ISO Track'
+          ImageIndex = 1
+        end
+      end
     end
     object tsAbout: TTabSheet
       Caption = 'About'
