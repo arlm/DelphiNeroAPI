@@ -30,6 +30,16 @@
 {******************************************************************************}
 
 {******************************************************************************
+|* History
+|*
+|* CREATOR: Andreas Hausladen
+|*
+|* 16/06/2003: Modifyied
+|*    Alexandre R. L. e Marcondes
+|*    Identation
+******************************************************************************}
+
+{******************************************************************************
 |* NeroSDK / NeroAPI
 |*
 |* PROGRAM: NeroFileSystemContent.h
@@ -61,9 +71,9 @@ uses
 type
   InterfaceBase = class
   public
-   { Get another interface for the same object. This will be used to extend the DLL interface without
-     loosing binary compatibility. Returns NULL if no interface with this ID was found
-     This is inspired from the COM QueryInterface function }
+    // Get another interface for the same object. This will be used to extend the DLL interface without
+    // loosing binary compatibility. Returns NULL if no interface with this ID was found
+    // This is inspired from the COM QueryInterface function
     function GetOtherInterface(interfaceId: Integer): Pointer;       overload; virtual; cdecl;  // Using an ID number
     function GetOtherInterface(const interfaceName: PChar): Pointer; overload; virtual; cdecl;  // Using a string
   protected
@@ -141,12 +151,12 @@ type
     procedure Write(const buffer: Pointer; size: Integer); virtual; cdecl; abstract;
   end;
 
-{ Produce the content of a file. This interface must be derived and its implementation must
-  create the content of the file in the ProduceFile function }
+// Produce the content of a file. This interface must be derived and its implementation must
+// create the content of the file in the ProduceFile function
   IFileProducer = class(InterfaceBase)
   public
-	{ Calling this method will automatically update the file size to the amount of data
-	  delivered by the producer }
+	// Calling this method will automatically update the file size to the amount of data
+	// delivered by the producer
     function ProduceFile(str: IDataInputStream): ENTRY_ERROR; virtual; cdecl; abstract;
 
 	// Called by NeroAPI when the object is not needed anymore
@@ -171,8 +181,8 @@ type
 	// Using this function, the file size can be changed after having added the entry to the directory
     procedure SetSize(size: Int64);                      virtual; cdecl; abstract;
 
-{	 The two functions below can be used to readjust the directory priority
-	 Priority numbers will be used in upward order: the file with smaller values first }
+	// The two functions below can be used to readjust the directory priority
+	// Priority numbers will be used in upward order: the file with smaller values first
     procedure SetPriority(priority: Integer);            virtual; cdecl; abstract;
     procedure SetDirOrder(directoryPriority: Integer);   virtual; cdecl; abstract;
 
@@ -197,9 +207,9 @@ type
 	// it anywhere
     function MeasureSize(): ENTRY_ERROR;                 virtual; cdecl; abstract;
 
-{	 Set the size that is stored in the media directory record but do not change the
-	 size of allocated and requested data
-	 This is currently only available for ISO filesystems }
+	// Set the size that is stored in the media directory record but do not change the
+	// size of allocated and requested data
+	// This is currently only available for ISO filesystems
     function SetDirRecordSize(size: Int64): ENTRY_ERROR; virtual; cdecl; abstract;
   end;
 
@@ -207,27 +217,27 @@ type
 // Represents the content of a directory
   IDirectoryContainer = class(IDirectory)
   public
-{	 Add a directory a returns a pointer on it
-	 directoryPriority specifies the position in the directory. See this->AddFile
-	 for details }
+	// Add a directory a returns a pointer on it
+	// directoryPriority specifies the position in the directory. See this->AddFile
+	// for details
     function AddDirectory(const name: PChar; directoryPriority: Integer): IDirectoryContainer; virtual; cdecl; abstract;
 
-{  Add a file the directory. The fp object will be automatically deleted when the directory
-	 container will be deleted
-
-	 the filesize passed here does *not* need to be correct, it will be used by the
-	 filesystem generator to preallocate space so it must be the *maximum* space the final
-	 version of the file may need (worst-case).
-
-	 Priority specifies some user-defined ordinal defining the order in which the files are
-	 being written to the disc physically (like .ifo comes before .vob).
-	 Priorities are valid across directories
-	 The fileentry order in a directory is defined by the directoryPriority parameter which is the primary
-	 sort criterium when arranging the files in a directory (Note that this is only true for
-	 filesystems that do not require files to be sorted in the directory, e.g. UDF)
-	 If any of the priority specifiers is -1, the producer doesn't care about the priority
-	 and Nero will put the file where it thinks it fit
-	 AddFile will return NULL if a file with the same name already exists }
+  // Add a file the directory. The fp object will be automatically deleted when the directory
+	// container will be deleted
+	//
+	// the filesize passed here does *not* need to be correct, it will be used by the
+	// filesystem generator to preallocate space so it must be the *maximum* space the final
+	// version of the file may need (worst-case).
+	//
+	// Priority specifies some user-defined ordinal defining the order in which the files are
+	// being written to the disc physically (like .ifo comes before .vob).
+	// Priorities are valid across directories
+	// The fileentry order in a directory is defined by the directoryPriority parameter which is the primary
+	// sort criterium when arranging the files in a directory (Note that this is only true for
+	// filesystems that do not require files to be sorted in the directory, e.g. UDF)
+	// If any of the priority specifiers is -1, the producer doesn't care about the priority
+	// and Nero will put the file where it thinks it fit
+	// AddFile will return NULL if a file with the same name already exists
     function AddFile(const name: PChar; const fp: IFileProducer; size: Int64;
       priority: Integer; directoryPriority: Integer): IDirectoryEntryContainer; overload; virtual; cdecl; abstract;
 

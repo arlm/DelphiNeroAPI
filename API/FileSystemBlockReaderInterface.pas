@@ -29,6 +29,13 @@
 {                                                                              }
 {******************************************************************************}
 
+{******************************************************************************
+|* History
+|*
+|* CREATOR: Andreas Hausladen
+|*
+******************************************************************************}
+
 {*****************************************************************************
 |* NeroSDK / NeroAPI
 |*
@@ -73,11 +80,11 @@ type
   TNeroFSTrackType = NeroFSTrackType;
 
   NeroFSPartitionInfo = record
-    PartitionNum: Integer;           // The current partition number
-    PartitionStart: NeroFSSecNo;     // The start sector for this Partition
-    PartitionSize: NeroFSSecNo;      // The number of sectors this Partition contains
-    PartitionType: NeroFSTrackType;  // The type of Partition
-    sectorSize: DWORD;               // Sector size for this Partition
+	PartitionNum: Integer;           // The current partition number
+	PartitionStart: NeroFSSecNo;     // The start sector for this Partition
+	PartitionSize: NeroFSSecNo;      // The number of sectors this Partition contains
+	PartitionType: NeroFSTrackType;  // The type of Partition
+	sectorSize: DWORD;               // Sector size for this Partition
   end;
   PNeroFSPartitionInfo = ^NeroFSPartitionInfo;
   TNeroFSPartitionInfo = NeroFSPartitionInfo;

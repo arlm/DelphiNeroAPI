@@ -29,6 +29,17 @@
 {******************************************************************************}
 
 {******************************************************************************
+|* History
+|*
+|* CREATOR: Andreas Hausladen
+|*
+|* 16/06/2003: Modifyied
+|*    Alexandre R. L. e Marcondes
+|*    Identation
+******************************************************************************}
+
+
+{******************************************************************************
 |* NeroSDK / NeroAPI
 |*
 |* PROGRAM: NeroUserDialog.h
@@ -62,9 +73,11 @@ type
     DLG_RETURN_EXIT = 0,   { Exit application / stop writing }
     DLG_RETURN_FALSE = 0,  { false/no }
     DLG_RETURN_TRUE = 1,   { true/yes }
-  { "Disconnect is turned off in the system configuration.
+  {
+  "Disconnect is turned off in the system configuration.
    This may cause serious problems while burning: your CD might
-   be damaged, or the system might hang up."}
+   be damaged, or the system might hang up."
+  }
     DLG_DISCONNECT,
     DLG_RETURN_ON_RESTART, { turn on disconnect and restart windows }
     DLG_RETURN_RESTART,    { Don't change disconnect option and restart windows }
@@ -76,12 +89,14 @@ type
      are only DLG_RETURN_ON_RESTART and DLG_RETURN_RESTART }
     DLG_DISCONNECT_RESTART,
 
-  { "Auto Insert Notification is turned on in the system configuration.
+  {
+  "Auto Insert Notification is turned on in the system configuration.
    This may cause serious problems while burning: your CD might be damaged,
    or the system might hang up.
 
    Nero is able to burn CDs with Auto Insert Notification turned on if all
-   necessary drivers are installed." }
+   necessary drivers are installed."
+  }
     DLG_AUTO_INSERT,
     DLG_RETURN_INSTALL_DRIVER, { Install IO driver which temporarily disables auto insert. }
                                { Note: this only works if the additional argument for the callback is not NULL,
@@ -93,40 +108,50 @@ type
     DLG_RETURN_CONTINUE,
     }
 
-  { "Please restart Windows now." }
+  {
+  "Please restart Windows now."
+  }
     DLG_RESTART,
     { return code irrelevant }
 
-  { "Auto Insert Notification is now OFF. You should restart Windows."
-  (displayed after rebooting within program failed and user has to do it manually) }
+  {
+  "Auto Insert Notification is now OFF. You should restart Windows."
+  (displayed after rebooting within program failed and user has to do it manually)
+  }
     DLG_AUTO_INSERT_RESTART,
     { return code irrelevant }
 
-  { "Nero detected some modifications of your PC system configuration
+  {
+  "Nero detected some modifications of your PC system configuration
    and needs to modify some settings. Please restart your PC to make
-   the changes become effective." }
+   the changes become effective."
+  }
     DLG_SETTINGS_RESTART,
     {
     DLG_RETURN_RESTART,
     DLG_RETURN_CONTINUE,
     }
 
-  { "Sorry, this compilation contains too much data to fit on the CD"
+  {
+  "Sorry, this compilation contains too much data to fit on the CD"
    with respect to the normal CD capacity. Do you want to try
    overburn writing at your own risk (this might cause read
    errors at the end of the CD or might even damage your recorder)?"
   "Note: It is also possible, that SCSI/Atapi errors occur at the end
    of the simulation or burning. Even in this case there is a certain
-   chance, that the CD is readable." }
+   chance, that the CD is readable."
+  }
     DLG_OVERBURN,
     {
     DLG_RETURN_TRUE/FALSE
     }
 
 
-  { The tracks cannot be written as requested. A detailed
+  {
+  The tracks cannot be written as requested. A detailed
   description of the problem is found in the "data" parameter.
-  It is a DWORD of with bits set according to the AUP constants above }
+  It is a DWORD of with bits set according to the AUP constants above
+  }
     DLG_AUDIO_PROBLEMS,
 
     {
@@ -135,7 +160,8 @@ type
     }
 
 
-  { This dialog type differs slightly from the other ones:
+  {
+  This dialog type differs slightly from the other ones:
   it should pop up a message and return immediately while still showing
   the message, so that the API can test for the expected CD in the meantime.
 
@@ -145,41 +171,58 @@ type
 
   The text depends on the "data" argument that is passed to the
   NERO_USER_DIALOG callback. It is the enumeration NERO_WAITCD_TYPE
-  specified below. }
+  specified below.
+  }
     DLG_WAITCD,
-  { It is time to remind the user of inserting the CD: play a jingle, flash the screen, etc.
-  Called only once after a certain amount of time of no CD being inserted. }
+  {
+  It is time to remind the user of inserting the CD: play a jingle, flash the screen, etc.
+  Called only once after a certain amount of time of no CD being inserted.
+  }
     DLG_WAITCD_REMINDER,
-  { Close the message box again, we are done. }
+  {
+  Close the message box again, we are done.
+  }
     DLG_WAITCD_DONE,
-  { Tell the user that there will be quality loss during the copy and ask if he wants
-  to continue anyway }
+  {
+  Tell the user that there will be quality loss during the copy and ask if he wants
+  to continue anyway
+  }
     DLG_COPY_QUALITY_LOSS,
   {
   PROCEED AT YOUR OWN RISK message
   }
     DLG_COPY_FULLRISK,
-  { Ask the user the path of the file which will be generated by the Image Recorder.
+  {
+  Ask the user the path of the file which will be generated by the Image Recorder.
   The "data" argument points on a 256 bytes buffer that has to be filled with the image path
-  Returning DLG_RETURN_EXIT will stop the burn process }
+  Returning DLG_RETURN_EXIT will stop the burn process
+  }
     DLG_FILESEL_IMAGE,
-  { Tell that there is not enough space on disk to produce this image }
+  {
+  Tell that there is not enough space on disk to produce this image
+  }
     DLG_BURNIMAGE_CANCEL,
 
-  { Tell the user that the CDRW is not empty
+  {
+  Tell the user that the CDRW is not empty
   Starting from NeroAPI 5.5.3.0, the "data" argument contains the device handle from the recorder
   Will be called only if the NBF_DETECT_EMPTY_CDRW flags is given to the NeroBurn function
   Returning DLG_RETURN_EXIT will stop the burn process
   Returning DLG_RETURN_CONTINUE will continue the burn process
-  Returning DLG_RETURN_RESTART will ask the user for an other CD }
+  Returning DLG_RETURN_RESTART will ask the user for an other CD
+  }
     DLG_NON_EMPTY_CDRW,
 
-  { NeroAPI 5.5.3.2: tell the user that the compilation cannot be written on that particular
+  {
+  NeroAPI 5.5.3.2: tell the user that the compilation cannot be written on that particular
   recorder and that the user shoud modify his compilation settings or burn the CD on
-  another recorder, that supports the required medium type }
+  another recorder, that supports the required medium type
+  }
     DLG_COMP_REC_CONFLICT,
 
-  { NeroAPI 5.5.3.2: another type of medium must be used to burn this compilation }
+  {
+  NeroAPI 5.5.3.2: another type of medium must be used to burn this compilation
+  }
     DLG_WRONG_MEDIUM,
   {* Implementation of the DLG_ROBO_MOVECD dialog types must behave
    * like the DLG_WAITCD type, that is, operate in a non-blocking way.
@@ -208,6 +251,7 @@ type
   );
   NeroUserDlgInOut = NeroUserDlgInOutEnum;
   TNeroUserDlgInOut = NeroUserDlgInOut;
+
 
  { enum ROBOUSERMESSAGETYPE }
   ROBOUSERMESSAGETYPE = (
@@ -238,24 +282,29 @@ type
  { struct ROBOMOVEMESSAGE }
   ROBOMOVEMESSAGE = record
     id: Integer; {* In future versions, we may have more than one Robo moving
-                      * at a time. So this ID identifies the movement action
+	              * at a time. So this ID identifies the movement action
                   * and will be used to remove it with DLG_ROBO_MOVECD_DONE }
     source: ROBOMOVENODE;
     destination: ROBOMOVENODE;
   end;
   TRoboMoveMessage = ROBOMOVEMESSAGE;
 
-{ This function gets a requester type and shall return a suitable response to it.
- Depending on the "type", "data" might contain additional information.
+{
+// This function gets a requester type and shall return a suitable response to it.
+// Depending on the "type", "data" might contain additional information.
+//
+// Argument passing is in standard C order (on the stack, right to left),
+// aka MS Visual++ __cdecl.
+}
 
- Argument passing is in standard C order (on the stack, right to left),
- aka MS Visual++ __cdecl. }
 
 // typedef NeroUserDlgInOut (NERO_CALLBACK_ATTR *NERO_USER_DIALOG) (void *pUserData, NeroUserDlgInOut type, void *data);
   NERO_USER_DIALOG = function(pUserData: Pointer; _type: NeroUserDlgInOut; data: Pointer): NeroUserDlgInOut; cdecl;
   TNeroUserDialogCallback = NERO_USER_DIALOG;
 
-{ see below for a description of the enumeration values }
+{
+// see below for a description of the enumeration values
+}
  { enum NERO_WAITCD_TYPE }
   NERO_WAITCD_TYPE = (
     NERO_WAITCD_WRITE,
@@ -279,7 +328,7 @@ type
     NERO_WAITCD_AUTOEJECTLOAD_VER,
     NERO_WAITCD_REINSERT_VER,
     NERO_WAITCD_NOFORMAT,
-    NERO_WAITCD_WRONG_MEDIUM,           // NeroAPI>=5.5.5.6
+    NERO_WAITCD_WRONG_MEDIUM,		// NeroAPI>=5.5.5.6
     NERO_WAITCD_MAX
   );
   TNeroWaitCDType = NERO_WAITCD_TYPE;
@@ -329,5 +378,6 @@ begin
   Assert(mapping[i]._type <> NERO_WAITCD_MAX);
   Result := mapping[i].text;
 end;
+
 
 end.

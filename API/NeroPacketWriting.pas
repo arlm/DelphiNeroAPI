@@ -29,6 +29,16 @@
 {******************************************************************************}
 
 {******************************************************************************
+|* History
+|*
+|* CREATOR: Andreas Hausladen
+|*
+|* 16/06/2003: Modifyied
+|*    Alexandre R. L. e Marcondes
+|*    Identation
+******************************************************************************}
+
+{******************************************************************************
 |* NeroSDK / NeroAPI
 |*
 |* PROGRAM: NeroPacketWriting.h
@@ -55,15 +65,17 @@ type
   );
   TAccessModeType = AccessMode;
 
-{ Use the following two functions to obtain a block reader/writer to a specified NeroAPI device.
- Please note that ownership of the aDeviceHandle is *not* transferred to the block writer/reader so you're
- still responsible to dispose of the device handle after disposing of the writer/reader interface.
-
- Please note that only one object created by either NeroCreateBlockWriterInterface or
- NeroCreateBlockReaderInterface may exist at a time. Also make sure to delete the object before using
- the referred drive for another purpose (e.g. importing multisession data, starting a recording- or
- digital audio extraction process).
- Opening a secondary device handle for the drive is *not* sufficient! }
+{
+// Use the following two functions to obtain a block reader/writer to a specified NeroAPI device.
+// Please note that ownership of the aDeviceHandle is *not* transferred to the block writer/reader so you're
+// still responsible to dispose of the device handle after disposing of the writer/reader interface.
+//
+// Please note that only one object created by either NeroCreateBlockWriterInterface or
+// NeroCreateBlockReaderInterface may exist at a time. Also make sure to delete the object before using
+// the referred drive for another purpose (e.g. importing multisession data, starting a recording- or
+// digital audio extraction process).
+// Opening a secondary device handle for the drive is *not* sufficient!
+}
 var
   NeroCreateBlockWriterInterface: function(aDeviceHandle: NERO_DEVICEHANDLE;
                                            eAccessMode: AccessMode
@@ -74,20 +86,24 @@ var
 
 type
   ImageAccessMode = (
-    eIAReadOnly	          = $0000,
-    eIAReadWrite			    = $0001,
+    eIAReadOnly	            = $0000,
+    eIAReadWrite			= $0001,
     eIAIllegalAccessMode	= Integer($ffffffff)
   );
   TImageAccessModeType = ImageAccessMode;
 
-{ Create a block access interface for the specified image file
- Instead of an image file, you may pass a drive letter
- here to read from a specific device supported by the operating system }
+{
+// Create a block access interface for the specified image file
+// Instead of an image file, you may pass a drive letter
+// here to read from a specific device supported by the operating system
+}
 var
   NeroCreateBlockAccessFromImage: function(szFilename: PChar; eAccessMode: ImageAccessMode): INeroFileSystemBlockAccess;
 
-{ This function will return a DWORD mask containing values as declared in enum AccessMode.
- Use ((result&eDesiredMode)!=0) to determine whether a specific mode is supported. }
+{
+// This function will return a DWORD mask containing values as declared in enum AccessMode.
+// Use ((result&eDesiredMode)!=0) to determine whether a specific mode is supported.
+}
   NeroGetSupportedAccessModesForDevice: function(aDeviceHandle: NERO_DEVICEHANDLE): DWORD;
 
 implementation

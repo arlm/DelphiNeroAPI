@@ -29,6 +29,16 @@
 {******************************************************************************}
 
 {******************************************************************************
+|* History
+|*
+|* CREATOR: Andreas Hausladen
+|*
+|* 16/06/2003: Modifyied
+|*    Alexandre R. L. e Marcondes
+|*    Identation
+******************************************************************************}
+
+{******************************************************************************
 |* NeroSDK / NeroAPI
 |*
 |* PROGRAM: NeroIsoTrack.h
@@ -61,16 +71,18 @@ type
   CNeroIsoIterator = class;
   CNeroIsoEntry = class;
   CNeroIsoTrack = class;
+//
+// The application has to specify the complete layout of the
+// ISO track. The NeroAPI does not care at all where the
+// data for the files comes from. This also means that the
+// application has to provide access to the filename or the
+// data itself when the API needs it.
+//
 
-{ The application has to specify the complete layout of the
- ISO track. The NeroAPI does not care at all where the
- data for the files comes from. This also means that the
- application has to provide access to the filename or the
- data itself when the API needs it.
-
- Data can be fed into the API directly (i.e. without intermediate
- files) with CNeroDataCallback: }
-
+//
+// Data can be fed into the API directly (i.e. without intermediate
+// files) with CNeroDataCallback:
+//
   CNeroDataCallback = class(TDestructorDone)
   public
     function IOCallback(pBuffer: PByte; dwLen: DWORD): DWORD; virtual; cdecl; abstract; // same semantic as NERO_IO_CALLBACK in "NeroAPI.h"
@@ -78,11 +90,12 @@ type
     function ErrorCallback(): BOOL; virtual; cdecl; abstract;                           //  "       "       NERO_IO.nioErrorCallback
   end;
 
-{ The API builds an internal representation of the complete
- ISO tree and uses a CNeroIsoHandle acquired from the
- application for each file to access the data later.
- Usually only one file at once will be left open. }
-
+//
+// The API builds an internal representation of the complete
+// ISO tree and uses a CNeroIsoHandle acquired from the
+// application for each file to access the data later.
+// Usually only one file at once will be left open.
+//
   CNeroIsoHandle = class(TDestructorDone)
   public
     function Clone(): CNeroIsoHandle; virtual; cdecl; abstract;              // make a copy of yourself
@@ -99,10 +112,11 @@ type
   end;
 
 
-{ Iterators are used to walk through directories while the API builds
- its internal copy of the tree. Iterators point to an entry or to NULL,
- if the last entry was passed, and can only be incremented. }
-
+//
+// Iterators are used to walk through directories while the API builds
+// its internal copy of the tree. Iterators point to an entry or to NULL,
+// if the last entry was passed, and can only be incremented.
+//
   CNeroIsoIterator = class(TDestructorDone)
   public
     function GetCurrentEntry(): CNeroIsoEntry; virtual; cdecl; abstract; // get pointer to current entry or NULL if last one passed;
@@ -112,8 +126,9 @@ type
     procedure Next(); virtual; cdecl; abstract;                          // go to next entry
   end;
 
-{ An entry (directory or file) is described like this: }
-
+//
+// An entry (directory or file) is described like this:
+//
   CImportInfo = Pointer;
 
   CNeroIsoEntry = class(TDestructorDone)
@@ -126,8 +141,8 @@ type
     function CreateHandle(): CNeroIsoHandle; virtual; cdecl; abstract; // creates a handle stored by the API to open a file later, NULL for directory;
                                                                        // handle will be deleted by NeroAPI when deleting the internal ISO tree
 
-{    The following entries are only needed when e.g. creating your
-     own Video CD ISO track and not implemented yet. }
+    // The following entries are only needed when e.g. creating your
+    // own Video CD ISO track and not implemented yet.
 {$ifdef NotDefined}
     function IsMode2(): BOOL; virtual; cdecl;                   // TRUE if the application delivers mode 2 data (2336 bytes/block);
                                                                 // NOTE: the size above are the number of bytes delivered by the application
@@ -136,21 +151,21 @@ type
     function GetBlockOffset(): Integer; virtual; cdecl;         // file data is to be written in this block (relative to beginning of ISO track),
                                                                 // or in a block chosen by NeroAPI if -1
 {$endif}
-    { Can be used to reference files from previous session }
+    // Can be used to reference files from previous session
     function GetDataStartSec(): DWORD; virtual; cdecl;
     function IsDataFixed(): BOOL; virtual; cdecl;
     function GetEntryTime(var tm: tm): BOOL; virtual; cdecl;
 
-    { This method was formerly known as GetRockRidgeInfo.
-     The object returned is a bit different internally now.
-     Since it is a private structure of NeroAPI this change doesn't matter. }
+    // This method was formerly known as GetRockRidgeInfo.
+    // The object returned is a bit different internally now.
+    // Since it is a private structure of NeroAPI this change doesn't matter.
     function GetImportInfo(): CImportInfo; virtual; cdecl;
     procedure GetPriorities(var iPriority: Integer; var iDirPriority: Integer); virtual; cdecl;
 
     // Up from NeroAPI 5.5.9.0
     function CreateDirectoryIteratorWrapper(): CNeroIsoIterator; virtual; cdecl;
-    { See CreateHandle(). Creates rsc fork handle for HFS filesystems
-     Will be preferred to reading the resource fork from the file specified by GetName() if !=NULL }
+    // See CreateHandle(). Creates rsc fork handle for HFS filesystems
+    // Will be preferred to reading the resource fork from the file specified by GetName() if !=NULL
     function CreateResourceHandle(): CNeroIsoHandle; virtual; cdecl;
   private
     // Reserved for future use
@@ -168,8 +183,9 @@ type
 {$HINTS ON}
   end;
 
-{ An ISO track is a special directory entry: }
-
+//
+// An ISO track is a special directory entry:
+//
   CNeroIsoTrack = class(CNeroIsoEntry)
   private
 {
@@ -195,10 +211,10 @@ type
     function CreateHandle(): CNeroIsoHandle; override;           // ... so we cannot be read
     function CreateResourceHandle(): CNeroIsoHandle; override;   // ... so we cannot be read
   public
-{    From NeroAPI version 5.5.1.2
-     You can set your burn options simply be redefining this function instead of
-     UseJoliet, UseMode2, UseRockRidge, BurnISO and BurnUDF
-     See NeroAPI.h for the signification of the NCITEF flags }
+    // From NeroAPI version 5.5.1.2
+    // You can set your burn options simply be redefining this function instead of
+    // UseJoliet, UseMode2, UseRockRidge, BurnISO and BurnUDF
+    // See NeroAPI.h for the signification of the NCITEF flags
     function BurnOptions(): DWORD; virtual; cdecl;
 
     // Up from NeroAPI 5.5.9.0

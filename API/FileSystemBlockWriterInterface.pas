@@ -29,6 +29,16 @@
 {                                                                              }
 {******************************************************************************}
 
+{******************************************************************************
+|* History
+|*
+|* CREATOR: Andreas Hausladen
+|*
+|* 16/06/2003: Modifyied
+|*    Alexandre R. L. e Marcondes
+|*    Identation
+******************************************************************************}
+
 {*****************************************************************************
 |* NeroSDK / NeroAPI
 |*
@@ -52,7 +62,9 @@ type
 // You can use this information to down-cast the interface to obtain specialized functionality...
 
 // No extensions to the normal blockwrite interface are available so far...
-  InterfaceType = (eBWIUnknown);
+  InterfaceType = (
+    eBWIUnknown
+  );
   TInterfaceType = InterfaceType;
 
   INeroFileSystemBlockWriter = class(INeroFileSystemBlockReader)
