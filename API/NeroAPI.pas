@@ -54,7 +54,7 @@
 |* 07/03/2004: Modified
 |*    Andreas Hausladen
 |*    Nero 6 (NeroAPI SDK v1.04)
-|* 07/03/2004: Modified
+|* 25/03/2004: Modified
 |*    Erik van Pienbroek
 |*    corrected NERO_ISO_ITEM.fileName and NERO_ISO_ITEM.sourceFilePath length
 |*

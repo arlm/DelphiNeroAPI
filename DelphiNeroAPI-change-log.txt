@@ -6,8 +6,7 @@
 { All Rights Reserved.                                                         }
 {                                                                              }
 { The original file is: NeroAPI.h/NeroAPIGlue.h, released March 2003. The      }
-{ original Pascal code is: NeroAPI.pas, released June 2003. The initial        }
-{ developer of the Pascal code is Andreas Hausladen (ahuser@sourceforge.net).  }
+{ original Pascal code is: NeroAPI.pas, released June 2003.                    }
 {                                                                              }
 { Portions created by Alexandre Rocha Lima e Marcondes are Copyright (C) 2003  }
 { Alexandre Rocha Lima e Marcondes . All Rights Reserved.                      }
@@ -27,6 +26,16 @@
 { the specific language governing rights and limitations under the License.    }
 {                                                                              }
 {******************************************************************************}
+
+{******************************************************************************
+|* Thanks to:
+|*
+|* Alexandre Rocha Lima e Marcondes (Project administration and support)
+|* Andreas Hausladen (NeroAPI porting and corrections)
+|* Gabriele Lauricella (ISO CD Writing code example)
+|* Erik van Pienbroek (NERO_ISO_ITEM corrections for Nero 6)
+|*
+******************************************************************************}
 
 {******************************************************************************
 |* DelphiNeroAPI
@@ -80,3 +89,7 @@ Version 0.30a
 Version 0.40a
 ---------------
 [+] added support to Nero SDK 1.03 and Nero SDK 1.04
+
+Version 0.41a
+---------------
+[-] corrected NERO_ISO_ITEM.fileName and NERO_ISO_ITEM.sourceFilePath length
