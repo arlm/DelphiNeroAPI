@@ -60,16 +60,19 @@ uses
 type
   TFMainForm = class(TForm)
     sbMain: TStatusBar;
-    lbDevices: TLabel;
-    cbDevices: TComboBox;
-    btnMore: TButton;
     ApplicationEvents: TApplicationEvents;
+    gbDevices: TGroupBox;
+    cbDevices: TComboBox;
+    btnMoreDevice: TButton;
+    cbWriteSpeeds: TComboBox;
+    lbWriteSpeeds: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ApplicationEventsShowHint(var HintStr: String;
       var CanShow: Boolean; var HintInfo: THintInfo);
     procedure cbDevicesChange(Sender: TObject);
-    procedure btnMoreClick(Sender: TObject);
+    procedure btnMoreDeviceClick(Sender: TObject);
+    procedure cbDevicesCloseUp(Sender: TObject);
   private
     { Private declarations }
   protected
@@ -77,7 +80,7 @@ type
     NeroSettings: PNeroSettings;
   public
     NeroDeviceInfos: PNeroSCSIDeviceInfos;
-    NeroCDInfo: PNERO_CD_INFO;
+    NeroCDInfo: PNeroCDInfo;
   end;
 
 function IdleCallback(pUserData: Pointer): Boolean; cdecl;
@@ -189,6 +192,27 @@ begin
       cbDevices.Items.Add(NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDeviceName + ' (' + UpperCase(NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiDriveLetter) + ':)');
   end;
 
+  for DeviceCount := 0 to NeroDeviceInfos.nsdisNumDevInfos - 1 do
+    if NeroDeviceInfos.nsdisDevInfos[DeviceCount].nsdiWriteSpeeds.nsiNumSupportedSpeeds > 0 then
+    begin
+      cbDevices.ItemIndex := DeviceCount;
+      btnMoreDevice.Enabled := True;
+
+      break;
+    end;
+
+  if cbDevices.ItemIndex > -1 then
+  begin
+    cbWriteSpeeds.Clear;
+    for DeviceCount := 0 to NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiNumSupportedSpeeds - 1 do
+      cbWriteSpeeds.Items.Add(FloatToStrF(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount] / NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiBaseSpeedKBs, ffFixed, 0, 0) + 'x (' + IntToStr(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount]) + ' KB/s)' );
+    cbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
+    lbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
+
+    cbWriteSpeeds.ItemIndex := cbWriteSpeeds.Items.Count - 1;
+
+    NeroDeviceHandle := NeroOpenDevice(@NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex]);
+  end;
 end;
 
 procedure TFMainForm.FormDestroy(Sender: TObject);
@@ -219,13 +243,34 @@ begin
 end;
 
 procedure TFMainForm.cbDevicesChange(Sender: TObject);
+var
+  DeviceCount: Integer;
 begin
-  btnMore.Enabled := (cbDevices.ItemIndex <> -1);
+  btnMoreDevice.Enabled := (cbDevices.ItemIndex <> -1);
+
+  if cbDevices.ItemIndex > -1 then
+  begin
+    cbWriteSpeeds.Clear;
+    for DeviceCount := 0 to NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiNumSupportedSpeeds - 1 do
+      cbWriteSpeeds.Items.Add(FloatToStrF(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount] / NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiBaseSpeedKBs, ffFixed, 0, 0) + 'x (' + IntToStr(NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[DeviceCount]) + ' KB/s)' );
+    cbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
+    lbWriteSpeeds.Enabled := (cbWriteSpeeds.Items.Count > 0);
+
+    cbWriteSpeeds.ItemIndex := cbWriteSpeeds.Items.Count - 1;
+  end;
 end;
 
-procedure TFMainForm.btnMoreClick(Sender: TObject);
+procedure TFMainForm.btnMoreDeviceClick(Sender: TObject);
 begin
   FDeviceInformation.ShowModal;
+end;
+
+procedure TFMainForm.cbDevicesCloseUp(Sender: TObject);
+begin
+  if Assigned(NeroDeviceHandle) then
+    NeroCloseDevice(NeroDeviceHandle);
+
+  NeroDeviceHandle := NeroOpenDevice(@NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex]);
 end;
 
 end.

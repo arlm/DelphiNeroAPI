@@ -17,14 +17,6 @@ object FMainForm: TFMainForm
   OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
-  object lbDevices: TLabel
-    Left = 16
-    Top = 10
-    Width = 39
-    Height = 13
-    Caption = '&Devices'
-    FocusControl = cbDevices
-  end
   object sbMain: TStatusBar
     Left = 0
     Top = 324
@@ -35,35 +27,60 @@ object FMainForm: TFMainForm
         Width = 200
       end>
   end
-  object cbDevices: TComboBox
-    Left = 64
+  object gbDevices: TGroupBox
+    Left = 8
     Top = 8
-    Width = 209
-    Height = 21
-    Hint = 'Avaible Devices|Choose one device to perform tests'
-    Style = csDropDownList
-    ItemHeight = 13
+    Width = 249
+    Height = 73
+    Caption = ' Writing Device '
     TabOrder = 1
-    OnChange = cbDevicesChange
-  end
-  object btnMore: TButton
-    Left = 280
-    Top = 10
-    Width = 17
-    Height = 19
-    Hint = 
-      'More information on this Device|Retrieve Read Speeds, Write Spee' +
-      'ds, BufferUnderrun Protection and more ...'
-    Caption = '?'
-    Enabled = False
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -11
-    Font.Name = 'MS Sans Serif'
-    Font.Style = [fsBold]
-    ParentFont = False
-    TabOrder = 2
-    OnClick = btnMoreClick
+    object lbWriteSpeeds: TLabel
+      Left = 8
+      Top = 42
+      Width = 59
+      Height = 13
+      Caption = 'Write Speed'
+    end
+    object cbDevices: TComboBox
+      Left = 8
+      Top = 16
+      Width = 209
+      Height = 21
+      Hint = 'Avaible Devices|Choose one device to perform tests'
+      Style = csDropDownList
+      ItemHeight = 13
+      TabOrder = 0
+      OnChange = cbDevicesChange
+      OnCloseUp = cbDevicesCloseUp
+    end
+    object btnMoreDevice: TButton
+      Left = 220
+      Top = 17
+      Width = 17
+      Height = 17
+      Hint = 
+        'More information on this Device|Retrieve Read Speeds, Write Spee' +
+        'ds, BufferUnderrun Protection and more ...'
+      Caption = '?'
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+      TabOrder = 1
+      OnClick = btnMoreDeviceClick
+    end
+    object cbWriteSpeeds: TComboBox
+      Left = 72
+      Top = 40
+      Width = 145
+      Height = 21
+      Style = csDropDownList
+      ItemHeight = 13
+      TabOrder = 2
+    end
   end
   object ApplicationEvents: TApplicationEvents
     OnShowHint = ApplicationEventsShowHint
