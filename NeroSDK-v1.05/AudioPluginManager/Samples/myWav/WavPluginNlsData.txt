@@ -1,0 +1,493 @@
+[ENG]
+1 Frequency
+2 Bits
+3 Channels
+4 Mono
+5 Stereo
+6 OK
+7 Cancel
+8 File details
+9 Path
+10 File size
+11 Date/Time
+12 Title
+13 Artist
+14 Data format
+15 Close
+16 Format
+17 Samplerate
+18 BitPerSample
+
+[NLD]
+1 Frequentie
+2 bits
+3 Kanalen
+4 Mono
+5 Stereo
+6 OK
+7 Annuleren
+8 Details bestand
+9 Pad
+10 Bestandsgrootte
+11 Datum/tijd
+12 Titel
+13 Kunstenaar
+14 Format data
+15 Sluiten
+16 Indeling
+17 Samplesnelheid
+18 BitPerSample
+
+[FRA]
+1 Fréquence
+2 bits
+3 Canaux
+4 Mono
+5 Stéréo
+6 OK
+7 Annuler
+8 Détails du fichier
+9 Chemin
+10 Taille du fichier
+11 Date/Heure
+12 Titre
+13 Artiste
+14 Format des Données
+15 Fermer
+16 Format
+17 Taux d'échantillonnage
+18 Bit par échantillon
+
+[ITA]
+1 Frequenza
+2 bits
+3 Canali
+4 Mono
+5 Stereo
+6 OK
+7 Annulla
+8 Dettagli file
+9 Percorso
+10 Dimensione file
+11 Data/Ora
+12 Titolo
+13 Artista
+14 Formato data
+15 Chiudi
+16 Formato
+17 Freq. di campionamento
+18 BitPerCampione
+
+[JPN]
+1 ü”g”
+2 ƒrƒbƒg
+3 ƒ`ƒƒƒ“ƒlƒ‹
+4 ÓÉ×Ù
+5 ½ÃÚµ
+6 OK
+7 ·¬İ¾Ù(C)
+8 ƒtƒ@ƒCƒ‹Ú×
+9 Êß½
+10 ƒtƒ@ƒCƒ‹ƒTƒCƒY
+11 “ú•t
+12 ƒ^ƒCƒgƒ‹
+13 ƒA[ƒeƒBƒXƒg
+14 ƒf[ƒ^ƒtƒH[ƒ}ƒbƒg
+15 •Â‚¶‚é(C)
+16 ƒtƒH[ƒ}ƒbƒg
+17 ƒTƒ“ƒvƒŠƒ“ƒOƒŒ[ƒg
+18 ƒrƒbƒg@ƒp[@ƒTƒ“ƒvƒ‹
+
+[CSY]
+1 Frekvence
+2 bitù
+3 Kanály
+4 Mono
+5 Stereo
+6 OK
+7 Storno
+8 Podrobnosti
+9 Cesta
+10 Velikost souboru
+11 Datum/Èas
+12 Název
+13 Interpret
+14 Formát souboru
+15 Zavøít
+16 Formát
+17 Vzorkování
+18 Bitù ve vzorku
+
+[UKR]
+1 ×àñòîòà
+2 Á³ò³â
+3 Êàíàë³â
+4 Ìîíî
+5 Ñòåğåî
+6 OK
+7 Â³äì³íèòè
+8 Â³êîíå÷êî ç ³íôîğìàö³ºş ïğî ôàéë
+9 Øëÿõ
+10 Ğîçì³ğ ôàéëó
+11 Äàòà/×àñ
+12 Çàãîëîâîê
+13 Àğòèñò
+14 Ôîğìàò äàíèõ
+15 Çàêğèòè
+16 Ôîğìàò
+17 ×àñòîòà âèì³ğşâàííÿ
+18 Á³ò³â íà âèì³ğşâàííÿ
+
+[FIN]
+1 Taajuus
+2 bittiä
+3 Kanavia
+4 Mono
+5 Stereo
+6 OK
+7 Peruuta
+8 Tiedostotiedot
+9 Polku
+10 Tiedoston koko
+11 Päiväys/Aika
+12 Nimike
+13 Esittäjä
+14 Datamuoto
+15 Sulje
+16 Formaatti
+17 Näytetaajuus
+18 Bittiä/näyte
+
+[SLV]
+1 Frekvenca
+2 bitov
+3 Kanali
+4 Mono
+5 Stereo
+6 V redu
+7 Preklièi
+8 Podatki o datoteki
+9 Pot
+10 Velikost datoteke
+11 Datum/Ura
+12 Naslov
+13 Izvajalec
+14 Format podatkov
+15 Zapri
+16 Format
+17 Vzorèenje
+18 Bitov na Vzorec
+
+[KOR]
+1 ÁÖÆÄ¼ö
+2 ºñÆ®
+3 Ã¤³Î
+4 ¸ğ³ë
+5 ½ºÅ×·¹¿À
+6 È®ÀÎ
+7 Ãë¼Ò(C)    
+8 ÆÄÀÏ ¼¼ºÎ »çÇ×
+9 °æ·Î
+10 ÆÄÀÏ Å©±â
+11 ³¯Â¥/½Ã°£
+12 Á¦¸ñ
+13 ¾ÆÆ¼½ºÆ®
+14 µ¥ÀÌÅÍ Çü½Ä
+15 ´İ±â
+16 Æ÷¸Ë
+17 »ùÇÃ ¼Óµµ
+18 BitPerSample
+
+[CHS]
+1 ÆµÂÊ
+2 Î»
+3 ÉùµÀ
+4 µ¥ÉùµÀ
+5 Á¢ÌåÉù
+6 È·¶¨
+7 È¡Ïû
+8 ÎÄ¼ş×ÊÁÏ
+9 Â·¾¶
+10 ÎÄ¼ş´óĞ¡
+11 ÈÕÆÚ/Ê±¼ä
+12 ±êÌâ
+13 ÒÕÊõ¼Ò
+14 Êı¾İ¸ñÊ½
+15 ¹Ø±Õ
+16 ¸ñÊ½
+17 ²ÉÑùÂÊ
+18 Î»/²ÉÑù
+
+[PTB]
+1 Frequência
+2 Bits
+3 Canais
+4 Mono
+5 Stereo
+6 OK
+7 Cancelar
+8 Detalhes do arquivo
+9 path
+10 Tamanho do arquivo
+11 Data/Hora
+12 Titulo
+13 Artista
+14 Formato de data
+15 Fechar
+16 Formato
+17 Taxa de amostragem
+18 Bits por amostra
+
+[PLK]
+1 Czêstotliwoœæ
+2 bitów
+3 Kana³y
+4 Mono
+5 Stereo
+6 OK
+7 Anuluj
+8 Szczegó³y pliku
+9 Œcie¿ka
+10 Rozmiar pliku
+11 Data/Czas
+12 Tytu³
+13 Wykonawca
+14 Format daty
+15 Zamknij
+16 Format
+17 Czêst. próbk.
+18 Bit/próbkê
+
+[CHT]
+1 ÀW²v
+2 ¦ì¤¸
+3 Án¹D
+4 ³æÁn¹D
+5 ¥ßÅéÁn
+6 ½T©w
+7 ¨ú®ø¡]C¡^
+8 ÀÉ®×¸ê®Æ
+9 ¸ô®|
+10 ÀÉ®×¤j¤p
+11 ¤é´Á/®É¶¡
+12 ¼ĞÃD
+13 ÃÀ³N®a
+14 ¸ê®Æ®æ¦¡
+15 Ãö³¬¡]C¡^
+16 ®æ¦¡
+17 ©â¼Ë²v
+18 ¦ì¤¸/©â¼Ë
+
+[ROM]
+1 Frecvenşã
+2 Bişi
+3 Canale
+4 Mono
+5 Stereo
+6 OK
+7 Renunşare
+8 Detalii fiº.
+9 Cale
+10 Mãrime fiº.
+11 Data/Timp
+12 Titlu
+13 Artist
+14 Format datã
+15 Închidere
+16 Format
+17 Rata bişi
+18 Bişi pe cadru
+
+[SKY]
+1 Frekvencia
+2 bity
+3 Kanály
+4 Mono
+5 Stereo
+6 OK
+7 Zruši
+8 Detaily o súbore
+9 Cesta
+10 Velkos súboru
+11 Dátum/Èas
+12 Titul
+13 Umelec
+14 Formát dát
+15 Zatvori
+16 Formát
+17 Vzorkovanie
+18 Bit na vzorku
+
+[RUS]
+1 ×àñòîòà
+2 áèò
+3 Êàíàëû
+4 Ìîíî
+5 Ñòåğåî
+6 OK
+7 Îòìåíà
+8 Ïîäğîáíî
+9 Ïóòü
+10 Ğàçìåğ ôàéëà
+11 Äàòà/Âğåìÿ
+12 Çàãîëîâîê
+13 Àğòèñò
+14 Ôîğìàò äàííûõ
+15 Çàêğûòü
+16 Ôîğìàò
+17 ×àñòîò îòñ÷åòîâ
+18 Áèò íà îòñ÷åò
+
+[NOR]
+1 Frekvens
+2 bits
+3 Kanaler
+4 Mono
+5 Stereo
+6 OK
+7 Avslutte
+8 Fildetaljer
+9 Bane
+10 Filstørr.
+11 Dato/Tid
+12 Tittel
+13 Artist
+14 Dataformat
+15 Lukk
+16 Format
+17 Samplingsfrekv.
+18 BitPerSample
+
+[ESN]
+1 Frecuencia
+2 bits
+3 Canales
+4 Mono
+5 Estéreo
+6 Aceptar
+7 Cancelar
+8 Detalles de archivo
+9 Ruta
+10 Tamaño de archivo
+11 Fecha/hora
+12 Título
+13 Artista
+14 Formato de datos
+15 Cerrar
+16 Formato
+17 Frec. muestreo
+18 Bit por muestra
+
+[DAN]
+1 Frekvens
+2 bits
+3 Kanaler
+4 Mono
+5 Stereo
+6 OK
+7 Annuller
+8 Filoplysninger
+9 Sti
+10 Filstørrelse
+11 Dato/Tid
+12 Titel
+13 Kunstner
+14 Dataformat
+15 Luk
+16 Format
+17 Samplehastighed
+18 BitPerSample
+
+[HUN]
+1 Frekvencia
+2 bitek
+3 Csatornák
+4 Mono
+5 Sztereo
+6 OK
+7 Mégse
+8 Fájl részletek
+9 Útvonal
+10 Fájl méret
+11 Dátum/Idõ
+12 Megnevezés
+13 Mûvész
+14 Adat formátum
+15 Bezárás
+16 Formátum
+17 Mintavételi arány
+18 BitPerMinta
+
+[SVE]
+1 Frekvens
+2 bitar
+3 Kanaler
+4 Mono
+5 Stereo
+6 OK
+7 Avbryt
+8 Fildetaljer
+9 Sökväg
+10 Filstorlek
+11 Datum/Tid
+12 Titel
+13 Artist
+14 Dataformat
+15 Stäng
+16 Format
+17 Sampling
+18 BitPerSample
+
+[PTG]
+1 Frequência
+2 bits
+3 Canais
+4 Mono
+5 Stereo
+6 OK
+7 Anular
+8 Detalhes do ficheiro
+9 Caminho
+10 Tamanho do ficheiro
+11 Data/Hora
+12 Titulo
+13 Intèrprete
+14 Formato dos dados
+15 Fechar
+16 Formato
+17 Vel. exemplo
+18 BitsPorExemplo
+
+[DEU]
+1 Frequenz
+2 Bits
+3 Kanäle
+4 Mono
+5 Stereo
+6 OK
+7 Abbrechen
+8 Dateieinzelheiten
+9 Pfad
+10 Dateigröße
+11 Datum/Zeit
+12 Titel
+13 Künstler
+14 Datenformat
+15 Schließen
+16 Format
+17 Samplerate
+18 BitProSample
+
+[ELL]
+4 Ìïíïöùíéêü
+5 Óôåñåïöùíéêü
+6 ÅíôÜîåé
+7 Áêıñùóç
+8 Ëåğôïìİñåéåò áñ÷åßïõ
+9 ÄéáäñïìŞ
+10 Ìİãåèïò áñ÷åßïõ
+12 Ôßôëïò
+13 Êáëëéôİ÷íçò
+14 ÌïñöŞ äåäïìİíùí
+15 Êëåßóéìï
+

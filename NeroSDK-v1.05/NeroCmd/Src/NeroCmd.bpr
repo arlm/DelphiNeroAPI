@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.06.00"/>
+    <PROJECT value="Debug\NeroCmd.exe"/>
+    <OBJFILES value="Debug\AbortedCallback.obj Debug\AddLogLineCallback.obj 
+      Debug\BurnContext.obj Debug\CommandCDInfo.obj Debug\CommandDriveInfo.obj 
+      Debug\CommandEject.obj Debug\CommandErase.obj Debug\CommandGetSpeeds.obj 
+      Debug\CommandImageInfo.obj Debug\CommandInternal.obj 
+      Debug\CommandListDrives.obj Debug\CommandListFormats.obj 
+      Debug\CommandRead.obj Debug\CommandVersion.obj Debug\CommandWrite.obj 
+      Debug\CtrlHandler.obj Debug\DisableAbortCallback.obj Debug\ErrorLog.obj 
+      Debug\ExitCode.obj Debug\ExitCodeTranslator.obj Debug\FindFile.obj 
+      Debug\getopt.obj Debug\IdleCallback.obj Debug\IOCallbacks.obj 
+      Debug\IsoTrack.obj Debug\NeroCMD.obj Debug\parameters.obj 
+      Debug\ProgressCallback.obj Debug\Response.obj 
+      Debug\SetMajorPhaseCallback.obj Debug\SetPhaseCallback.obj 
+      Debug\SimpleStringArray.obj Debug\StdAfx.obj Debug\UserDialog.obj 
+      Debug\WriteFreestyle.obj Debug\WriteImage.obj Debug\WriteIsoAudio.obj 
+      Debug\WriteNeroErrorLog.obj Debug\WriteVideoCD.obj Debug\Estimate.obj"/>
+    <RESFILES value=""/>
+    <IDLFILES value=""/>
+    <IDLGENFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value="..\..\NeroAPI\Lib\NeroAPIGlueBCPPB.lib"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value=""/>
+    <PACKAGES value="vcl.bpi rtl.bpi vcldb.bpi vclx.bpi qrpt.bpi"/>
+    <PATHCPP value=".;"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="ilink32"/>
+    <USERDEFINES value="WIN32;_CONSOLE;_MBCS"/>
+    <SYSDEFINES value="_MSC_VER=1100;_NO_VCL;_ASSERTE;NO_STRICT"/>
+    <MAINSOURCE value="NeroCmd.bpf"/>
+    <INCLUDEPATH value="$(BCB)\include;$(BCB)\include\mfc;$(BCB)\include\atl;$(BCB)\include\vcl"/>
+    <LIBPATH value="$(BCB)\lib;$(DEBUGLIBPATH);$(BCB)\lib\psdk"/>
+    <WARNINGS value="-w-8026 -w-8027 -w-8022 -w-8084 -w-8010 -w-8013 -w-8058 -w-par"/>
+    <OTHERFILES value=""/>
+  </MACROS>
+  <OPTIONS>
+    <IDLCFLAGS value="-I$(BCB)\include -I$(BCB)\include\mfc -I$(BCB)\include\atl 
+      -I$(BCB)\include\vcl -src_suffix cpp -DWIN32 -D_CONSOLE -D_MBCS"/>
+    <CFLAG1 value="-O2 -w -VF -X- -a8 -b -k- -vi -q -tWM -I..\..\NeroAPI\Include -c -w-8026 
+      -w-8027 -w-8022 -w-8084 -w-8010 -w-8013 -w-8058 -w-par"/>
+    <PFLAGS value="-N2Debug -N0Debug -$Y- -$L- -$D- -$A8"/>
+    <RFLAGS value="/l 0x407 /d &quot;_DEBUG&quot; /i$(BCB)\include;$(BCB)\include\mfc"/>
+    <AFLAGS value="/mx /w2 /zn"/>
+    <LFLAGS value="-IDebug -D&quot;&quot; -ap -Tpe -x -Gn -q -L..\..\NEROAPI\LIB"/>
+    <OTHERFILES value=""/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0x32.obj $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cw32mt.lib"/>
+    <OTHERFILES value=""/>
+  </LINKER>
+  <FILELIST>
+      <FILE FILENAME="NeroCmd.bpf" FORMNAME="" UNITNAME="NeroCmd" CONTAINERID="BPF" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="AbortedCallback.cpp" FORMNAME="" UNITNAME="AbortedCallback" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="AddLogLineCallback.cpp" FORMNAME="" UNITNAME="AddLogLineCallback" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="BurnContext.cpp" FORMNAME="" UNITNAME="BurnContext" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandCDInfo.cpp" FORMNAME="" UNITNAME="CommandCDInfo" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandDriveInfo.cpp" FORMNAME="" UNITNAME="CommandDriveInfo" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandEject.cpp" FORMNAME="" UNITNAME="CommandEject" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandErase.cpp" FORMNAME="" UNITNAME="CommandErase" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandGetSpeeds.cpp" FORMNAME="" UNITNAME="CommandGetSpeeds" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandImageInfo.cpp" FORMNAME="" UNITNAME="CommandImageInfo" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandInternal.cpp" FORMNAME="" UNITNAME="CommandInternal" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandListDrives.cpp" FORMNAME="" UNITNAME="CommandListDrives" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandListFormats.cpp" FORMNAME="" UNITNAME="CommandListFormats" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandRead.cpp" FORMNAME="" UNITNAME="CommandRead" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandVersion.cpp" FORMNAME="" UNITNAME="CommandVersion" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CommandWrite.cpp" FORMNAME="" UNITNAME="CommandWrite" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="CtrlHandler.cpp" FORMNAME="" UNITNAME="CtrlHandler" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="DisableAbortCallback.cpp" FORMNAME="" UNITNAME="DisableAbortCallback" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ErrorLog.cpp" FORMNAME="" UNITNAME="ErrorLog" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ExitCode.cpp" FORMNAME="" UNITNAME="ExitCode" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ExitCodeTranslator.cpp" FORMNAME="" UNITNAME="ExitCodeTranslator" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="FindFile.cpp" FORMNAME="" UNITNAME="FindFile" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="getopt.cpp" FORMNAME="" UNITNAME="getopt" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IdleCallback.cpp" FORMNAME="" UNITNAME="IdleCallback" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IOCallbacks.cpp" FORMNAME="" UNITNAME="IOCallbacks" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="IsoTrack.cpp" FORMNAME="" UNITNAME="IsoTrack" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="NeroCMD.cpp" FORMNAME="" UNITNAME="NeroCMD" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="parameters.cpp" FORMNAME="" UNITNAME="parameters" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="ProgressCallback.cpp" FORMNAME="" UNITNAME="ProgressCallback" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Response.cpp" FORMNAME="" UNITNAME="Response" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SetMajorPhaseCallback.cpp" FORMNAME="" UNITNAME="SetMajorPhaseCallback" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SetPhaseCallback.cpp" FORMNAME="" UNITNAME="SetPhaseCallback" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="SimpleStringArray.cpp" FORMNAME="" UNITNAME="SimpleStringArray" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="StdAfx.cpp" FORMNAME="" UNITNAME="StdAfx" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="UserDialog.cpp" FORMNAME="" UNITNAME="UserDialog" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WriteFreestyle.cpp" FORMNAME="" UNITNAME="WriteFreestyle" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WriteImage.cpp" FORMNAME="" UNITNAME="WriteImage" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WriteIsoAudio.cpp" FORMNAME="" UNITNAME="WriteIsoAudio" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WriteNeroErrorLog.cpp" FORMNAME="" UNITNAME="WriteNeroErrorLog" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="WriteVideoCD.cpp" FORMNAME="" UNITNAME="WriteVideoCD" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="vctobpr.log" FORMNAME="" UNITNAME="vctobpr" CONTAINERID="" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="..\..\NeroAPI\Lib\NeroAPIGlueBCPPB.lib" FORMNAME="" UNITNAME="NeroAPIGlueBCPPB.lib" CONTAINERID="LibTool" DESIGNCLASS="" LOCALCOMMAND=""/>
+      <FILE FILENAME="Estimate.cpp" FORMNAME="" UNITNAME="Estimate" CONTAINERID="CCompiler" DESIGNCLASS="" LOCALCOMMAND=""/>
+  </FILELIST>
+  <BUILDTOOLS>
+  </BUILDTOOLS>
+
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1033
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+Comments=
+
+[Excluded Packages]
+F:\Programme\Borland\CBuilder6\Bin\dbx60.bpl=Borland SQL Explorer UI Package
+f:\programme\borland\cbuilder6\Bin\dcl31w60.bpl=Delphi 1.0 Compatibility Components
+f:\programme\borland\cbuilder6\Bin\dclbcbsmp60.bpl=Borland Sample Controls Design Time Package
+f:\programme\borland\cbuilder6\Bin\DCLNMF60.bpl=NetMasters Fastnet Tools
+f:\programme\borland\cbuilder6\Bin\dclocx60.bpl=Borland Sample Imported ActiveX Controls
+f:\programme\borland\cbuilder6\Bin\dclindy60.bpl=Internet Direct (Indy) for D6 Property and Component Editors
+f:\programme\borland\cbuilder6\Bin\dclado60.bpl=Borland ADO DB Components
+F:\Programme\Borland\CBuilder6\Bin\dcldb60.bpl=Borland Database Components
+f:\programme\borland\cbuilder6\Bin\dclbde60.bpl=Borland BDE DB Components
+f:\programme\borland\cbuilder6\Bin\DCLIB60.bpl=InterBase Data Access Components
+f:\programme\borland\cbuilder6\Bin\dclcds60.bpl=Borland Base Cached ClientDataset Component
+F:\Programme\Borland\CBuilder6\Bin\dclmid60.bpl=Borland MyBase DataAccess Components
+f:\programme\borland\cbuilder6\Bin\dclbdecds60.bpl=Borland Local BDE ClientDataset Components
+f:\programme\borland\cbuilder6\Bin\dcltee60.bpl=TeeChart Components
+f:\programme\borland\cbuilder6\Bin\dcldss60.bpl=Borland Decision Cube Components
+f:\programme\borland\cbuilder6\Bin\dcltqr60.bpl=TeeChart for QuickReport Components
+f:\programme\borland\cbuilder6\Bin\dclclxdb60.bpl=Borland CLX Database Components
+F:\Programme\Borland\CBuilder6\Bin\dclclxstd60.bpl=Borland CLX Standard Components
+f:\programme\borland\cbuilder6\Bin\dclmcn60.bpl=Borland DataSnap Connection Components
+f:\programme\borland\cbuilder6\Bin\dclsmpedit60.bpl=Borland Editor Script Enhancements
+f:\programme\borland\cbuilder6\Bin\applet60.bpl=Borland Control Panel Applet Package
+f:\programme\borland\cbuilder6\Bin\dclemacsedit60.bpl=Borland Editor Emacs Enhancements
+f:\programme\borland\cbuilder6\Bin\dclmlwiz60.bpl=Borland Markup Language Wizards
+f:\programme\borland\cbuilder6\Bin\dclnet60.bpl=Borland Internet Components
+f:\programme\borland\cbuilder6\Bin\DBWEBXPRT.BPL=Borland Web Wizard Package
+f:\programme\borland\cbuilder6\Bin\dclwbm60.bpl=Borland InternetExpress Components
+f:\programme\borland\cbuilder6\Bin\bcbie60.bpl=Borland C++Builder Internet Explorer 5 Components Package
+f:\programme\borland\cbuilder6\Bin\dclwebsnap60.bpl=Borland WebSnap Components
+f:\programme\borland\cbuilder6\Bin\dclsoap60.bpl=Borland SOAP Components
+f:\programme\borland\cbuilder6\Bin\dclite60.bpl=Borland Integrated Translation Environment
+f:\programme\borland\cbuilder6\Bin\dcldbx60.bpl=Borland dbExpress Components
+f:\programme\borland\cbuilder6\Bin\dcldbxcds60.bpl=Borland Local DBX ClientDataset Components
+f:\programme\borland\cbuilder6\Bin\bcb2kaxserver60.bpl=Borland C++Builder COM Server Components Sample Package
+
+[HistoryLists\hlIncludePath]
+Count=2
+Item0=$(BCB)\include;$(BCB)\include\mfc;$(BCB)\include\atl;$(BCB)\include\vcl
+Item1=$(BCB)\include;$(BCB)\include\mfc;$(BCB)\include\atl;$(BCB)\include\vcl;
+
+[HistoryLists\hlLibraryPath]
+Count=2
+Item0=$(BCB)\lib;$(DEBUGLIBPATH);$(BCB)\lib\psdk
+Item1=$(BCB)\lib;$(DEBUGLIBPATH);;$(BCB)\lib\psdk;
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=2
+Item0=WIN32;_CONSOLE;_MBCS
+Item1=WIN32;_DEBUG;_CONSOLE;_MBCS
+
+[HistoryLists\hlIntOutputDir]
+Count=1
+Item0=Debug
+
+[HistoryLists\hlFinalOutputDir]
+Count=1
+Item0=Debug\
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+Launcher=
+UseLauncher=0
+DebugCWD=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteLauncher=
+RemoteCWD=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=0
+LinkCGLIB=0
+
+[CORBA]
+AddServerUnit=1
+AddClientUnit=1
+PrecompiledHeaders=1
+  </IDEOPTIONS>
+</PROJECT>

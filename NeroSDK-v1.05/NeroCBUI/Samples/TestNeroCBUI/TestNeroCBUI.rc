@@ -1,0 +1,314 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Croatian (unknown sub-lang: 0x2) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_SRL)
+#ifdef _WIN32
+LANGUAGE LANG_CROATIAN, 0x2
+#pragma code_page(1250)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\TestNeroCBUI.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\r\n"
+    "#include ""aptkres.rc""\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Croatian (unknown sub-lang: 0x2) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\TestNeroCBUI.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_TESTNEROCBUI_DIALOG DIALOGEX 0, 0, 405, 182
+STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Test NeroCBUI"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Exit",IDOK,349,158,50,14
+    LTEXT           "Erase disc functionality...",IDC_STATIC,7,47,104,10
+    PUSHBUTTON      "Test",IDC_TEST_ERASE_DISC,7,60,50,14
+    LTEXT           "Disc info functionality...",IDC_STATIC,135,47,104,10
+    PUSHBUTTON      "Test",IDC_TEST_DISC_INFO,135,61,50,14
+    LTEXT           "Recorder combobox",IDC_STATIC,7,7,103,10
+    CONTROL         "",IDC_RECORDER,"ComboBoxEx32",CBS_DROPDOWNLIST | 
+                    CBS_SORT | WS_VSCROLL | WS_TABSTOP,7,21,104,76
+    LTEXT           "Burn settings prop page...",IDC_STATIC,7,98,104,10
+    PUSHBUTTON      "Test",IDC_TEST_BURN_SETTINGS,7,112,50,14
+    PUSHBUTTON      "Ole Test",IDC_TEST_BURN_SETTINGS_OLE,63,112,50,14
+    LTEXT           "Burn progress functionality...",IDC_STATIC,135,143,104,
+                    10
+    PUSHBUTTON      "Test",IDC_TEST_BURN_PROGRESS,135,158,50,14
+    LTEXT           "Image info prop page...",IDC_STATIC,7,142,104,11
+    PUSHBUTTON      "Test",IDC_TEST_IMAGE_INFO,7,158,50,14
+    PUSHBUTTON      "Ole Test",IDC_TEST_IMAGE_INFO_OLE,63,158,50,14
+    LTEXT           "Choose recorder dialog...",IDC_STATIC,240,98,92,10
+    PUSHBUTTON      "Test",IDC_TEST_CHOOSE_RECORDER,240,112,50,14
+    LTEXT           "Choose session dialog...",IDC_STATIC,240,141,104,11
+    PUSHBUTTON      "Test",IDC_TEST_CHOOSE_SESSION,240,158,50,14
+    COMBOBOX        IDC_LANG_COMBO,351,21,48,45,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Language:",IDC_STATIC,351,7,48,11
+    PUSHBUTTON      "Test Modeless",IDC_TEST_ERASE_DISC_MODELESS,63,61,50,14
+    CONTROL         "Modal",IDC_MODAL_ERASE_DISC,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,7,76,35,10
+    LTEXT           "Wait for media...",IDC_STATIC,135,98,71,11
+    PUSHBUTTON      "Test",IDC_TEST_WAIT_FOR_MEDIA,135,112,50,14
+    LTEXT           "Write speed combobox",IDC_STATIC,135,7,94,11
+    COMBOBOX        IDC_WRITESPEEDS,135,21,86,76,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_MEDIA_COMBO,240,21,50,45,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Mediumtype:",IDC_STATIC,239,7,48,11
+    CONTROL         "Wizard mode",IDC_BURN_WIZARD_MODE,"Button",
+                    BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,189,155,36,
+                    19
+END
+
+IDD_BURN_DLG DIALOG DISCARDABLE  0, 0, 511, 323
+STYLE WS_POPUP | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "TestNeroCBUI MFC Application\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "TestNeroCBUI\0"
+            VALUE "LegalCopyright", "Copyright (C) 2003\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "TestNeroCBUI.EXE\0"
+            VALUE "ProductName", "TestNeroCBUI Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_TESTNEROCBUI_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 399
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 175
+        HORZGUIDE, 21
+    END
+
+    IDD_BURN_DLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 504
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 316
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_TESTNEROCBUI_DIALOG DLGINIT
+BEGIN
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5241, 0x0041, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4843, 0x0053, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4843, 0x0054, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5343, 0x0059, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4144, 0x004e, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4544, 0x0055, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4c45, 0x004c, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4e45, 0x0047, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4e45, 0x0055, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5345, 0x004c, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5345, 0x0050, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4946, 0x004e, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5246, 0x0041, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5548, 0x004e, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5449, 0x0041, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x504a, 0x004e, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4f4b, 0x0052, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4c4e, 0x0044, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4c50, 0x004b, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5450, 0x0042, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5450, 0x0047, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4f4e, 0x0052, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5552, 0x0053, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4c53, 0x0056, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4b53, 0x0059, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5653, 0x0045, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4854, 0x0041, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x5254, 0x004b, 
+    IDC_LANG_COMBO, 0x403, 4, 0
+0x4b55, 0x0052, 
+    IDC_MEDIA_COMBO, 0x403, 3, 0
+0x4443, "\000" 
+    IDC_MEDIA_COMBO, 0x403, 4, 0
+0x5644, 0x0044, 
+    IDC_MEDIA_COMBO, 0x403, 4, 0
+0x4448, 0x0042, 
+    0
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\TestNeroCBUI.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,0 +1,45 @@
+Changelog of the NeroSDK
+-------------------------------------------------------------------------------
+
+Version		Changes
+--------	---------------------------------------------------------------
+1.01		- NeroAPI interface version 5.5.9.14
+		- New SDK included to develop plug-ins for the Nero Audio Plug-in Manager
+
+1.02		- NeroAPI interface version 5.5.10.15 now supporting packet writing
+
+1.03		- NeroAPI interface version 6.0.0.0 including:
+			- hotplugging support
+			- long filename support
+			- better error handling of drive errors
+			- callbacks for drive status changes
+			- New import method with better error handling and more import info
+		- New NeroCOM documentation
+
+1.04		- NeroAPI interface version 6.3.0.0 including:
+			- support for choosing encoding resolution (NTSC or PAL) of (S)VCD
+			- support for virtual multisession
+			- new nsdiMediaReadSupport member of NERO_SCSI_DEVICE_INFO
+			- new flag NCITEF_DVDVIDEO_CMPT for NeroCreateIsoTrackEx
+			- new user dialog DLG_MESSAGEBOX
+			- new method NeroEstimateTrackSize
+			- new method NeroWaitForDisc
+			- new method NeroGetLastErrors
+                        - new option to enable/disable overburning not only with NeroInit
+                        - better support for HD-BURN media in NeroGetCDInfo
+                        - new method NeroInitImageRecorder to set image file for packet writing
+		- New SDK for the Nero Common Burning User Interface (NeroCBUI) included
+
+1.05		- NeroAPI interface version 6.3.1.4 including:
+			- support for double layer media:
+			  - new member ncdiLayer0MaxBlocks in struct NERO_CD_INFO
+                          - new device option NERO_DEVICEOPTION_LAYERSWITCH to set the position
+                            of the layer break. If not set, NeroAPI will automatically try to find
+                            the best position. 
+			    For DVD-Video, if flag NCITEF_DVDVIDEO_REALLOC is set,
+			    NeroAPI will also adjust the video content to match the layer break.
+			- support for setting media type for burning image files
+		- NeroAPI SDK now supports Borland C++ Builder 6
+		- New SDK for the NeroVision API, so that you can access the DVD, VCD and SVCD authoring
+		  functionality of NeroVision Express 2.
+		

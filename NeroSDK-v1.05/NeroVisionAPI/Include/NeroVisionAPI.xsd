@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+******************************************************************************
+|* THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+|* ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+|* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+|* PARTICULAR PURPOSE.
+|* 
+|* Copyright 1995-2004 Ahead Software AG and its licensors. All Rights Reserved.
+|* 
+|* NeroSDK / NeroVisionAPI
+|*
+|* PROGRAM: NeroVisionAPI.xsd
+|*
+|* PURPOSE: XML schema definition for the NeroVision API
+******************************************************************************/ 
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:simpleType name="AVTime">
+    <xs:restriction base="xs:decimal">
+      <xs:minInclusive value="0"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="FileLocation">
+    <xs:restriction base="xs:anyURI"/>
+  </xs:simpleType>
+  <xs:simpleType name="RGBColor">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="#[0-9A-Fa-f]{6}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="TransitionType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="WipeUp"/>
+      <xs:enumeration value="WipeDown"/>
+      <xs:enumeration value="WipeLeft"/>
+      <xs:enumeration value="WipeRight"/>
+      <xs:enumeration value="MoveIn"/>
+      <xs:enumeration value="MoveOut"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="VideoEncoding">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PAL"/>
+      <xs:enumeration value="NTSC"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:attributeGroup name="FontAttrGrp">
+    <xs:attribute name="font-face" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"/>
+          <xs:whiteSpace value="replace"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="font-color" type="RGBColor" use="optional"/>
+    <xs:attribute name="font-size" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:int">
+          <xs:minExclusive value="0"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+  <xs:complexType name="ProjectBaseType">
+    <xs:sequence>
+      <xs:element name="label" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="32"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element name="content">
+        <xs:complexType>
+          <xs:choice maxOccurs="unbounded">
+            <xs:element name="videotitle">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:choice maxOccurs="unbounded">
+                    <xs:element name="video">
+                      <xs:complexType>
+                        <xs:attribute name="src" type="FileLocation" use="required"/>
+                        <xs:attribute name="id" type="xs:ID" use="optional"/>
+                        <xs:attribute name="start" type="AVTime" use="optional" default="0"/>
+                        <xs:attribute name="duration" type="AVTime" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:choice>
+                  <xs:element name="chapters" minOccurs="0">
+                    <xs:complexType>
+                      <xs:sequence>
+                        <xs:element name="chapter-mark" minOccurs="0" maxOccurs="unbounded">
+                          <xs:complexType>
+                            <xs:attribute name="pos" type="AVTime" use="required"/>
+                            <xs:attribute name="id" type="xs:ID" use="optional"/>
+                            <xs:attribute name="name" type="xs:string" use="optional"/>
+                          </xs:complexType>
+                        </xs:element>
+                      </xs:sequence>
+                    </xs:complexType>
+                  </xs:element>
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" use="required"/>
+                <xs:attribute name="id" type="xs:ID" use="optional"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="slideshow">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element ref="transition" minOccurs="0"/>
+                  <xs:sequence maxOccurs="unbounded">
+                    <xs:element name="image">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="header" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attributeGroup ref="FontAttrGrp"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element name="footer" minOccurs="0">
+                            <xs:complexType>
+                              <xs:simpleContent>
+                                <xs:extension base="xs:string">
+                                  <xs:attributeGroup ref="FontAttrGrp"/>
+                                </xs:extension>
+                              </xs:simpleContent>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="src" type="FileLocation" use="required"/>
+                        <xs:attribute name="duration" type="AVTime" use="required"/>
+                        <xs:attribute name="id" type="xs:ID" use="optional"/>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element ref="transition" minOccurs="0"/>
+                  </xs:sequence>
+                </xs:sequence>
+                <xs:attribute name="name" type="xs:string" use="required"/>
+                <xs:attribute name="id" type="xs:ID" use="optional"/>
+              </xs:complexType>
+            </xs:element>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="menu" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="default-template" minOccurs="0">
+              <xs:complexType>
+                <xs:complexContent>
+                  <xs:extension base="MenuTemplateBaseType"/>
+                </xs:complexContent>
+              </xs:complexType>
+            </xs:element>
+            <xs:choice>
+              <xs:sequence>
+                <xs:element name="main-menu">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:element name="template" type="MenuTemplateBaseType" minOccurs="0"/>
+                      <xs:element name="thumbnail" minOccurs="0" maxOccurs="unbounded">
+                        <xs:complexType>
+                          <xs:complexContent>
+                            <xs:extension base="ThumnailBaseType">
+                              <xs:attribute name="title-id" type="xs:IDREF" use="required"/>
+                            </xs:extension>
+                          </xs:complexContent>
+                        </xs:complexType>
+                      </xs:element>
+                    </xs:sequence>
+                  </xs:complexType>
+                </xs:element>
+                <xs:element ref="chapter-menu" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+              <xs:element ref="chapter-menu" minOccurs="0"/>
+            </xs:choice>
+          </xs:sequence>
+          <xs:attribute name="default-thumbnail" use="optional">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:enumeration value="FirstFrame"/>
+                <xs:enumeration value="FirstNonEmptyFrame"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="encoding" type="VideoEncoding" use="required"/>
+  </xs:complexType>
+  <xs:complexType name="MenuTemplateBaseType">
+    <xs:attribute name="id" type="xs:ID" use="optional"/>
+    <xs:attribute name="src" type="xs:string" use="optional"/>
+    <xs:attribute name="group" type="xs:string" use="optional"/>
+    <xs:attribute name="name" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:minLength value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:complexType>
+  <xs:complexType name="ThumnailBaseType">
+    <xs:attribute name="thumbnail-image-src" type="FileLocation" use="optional"/>
+    <xs:attribute name="thumbnail-posx" type="AVTime" use="optional"/>
+  </xs:complexType>
+  <xs:element name="nerovision-project">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element name="vcd" type="ProjectBaseType"/>
+        <xs:element name="svcd" type="ProjectBaseType"/>
+        <xs:element name="dvd" type="ProjectBaseType"/>
+      </xs:choice>
+      <xs:attribute name="version" use="required" fixed="1">
+        <xs:simpleType>
+          <xs:restriction base="xs:integer">
+            <xs:minExclusive value="0"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="transition">
+    <xs:complexType>
+      <xs:attribute name="type" type="TransitionType" use="required"/>
+      <xs:attribute name="id" type="xs:ID" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="chapter-menu">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="template" minOccurs="0">
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="MenuTemplateBaseType"/>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="thumbnail" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="ThumnailBaseType">
+                <xs:attribute name="chapter-id" type="xs:IDREF" use="required"/>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="title-id" type="xs:IDREF" use="required"/>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

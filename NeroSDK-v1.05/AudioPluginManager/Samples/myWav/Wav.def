@@ -1,0 +1,8 @@
+; Wav.def : Declares the module parameters for the DLL.
+
+LIBRARY      "nxMyWav"
+DESCRIPTION  'Wav Windows Dynamic Link Library'
+
+EXPORTS
+	NERO_PLUGIN_GetPrimaryAudioObject
+	NERO_PLUGIN_ReadyToFinish

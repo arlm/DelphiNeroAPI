@@ -1,0 +1,358 @@
+NeroSDK License Agreement May 2004
+--------------------------------------------------------------------------------
+
+
+License Agreement
+-----------------
+
+IMPORTANT: PLEASE READ THIS SOFTWARE LICENSE AGREEMENT ("LICENSE") CAREFULLY BEFORE 
+USING THE SOFTWARE. 
+
+USING THE SOFTWARE INDICATES YOUR ACKNOWLEDGMENT THAT YOU HAVE READ THIS LICENSE AND 
+AGREE TO ITS TERMS.
+
+
+0.) Definitions:
+
+NeroSDK: means the package provided by Ahead Software AG, Im Stoeckmaedle 18, 76307 
+Karlsbad, Germany ("Ahead Software") for using the NeroAPI and as defined in Annex 
+A.
+
+Nero Burning ROM: application software of Ahead Software, distributed exclusivly by
+Ahead Software and its licensors, and which has different names like, but not limited
+to, "Nero Burning ROM", "Nero Express", "Nero Express SE", "Nero Ultra Edition",
+"Nero Enterprise Edition" and "Nero SE". All names with and without version numbering.
+
+APPLICATION SOFTWARE: means software written by you using the NeroSDK, which has 
+substantial different functionalities than NeroSDK and which is not a developer kit 
+itself. 
+
+NeroAPI: means Nero Application Programming Interface. It represents the interface 
+for accessing the NeroAPI-Engine from Nero.
+
+NeroAPI-Engine: means Dynamic Link Library ("NeroAPI.DLL" and other related DLL's) 
+included in the software package Nero Burning ROM of Ahead Software.  NeroAPI-
+Engine is part of the Nero Burning ROM license and can only be used pursuant to an 
+accepted Nero end user license agreement.
+
+NeroAPI-Documentation: means the specification of the functionalities and usage of 
+NeroAPI and NeroVision-API
+
+NeroAPI-Include: means the files that have to be included in the APPLICATION 
+SOFTWARE source code to make it able to access NeroAPI functionalities.
+
+NeroAPI-Lib: means the files that have to be included in the APPLICATION SOFTWARE to 
+make it able to manage communication with the NeroAPI-Engine which is present in the 
+system.
+
+NeroAPI-Samples: means all files whose aim is to help the user understanding how to
+use NeroAPI.
+
+NeroCmd: means Nero Command Line Tool. It allows execution of burn processes from 
+the command line by using NeroAPI. It is also an example of application written 
+using NeroAPI functionalities.
+
+NeroCmd-Documentation: means the text which explains how NeroCmd can be used and how 
+its source code is structured.
+
+NeroCmd-Source Code: means the material needed for building the NeroCmd program. 
+
+NeroCOM: means a set of COM (Component Object Model) classes and interfaces that
+can be used in any programming language that supports COM philosophy for execution
+of burn processes.
+
+NeroCOM-Documentation: means the text which explains how NeroCOM can be used.
+
+NeroCOM-Sample: means all files in source code whose aim is to help the user
+understanding how to write an application to use NeroCOM.
+
+AudioPluginManager: means the Nero Audio Plug-in Manager. It allows playing, decoding
+and encoding of different audio formats using Nero Burning ROM and other Ahead
+Software applications. AudioPluginManager is part of the Nero Burning ROM license
+and can only be used pursuant to an accepted Nero end user license agreement.
+
+AudioPlugin: dll which will solely en- and/or decode audio formats, for usage with
+the AudioPluginManager.
+
+AudioPlugin-Sample: means all files whose aim is to help the user understanding
+how to write an AudioPlugin.
+
+AudioPluginManager-Documentation: means the text which explains how the AudioPlugin-
+Source Code works and how to create an AudioPlugin with it.
+
+AudioPlugin-Source Code: means the material needed for building the AudioPlugin-
+Sample and to create an AudioPlugin.
+
+AudioPlugin-Includes: : means the files that have to be included in the APPLICATION 
+SOFTWARE source code to make it able to access the AudioPluginManager.
+
+NeroCBUI: means Dynamic Link Library ("NeroCBUI.dll") included in the software
+package Nero Burning ROM of Ahead Software which can be called for easily integrating
+burning functionality into APPLICATION SOFTWARE.  NeroCBUI is part of the
+Nero Burning ROM license and can only be used pursuant to an accepted Nero end user
+license agreement.
+
+NeroVision-API: means NeroVision Application Programming Interface. It represents
+the interface for accessing the NeroVision-Engine.
+
+NeroVision-API-Include: means the files that have to be included in the APPLICATION 
+SOFTWARE source code to make it able to access NeroVision-API functionalities.
+
+NeroVision-API-Samples: means all files whose aim is to help the user understanding
+how to use the NeroVision API.
+
+NeroVision-API-Engine: means Dynamic Link Library ("NeroVisionAPI.dll" and other
+related DLL's) included in the software package Nero Burning ROM of Ahead Software.
+NeroVision-API-Engine is part of the Nero Burning ROM license and can only be used
+pursuant to an accepted Nero end user license agreement.
+
+
+
+1.) Software Product. Ahead Software provides you with a package containing 
+Application Programming Interfaces ("API", "NeroAPI", "NeroVision-API"),
+documentation ("NeroAPI-Documentation"), a sample code how to use NeroAPI
+("NeroAPI-Samples") and NeroVision-API ("NeroVision-API-Samples"), a library
+("NeroAPI-Lib"), include files ("NeroAPI-Include" and "NeroVision-API-Include"),
+a Command Line Tool ("NeroCmd") including Source Code ("NeroCmd-Source Code") and
+documentation ("NeroCmd-Documentation"), a set of COM classes and interfaces
+("NeroCOM") including documentation ("NeroCOM-Documentation") and sample code
+("NeroCOM-Sample") and an Audio Plug-in Manager documentation and source code
+("AudioPluginManager-Documentation"), ("AudioPlugin-Samples"). NeroCmd-Source Code
+and AudioPlugin-Source Code could be used for building customized versions of NeroCmd,
+and AudioPlugins. Those customized versions shall not be described as NeroCmd and
+nor as AudioPlugin-Sample, but shall be considered as APPLICATION SOFTWARE. Also
+NeroCOM-Sample could be used for building customized versions and shall be considered
+as APPLICATION SOFTWARE
+
+Ahead Software grants you a license to use this Product ("NeroSDK") in accordance 
+with the terms of this License. The software, tools and utilities, accompanying 
+this License, whether in Source Code or Object Code, whether on disk, on compact 
+disc, available by download from www.nero.com, or any other media are licensed, not 
+sold, to you by Ahead Software.  NeroSDK and any copies and modifications which 
+this License authorizes you to make are subject to this License. The copyright and 
+all other rights in NeroSDK or its modifications, derivatives, and merged portions 
+thereof, are protected under international copyright laws.
+
+
+2.) License Grant. This License allows you to use NeroSDK solely for developing 
+APPLICATION SOFTWARE. Ahead Software grants to you as an individual (or an entity 
+in the strictly limited circumstances specified below), a personal, non-exclusive, 
+non-sublicensable, non-transferable license under Ahead Software's copyrights to 
+use, copy, modify NeroSDK for your own internal operations of designing, developing 
+and testing APPLICATION SOFTWARE. In order to develop APPLICATION SOFTWARE, you 
+may incorporate NeroAPI-Include, NeroVision-API-Include, NeroAPI-Lib, AudioPlugin-
+Include and/or parts or all of NeroCmd-Source Code, NeroCOM-Sample and
+AudioPlugin-Source Code into your program and compile in combination with your own
+program. Internal operation shall mean your use to develop APPLICATION SOFTWARE,
+but shall not include providing NeroSDK in full or in parts in any form whatsoever
+to any third party via download, time sharing, service bureau or in any other manner.
+
+NeroSDK is considered to be in use on a computer when it is loaded into temporary 
+memory or installed into permanent memory. You may install a copy of NeroSDK on 
+only one specific computer provided that you are the owner of the computer and the 
+only individual using NeroSDK. After a copy of NeroSDK has been used on a computer, 
+it may not be used on any other computer, unless you first accept a license of 
+NeroSDK for each other computer. If you are an entity, Ahead Software grants you 
+for each license the right to designate one individual within your organization to 
+have the right to use NeroSDK in the manner provided above. You may also store or 
+install a copy of NeroSDK on a storage device, such as a network server, used only 
+to install or run NeroSDK on your other computers over an internal network; 
+provided that you first accept and dedicate a license for each separate computer on 
+which NeroSDK will be installed or run from the storage device. A license for 
+NeroSDK may not be shared or used concurrently on different computers. NeroSDK is 
+only available from Ahead Software and shall not be passed to third partys or 
+entities without prior written consent by Ahead Software.
+
+NeroSDK will use the embedded NeroAPI-Engine and NeroVision-API-Engine, the
+AudioPluginManager and NeroCBUI of Nero Burning ROM. Therefore, the Nero Burning
+ROM product needs to be installed prior to using NeroAPI-Engine, NeroVision-API-
+Engine, AudioPluginManager, NeroCBUI or NeroSDK, or parts thereof. This means that
+for each computer on which you plan to use NeroSDK you must acquire a license of
+Nero Burning ROM. All functionalities of NeroSDK will be available only when the
+most current version of Nero Burning ROM is installed on the system. The NeroSDK
+will also work with fewer functionalities provided that at least Nero Burning ROM
+version 5.5.3.5 is installed, for using the AudioPlugManager at least Nero Burning
+ROM 5.5.9.0 must be installed, for using the NeroVision-API at least NeroVision
+Express 2.1.2.0 must be installed. Ahead Software and its licensors do not and
+cannot warrant, that future versions of Nero Burning ROM will support NeroSDK.
+At Ahead's sole discretion, future versions of Nero Burning ROM might not include
+the NeroAPI-Engine, NeroVision-API-Engine, the AudioPluginManager, NeroCBUI or
+only a limited feature set of the current or future versions of NeroAPI-Engine,
+NeroVision-API-Engine, the AudioPluginManager or the NeroCBUI.
+
+You may distribute your APPLICATION SOFTWARE in object code and/or source code form 
+only provided that (i) you advise your customers that for the burning process of 
+your APPLICATION SOFTWARE a license of Nero Burning ROM must be acquired and 
+available for each computer of your customer and you advise your customers that the 
+initialising of NeroAPI-Engine on the processor of the customer must have been 
+completed successfully, (ii) you distribute such code under the terms and conditions 
+of an end user license agreement with terms no less protective than the provisions 
+contained in this NeroSDK License, (iii) you include a copyright notice reflecting 
+your copyright ownership in such APPLICATION SOFTWARE, (iv) you shall be solely 
+responsible to your customers for any update or support obligation or other 
+liability which may arise from such distribution, (v) you shall not make any 
+statements that your APPLICATION SOFTWARE is "certified," or that its performance is 
+guaranteed, by Ahead Software, (vi) your APPLICATION SOFTWARE has substantial 
+different functionalities than NeroSDK and is not a developer kit itself, (vii) you 
+do not describe or represent your APPLICATION SOFTWARE as NeroSDK, (viii) you do not 
+use Ahead Software's name or trademarks to market your APPLICATION SOFTWARE without 
+the prior written consent of Ahead Software and (ix) your APPLICATION SOFTWARE does 
+not support CD and/or DVD recording by any other third-party-tool, third-party-SDK 
+or by itself.  Use of Nero Burning ROM, NeroAPI-Engine, NeroVision-API-Engine,
+AudioPluginManager, NeroCBUI and/or any other software of Ahead Software is subject
+to the applicable end user license agreement for such software even if such software
+is supplied to you in connection with this License. You may distribute Ahead
+Software's Nero Burning ROM, the NeroAPI-Engine, the NeroVision-API-Engine, the
+AudioPluginManager, NeroCmd, NeroCOM or NeroCBUI with your APPLICATION SOFTWARE only
+under a separate license from Ahead Software. Ahead Software is under no obligation
+to provide any support, assistance, training or other services under this License,
+including updates, upgrades or future versions of NeroSDK, Nero Burning ROM and/or
+any component thereof, to you, to end users, or to any other party. Any further
+developer support, software licensing, trademark licensing and trademark usage
+information that may be available is accessible through www.nero.com. 
+
+Users without Nero Burning ROM installed may be advised to download Nero Burning 
+ROM from www.nero.com.
+
+Except as expressly permitted in this License, you may not decompile, reverse 
+engineer, disassemble, modify, rent, lease, loan or create derivative works of 
+NeroSDK in whole or part and you are granted no other license or right with respect 
+to NeroSDK directly or by implication, estoppel or otherwise. The following is
+strictly prohibited: using the AudioPluginManager, the AudioPluginManager-
+Documentation or the AudioPluginManager-Includes for playing, decoding and/or
+encoding of audio formats from any APPLICATION SOFTWARE, which is not itself an
+AudioPlugin.
+
+Notwithstanding any other provision of this Agreement, you may not use NeroSDK in a 
+manner inconsistent with any written agreement between Ahead Software and you or 
+your employer, or after termination or expiration of any such agreement. 
+
+
+3.) Copyright.  All title and copyrights in and to NeroSDK (including but not 
+limited to any images, photographs, animations, video, audio, music, text, and 
+"applets" incorporated into the NeroSDK) and any copies of NeroSDK are owned by 
+Ahead Software or its licensors. NeroSDK is protected by copyright laws and 
+international treaty provisions. Therefore, you must treat NeroSDK like any other 
+copyrighted material except that you may install NeroSDK on a single computer 
+provided you keep the original solely for backup or archival purposes. 
+
+4.) Disclaimer of Warranty. AHEAD SOFTWARE AND ITS LICENSORS DO NOT AND CANNOT 
+WARRANT THE PERFORMANCE OR RESULTS YOU OR END USERS MAY OBTAIN BY USING NEROSDK. 
+EXCEPT FOR ANY WARRANTY, CONDITION, REPRESENTATION OR TERM TO THE EXTENT TO WHICH 
+THE SAME CANNOT OR MAY NOT BE EXCLUDED OR LIMITED BY LAW APPLICABLE TO YOU IN YOUR 
+JURISDICTION, AHEAD SOFTWARE AND ITS LICENSORS MAKE NO WARRANTIES, CONDITIONS, 
+REPRESENTATIONS OR TERMS, EXPRESS OR IMPLIED, WHETHER BY STATUTE, COMMON LAW, 
+CUSTOM, USAGE OR OTHERWISE AS TO NEROSDK OR ANY COMPONENT THEREOF, INCLUDING BUT 
+NOT LIMITED TO FUTURE AVAILABILITY AND SUPPORT OF NEROSDK, NON-INFRINGEMENT OF 
+THIRD PARTY RIGHTS, INTEGRATION, MERCHANTABILITY, SATISFACTORY QUALITY OR FITNESS 
+FOR ANY PARTICULAR PURPOSE.
+Some states or provinces do not allow the exclusion of implied warranties so the 
+above limitations may not apply to you. You may have rights that vary from 
+jurisdiction to jurisdiction. 
+5.) Limitation of Liability. IN NO EVENT WILL AHEAD SOFTWARE OR ITS LICENSORS BE 
+LIABLE TO YOU FOR ANY DAMAGES, CLAIMS OR COSTS WHATSOEVER ARISING FROM THIS LICENSE 
+AND/OR YOUR USE OF NEROSDK OR ANY COMPONENT THEREOF, INCLUDING WITHOUT LIMITATION 
+ANY CONSEQUENTIAL, INDIRECT, INCIDENTAL DAMAGES, LOSS OF USE OR DATA, INTERRUPTION 
+OF BUSINESS, OR ANY LOST PROFITS OR LOST SAVINGS, EVEN IF AN AHEAD SOFTWARE 
+REPRESENTATIVE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR 
+COSTS OR FOR ANY CLAIM BY ANY THIRD PARTY. THE FOREGOING LIMITATIONS AND EXCLUSIONS 
+APPLY TO THE FULLEST EXTENT PERMITTED BY APPLICABLE LAW IN YOUR JURISDICTION. AHEAD 
+SOFTWARE'S AGGREGATE LIABILITY AND THAT OF ITS LICENSORS UNDER OR IN CONNECTION 
+WITH THIS LICENSE SHALL BE LIMITED TO TEN US DOLLARS (US $ 10.00). 
+Because some states and jurisdictions do not allow the exclusion or limitation of 
+liability for consequential or incidental damages, the above limitation may not 
+apply to you.
+6.) Indemnification. You agree to defend, indemnify and hold Ahead Software and its 
+licensors harmless from and against any claims or lawsuits, including attorney's 
+reasonable fees, that arise or result from the use of APPLICATION SOFTWARE, 
+provided that Ahead Software gives you prompt written notice of any such claims, 
+tenders to you the defense or settlement of such a claim at your expense, and 
+cooperates with you, at your expense, in defending or settling such claim.
+7.) General. This License constitutes the complete and exclusive agreement between 
+Ahead Software and you with respect to the subject matter hereof, and supersedes 
+all prior oral or written understandings, communications or agreements not 
+specifically incorporated herein. You may not assign your rights or obligations 
+granted under this License without the prior written consent of Ahead Software. 
+None of the provisions of this License shall be deemed to have been waived by any 
+act on the part of Ahead Software, but only by an instrument in writing signed by 
+an authorized signatory of Ahead Software. If any provision of this agreement is 
+held to be unenforceable for any reason, such provision will be reformed only to 
+the extent necessary to make it enforceable, and such decision will not affect the 
+enforceability (i) of such provision under other circumstances, or (ii) of the 
+remaining provisions hereof under all circumstances. The failure of either party to 
+enforce any of the provisions hereof will not be construed to be a waiver of the 
+right of such party thereafter to enforce such provisions. Any and all remedies 
+herein expressly conferred upon a party will be deemed cumulative and not exclusive 
+of any remedy conferred hereby or by law, and the exercise of any one remedy will 
+not preclude the exercise of any other. Headings will not be considered in 
+interpreting this Agreement.
+This License will be governed by and construed in accordance with the substantive 
+laws in force in the Federal Republic of Germany. The respective law courts of 
+Karlsruhe, Germany, shall have non-exclusive jurisdiction over all disputes 
+relating to this License. This License will not be governed by the conflict of law 
+rules of any jurisdiction or of the United Nations Convention on contracts for the 
+International Sale of Goods, the application of which is expressly excluded.
+You acknowledge that you have read this License, understand it, and that it is the 
+complete and exclusive statement of your agreement with Ahead Software which 
+supersedes any prior agreement, oral or written, between Ahead Software and you with 
+respect to the licensing to you of this NeroSDK. No variation of the terms of this 
+License will be enforceable against Ahead Software unless Ahead Software gives its 
+express prior consent in a writing signed by an authorized signatory of Ahead 
+Software. 
+
+Your rights under this License will terminate automatically without notice from 
+Ahead Software if you fail to comply with any term(s) of this License. 
+
+(c) Copyright Ahead Software AG May 2004. All rights reserved.
+
+
+
+ANNEX A
+Package content
+---------------
+
+
+\NeroAPI
+	\Doc		NeroAPI-Documentation
+	\Include	NeroAPI-Include files
+	\Lib		NeroAPI Glue library file
+	\Samples	NeroAPI Example programs source code with Visual C++ 6 workspace
+
+\NeroVisionAPI
+	\Doc		NeroVision API-Documentation
+	\Include	NeroVision API IDL file and XML schema definition
+	\Samples	NeroVision API Example source code
+
+\NeroCBUI
+	\Doc		NeroCBUI-Documentation
+	\Include	NeroCBUI-Include files
+	\Samples	NeroCBUI Example programs source code
+
+\NeroCOM
+	\Doc		NeroCOM-Documentation
+	\Samples	NeroCOM Example source code
+
+\NeroCmd		NeroCmd executable file
+	\Doc		NeroCmd-Documentation
+	\Src		NeroCmd-Source Code
+
+\AudioPluginManager
+	\Doc		AudioPluginManager-Documentation
+	\Include	AudioPluginManager-Include files
+	\Common		AudioPluginManager Utility source files
+	\Samples	AudioPluginManager Example source code
+
+
+
+Feedback
+--------
+If you find bugs, errors or have any suggestions, you can send e-mails to the 
+following address: NeroSDK@nero.com. Your comment will be taken into account for 
+the future releases, but will not be replied. But please do not send any technical 
+questions related to NeroSDK. Unfortunately, we do not have enough resources to 
+provide individual support for this product. However, we provide a forum for all 
+users of the NeroSDK to get in dialog with each other at 
+http://www.nero.com/link.php?topic_id=17. We will also monitor the 
+messages from time to time and try to help where possible. 
+If you have any questions concerning this License, you can contact us at 
+legal@nero.com.

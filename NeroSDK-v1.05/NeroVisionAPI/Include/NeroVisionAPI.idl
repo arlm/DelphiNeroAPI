@@ -1,0 +1,198 @@
+/******************************************************************************
+|* THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+|* ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+|* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+|* PARTICULAR PURPOSE.
+|* 
+|* Copyright 1995-2004 Ahead Software AG and its licensors. All Rights Reserved.
+|*-----------------------------------------------------------------------------
+|* NeroSDK / NeroVisionAPI
+|*
+|* PROGRAM: NeroVisionAPI.idl
+|*
+|* PURPOSE: Interface definition of the NeroVision API
+******************************************************************************/
+
+[
+  uuid(BF84BFD8-B411-4948-9BDA-3A6C02CE7BD4),
+  version(1.1),
+  helpstring("NeroVision API 1.1 Library")
+]
+library NeroVisionAPI
+{
+  importlib("STDOLE2.TLB");
+
+  [
+    local, uuid(8DE64FCC-95CD-42dc-A332-D435E3326EEF),
+    helpstring("Error object containing error code and error description.")
+  ]
+  interface IError : IUnknown
+  {
+    typedef [uuid(8A26FF0C-75A1-4e71-926E-3FE51813956C), helpstring("NeroVision API error codes.")]
+    enum
+    {
+      NoError = 0,
+	  Canceled,
+      InternalError,
+	  APIUsageError,
+	  InstallationError,
+      XMLSyntaxError,
+      FileIOError,
+	  MenuTemplateError,
+	  NeroAPIError,
+	  TranscodingFailed,
+	  DiscOverflow
+    } ErrorCode;
+
+    [propget, helpstring("Gets the error code")]
+    HRESULT ErrCode([out, retval] ErrorCode* errCode);
+    [propget, helpstring("Gets the error text")]
+    HRESULT ErrText([out, retval] BSTR* errStr);
+    [propget, helpstring("Gets the ID of the XML tag involved in the error")]
+    HRESULT XMLID([out, retval] BSTR* xmlID);
+  };
+
+  [
+    local, uuid(25C8265E-D1F4-4502-8664-EA1F497EF76C),
+    helpstring("The result of createNeroBurnContext().")
+  ]
+  interface INeroBurnContext : IUnknown
+  {
+    [propget, helpstring("Gets the resulting NERO_CD_FORMAT (2. parameter of NeroBurn()).")]
+    HRESULT NERO_CD_FORMAT([out, retval] int* pFormat);
+    [propget, helpstring("Gets pointer to the resulting NERO_WRITE_CD structure (3. parameter of NeroBurn()).")]
+    HRESULT NERO_WRITE_CD([out, retval] void** pNWCD);
+  };
+
+  [
+    local, uuid(DA1F536B-6548-4185-9372-6F0C4539C1D0),
+    helpstring("Interface for handling progress information.")
+  ]
+  interface IProgressCallback : IUnknown
+  {
+    typedef [uuid(B9976811-F6DA-44d6-89CF-7A611F2A19E3), helpstring("Action reported by ProgressCallback.")]
+    enum
+    {
+      Estimating = 0,
+      Preparing,
+      Transcoding,
+      Generating,
+	  Analyzing
+    } ProgressAction;
+
+	[helpstring("Called regularly to report progress of the current sub-task and the total function called.")]
+    HRESULT OnProgress([in] ProgressAction action, [in] BSTR itemname, [in] double currentRemain, [in] double currentTotal, [in] float currentFraction, [in] double totalRemain, [in] double totalTotal, [in] float totalFraction);
+	[helpstring("Called regularly to check whether the called function should be canceled.")]
+    HRESULT ShouldCancel([out, retval] boolean* pbCancel);
+  };
+
+  [
+    local, uuid(01ED3DAA-F36D-470b-AC64-7B1E950796F3),
+    helpstring("A NeroVision project describes a DVD/(S)VCD.")
+  ]
+  interface IProject : IUnknown
+  {
+    [helpstring("Sets the project content from raw XML data.")]
+    HRESULT SetXMLString([in] const char* data, [out, retval] boolean* pbSuccess);
+    [helpstring("Sets the project content from a XML file.")]
+    HRESULT SetXMLFile([in] BSTR filepath, [out, retval] boolean* pbSuccess);
+    [helpstring("Estimates the size of the resulting disk.")]
+    HRESULT EstimateDiskSize([out] hyper* size, [out, retval] boolean* pbSuccess);
+    [helpstring("Estimates the time needed by CreateNeroBurnContext().")]
+    HRESULT EstimateCreateNeroBurnContextTime([in] IProgressCallback* pCallback, [out] double* seconds, [out, retval] boolean* pbSuccess);
+    [helpstring("Creates a NeroBurnContext object which can be burned with Nero. if a ProgressCallback is passed, it will receive progress information.")]
+    HRESULT CreateNeroBurnContext([in] HMODULE hNeroAPIDLL, [in] IProgressCallback* pCallback, [out] INeroBurnContext** ppburnContext, [out, retval] boolean* pbSuccess);
+    [propput, helpstring("Sets the directory used for storing temporary files. Defaults to the system temp. directory.")]
+    HRESULT TempDirectory([in] BSTR path);
+    [propget, helpstring("Gets the error object of the last called function")]
+    HRESULT LastError([out, retval] IError** pError);
+  };
+
+  [
+    local, uuid(B8A9267B-F8EB-4aef-ACFA-BF18F43A32FD),
+    helpstring("Attributes and methods for audio & video of a single media")
+  ]
+  interface IMediaInfo : IUnknown
+  {
+    typedef [uuid(CE8077C7-A66E-4214-A782-E7D590A18C0C), helpstring("MediaInfo file type")]
+    enum
+    {
+	  Invalid = 0,
+	  Other,
+	  MPEG1,
+	  MPEG2,
+	  DV_DV,
+	  DV_AVI1,
+	  DV_AVI2
+    } FileType;
+
+    [propget, helpstring("Media file type")]
+    HRESULT FileType([out, retval] FileType* ft);
+    [propget, helpstring("Duration in seconds")]
+    HRESULT Duration([out, retval] double* sec);
+    [propget, helpstring("Whether the Media has audio")]
+    HRESULT HasAudio([out, retval] boolean* has);
+    [propget, helpstring("Whether the Media has video")]
+    HRESULT HasVideo([out, retval] boolean* has);
+    [propget, helpstring("Media width")]
+    HRESULT Width([out, retval] int* w);
+    [propget, helpstring("Media height")]
+    HRESULT Height([out, retval] int* h);
+    [propget, helpstring("Media TV system")]
+    HRESULT AspectXByY([out, retval] double* aspect);
+    [propget, helpstring("Frame time in seconds")]
+    HRESULT FrameRate([out, retval] double* rate);
+
+    [helpstring("Retrieves the first (non-empty) thumbnail of the media")]
+    HRESULT GetThumbnail([in] boolean ensureNotEmpty, [out, retval] long* hDIB);
+    [helpstring("Retrieves a frame of the media at a given position")]
+    HRESULT GetImage([in] double posSec, [out, retval] long* hDIB);
+  };
+
+  [
+    local, uuid(7B64280B-4277-43dd-B753-92A1315046B0),
+    helpstring("Attributes and methods for a physical file, which may contain several segments.")
+  ]
+  interface IFileInfo : IUnknown
+  {
+    [propget, helpstring("The associated file's path and name")]
+    HRESULT FilePath([out, retval] BSTR* filepath);
+    [propget, helpstring("Gets the number of segments in the file")]
+    HRESULT NumSegments([out, retval] int* numSeg);
+    [helpstring("Gets the MediaInfo for one segment of the file")]
+    HRESULT GetSegmentMediaInfo([in] int segIndex, [out, retval] IMediaInfo** pMediaInfo);
+  };
+
+  [
+    local, uuid(9CC2383F-485F-4593-983D-4686DA5CA265),
+    helpstring("Interface for analyzing one or more media files")
+  ]
+  interface IMediaAnalyzer : IUnknown
+  {
+    [helpstring("Add a file to be analyzed. The resulting IFileInfo is filled after calling AnalyzeFiles().")]
+    HRESULT AddFile([in] BSTR filepath, [out, retval] IFileInfo** fileInfo);
+    [helpstring("Analyzes all files previously added by AddFile().")]
+    HRESULT AnalyzeFiles([in] IProgressCallback* pCallback, [out, retval] boolean* pbSuccess);
+    [propget, helpstring("Gets the error object of the last called function")]
+    HRESULT LastError([out, retval] IError** pError);
+  };
+
+
+  [
+    uuid(BB32FBED-A8CC-41a8-8A15-3F6D5E3D25C7),
+    helpstring("NeroVision project object"),
+  ]
+  coclass Project
+  {
+    [default] interface IProject;
+  };
+
+  [
+    uuid(AEF4E74F-7767-4fed-B4A8-2F9A0A713D26),
+    helpstring("Media analyzer object"),
+  ]
+  coclass MediaAnalyzer
+  {
+    [default] interface IMediaAnalyzer;
+  };
+};
