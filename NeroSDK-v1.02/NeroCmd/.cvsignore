@@ -1,0 +1,15 @@
+*.~*
+*.dcu
+UNeroAPI.pas
+*.bak
+.cvsignore
+*.ddp
+*.dsk
+*.dof
+*.cfg
+*.exe
+*.dll
+*.rar
+*.zip
+*.upl
+WebSite.txt

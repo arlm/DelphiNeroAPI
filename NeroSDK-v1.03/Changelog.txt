@@ -1,0 +1,18 @@
+Changelog of the NeroSDK
+-------------------------------------------------------------------------------
+
+Version		Changes
+--------	---------------------------------------------------------------
+1.01		- NeroAPI interface version 5.5.9.14
+		- New SDK included to develop plug-ins for the Nero Audio Plug-in Manager
+
+1.02		- NeroAPI interface version 5.5.10.15 now supporting packet writing
+
+1.03		- NeroAPI interface version 6.0.0.0 including:
+			- hotplugging support
+			- long filename support
+			- better error handling of drive errors
+			- callbacks for drive status changes
+			- New import method with better error handling and more import info
+		- New NeroCOM documentation
+		

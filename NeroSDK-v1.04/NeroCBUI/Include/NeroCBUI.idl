@@ -1,0 +1,891 @@
+/******************************************************************************
+|* THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+|* ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+|* THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+|* PARTICULAR PURPOSE.
+|* 
+|* Copyright 1995-2004 Ahead Software AG. All Rights Reserved.
+|*-----------------------------------------------------------------------------
+|* NeroSDK / NeroCBUI
+|*
+|* PROGRAM: NeroCBUI.idl
+|*
+|* PURPOSE: Interface Definition Language file for NeroCBUI library.
+******************************************************************************/
+
+import "oaidl.idl";
+
+#define DECLARE_NEROCBUI_STRUCT(name)		typedef long LP##name; typedef long LPC##name
+#define DECLARE_NEROCBUI_HANDLE(name)		typedef void * name
+
+// The following lines define some of the datatypes from the NeroAPI.h that are
+// used here. We must let them be known to the MIDL compiler but we must also
+// make sure that the definitions we make do not get to the generated .H file.
+// 
+cpp_quote("#if 0")
+//cpp_quote("#ifdef REGISTER_PROXY_DLL")
+	DECLARE_NEROCBUI_STRUCT(NERO_SCSI_DEVICE_INFO);
+	DECLARE_NEROCBUI_STRUCT(NERO_SCSI_DEVICE_INFOS);
+	DECLARE_NEROCBUI_HANDLE(NERO_DEVICEHANDLE);
+	typedef LONG NERO_TEXT_TYPE;
+	typedef LONG NERO_CD_FORMAT;
+	typedef LONG NEROAPI_BURN_ERROR;
+	typedef LONG NEROAPI_CDRW_ERASE_MODE;
+	typedef LONG NERO_MEDIA_TYPE;
+	typedef LONG NERO_MEDIA_SET;
+	typedef LONG NERO_MAJOR_PHASE;
+	typedef LONG NeroUserDlgInOut;
+cpp_quote("#endif")
+
+cpp_quote("#ifdef REGISTER_PROXY_DLL")
+cpp_quote("#include \"..\\..\\NeroAPI6Package\\Include\\NeroAPIGlue.h\"")
+cpp_quote("#endif")
+cpp_quote("typedef NERO_SCSI_DEVICE_INFO * LPNERO_SCSI_DEVICE_INFO;")
+cpp_quote("typedef const NERO_SCSI_DEVICE_INFO * LPCNERO_SCSI_DEVICE_INFO;")
+cpp_quote("typedef NERO_SCSI_DEVICE_INFOS * LPNERO_SCSI_DEVICE_INFOS;")
+cpp_quote("typedef const NERO_SCSI_DEVICE_INFOS * LPCNERO_SCSI_DEVICE_INFOS;")
+
+[
+	uuid(b3267063-8ab4-464d-a13c-1517bd6dc6f4),
+	version(1.2),
+	helpstring("NeroCBUI 1.2 Type Library")
+]
+library NEROCBUILib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(9871f8af-152a-4651-834c-cdc5fe61c14c)
+	]
+// This object should first be created to pass the module handle for NeroCBUI
+// to use. Language can also be set here. This object has to persist as long
+// as NeroCBUI is used. On destruction of this object NeroCBUI is deinitialized.
+// 
+	coclass InitSettings
+	{
+		[default] interface IInitSettings3;
+		interface IInitSettings2;
+		interface IInitSettings;
+		interface IInformation;
+	};
+
+// This is the burn settings object. It is directly creatable by the client.
+// The client can set the initial burn settings for this object.
+// 
+	[
+		uuid(ec39bf14-ca12-46cd-8ea2-b48d5a44350a)
+	]
+	coclass BurnSettings
+	{
+		[default] interface IBurnSettings;
+	};
+
+// This is the recorder combobox object. The client should create the object
+// and acquire the IRecorderCombobox and INERO_SCSI_DEVICE_INFO interfaces
+// first to set the working parameters. Then the client should create the
+// actual Win32 window through IChildWindow interface. The selected recorder
+// can be retrieved using INERO_SCSI_DEVICE_INFO interface.
+// 
+	[
+		uuid(f495ebbe-a068-41fb-89b6-c605d20a2df3)
+	]
+	coclass RecorderCombobox
+	{
+		[default] interface IRecorderCombobox3;
+		interface IRecorderCombobox2;
+		interface IRecorderCombobox;
+		interface INERO_SCSI_DEVICE_INFO;
+		interface IChildWindow;
+	};
+
+// The burn settings window object should be assigned its working parameters
+// first through IBurnSettingsDlg and INERO_SCSI_DEVICE_INFO interfaces.
+// Then the client should create the actual Win32 window through IChildWindow
+// interface.
+// 
+	[
+		uuid(e6028af3-ee0a-4e49-a043-c44437680ad8)
+	]
+	coclass BurnSettingsDlg
+	{
+		[default] interface IBurnSettingsDlg;
+		interface INERO_SCSI_DEVICE_INFO;
+		interface IMfcPropertyPage;
+	};
+
+	[
+		uuid(0b1511cd-37ee-4f0a-9647-cb2785b68a29)
+	]
+	coclass BurnSettingsDlgParam
+	{
+		[default] interface IBurnSettingsDlg;
+		interface INERO_SCSI_DEVICE_INFO;
+	};
+
+// The progress window object should first be assigned its working parameters
+// through IBurnProgressDlg interface and then the actual Win32 window should
+// be created through IChildWindow. After the window is in place, IBurnProgressDlg
+// should be used again to initiate the actual burn process.
+// 
+	[
+		uuid(a861a366-0c7a-484b-9116-f366bf0fa23f)
+	]
+	coclass BurnProgressDlg
+	{
+		[default] interface IBurnProgressDlg3;
+		interface IBurnProgressDlg2;
+		interface IBurnProgressDlg;
+		interface IModelessDialog;
+		interface IBurnProgressDlgEx;
+	};
+
+// The choose recorder dialog object is first assigned the initial recorder
+// selection (if needed) through INERO_SCSI_DEVICE_INFO interface and then
+// IModalDialog interface should be used to display the modal dialog.
+// 
+	[
+		uuid(0edcdb7d-cd9e-44e6-9e9a-adbaa85540e8)
+	]
+	coclass ChooseRecorderDlg
+	{
+		[default] interface INERO_SCSI_DEVICE_INFO;
+		interface IModalDialog;
+	};
+
+// The erase settings dialog object is first assigned its working parameters
+// through INERO_SCSI_DEVICE_INFO and INEROAPI_CDRW_ERASE_MODE interfaces and just
+// then is the dialog displayed through IModalDialog.
+// 
+	[
+		uuid(1c613f47-70c5-4551-a264-f7254139854c)
+	]
+	coclass EraseSettingsDlg
+	{
+		[default] interface INEROAPI_CDRW_ERASE_MODE;
+		interface INERO_SCSI_DEVICE_INFO;
+		interface IModalDialog;
+		interface IEraseSettingsDlg2;
+		interface IEraseSettingsDlg;
+	};
+
+// The erase disc dialog object is first assigned its working parameters
+// and then it is displayed as a modal dialog box.
+// 
+	[
+		uuid(7b9717b1-2d9b-4d14-b2da-d4bf5a28c6af)
+	]
+	coclass EraseDiscDlg
+	{
+		[default] interface IEraseDiscDlg4;
+		interface IEraseDiscDlg3;
+		interface IEraseDiscDlg2;
+		interface IEraseDiscDlg;
+		interface INEROAPI_CDRW_ERASE_MODE;
+		interface INERO_SCSI_DEVICE_INFO;
+		interface IModalDialog;
+		interface IModelessDialog;
+	};
+
+// The disc info dialog object is first assigned its working parameters
+// and then it is displayed as a modal dialog box. NERO_SCSI_DEVICE_INFO
+// can be both set and obtained from the object.
+// 
+	[
+		uuid(f1f2ece6-0289-4992-a536-f82dfc6f6d6e)
+	]
+	coclass DiscInfoDlg
+	{
+		[default] interface INERO_SCSI_DEVICE_INFO;
+		interface IModalDialog;
+	};
+
+	[
+		uuid(940f79d9-2062-41b7-a22f-9e99ffdd1b85)
+	]
+	coclass ImageInfoDlg
+	{
+		[default] interface IImageInfoDlg;
+		interface IMfcPropertyPage;
+	};
+
+	[
+		uuid(712a2867-02b2-402b-8f8d-74437494dcfb)
+	]
+	coclass ImageInfoDlgParam
+	{
+		[default] interface IImageInfoDlg;
+	};
+
+	[
+		uuid(e5b2709a-0e6b-45d3-83c8-ef90c2ed5340)
+	]
+	coclass ChooseSessionDlg
+	{
+		[default] interface IChooseSessionDlg;
+		interface IModalDialog;
+		interface INERO_SCSI_DEVICE_INFO;
+	};
+
+	[
+		uuid(612fbd09-aad2-4f1c-ba97-f56658b1161b)
+	]
+	coclass SpeedCombobox
+	{
+		[default] interface ISpeedCombobox2;
+		interface ISpeedCombobox;
+		interface INERO_SCSI_DEVICE_INFO;
+		interface IChildWindow;
+	};
+
+	[
+		uuid(9e42f1b8-de23-4af5-a79a-0976e9ec5781)
+	]
+	coclass WaitForMediaDlg
+	{
+		[default] interface IWaitForMediaDlg;
+	};
+
+	[
+		uuid(bc91ed21-e702-44e5-aa88-9f2f70e986c6)
+	]
+	coclass UserDlgHandler
+	{
+		[default] interface IUserDlgHandler;
+	};
+}
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+	[
+		object,
+		uuid(98654976-9086-4817-841c-b75b0ac0aaa6),
+		pointer_default(unique),
+		local
+	]
+	// This interface implements the functionality of a modeless dialog.
+	// 
+	interface IModelessDialog : IUnknown
+	{
+		HRESULT Create ([in] HWND hWndParent, [in] LPCRECT pRect, [out, retval] HWND * phWndRet);
+		HRESULT Destroy ();
+		HRESULT TranslateAccelerator ([in] MSG * pMsg);
+	}
+
+	[
+		object,
+		uuid(8268ed13-82f5-4dcc-bb13-95b5c7a64590),
+		pointer_default(unique),
+		local
+	]
+	// This interface contains the common functionality of getting and setting the
+	// NERO_SCSI_DEVICE_INFO information. Some objects inheriting from this interface
+	// might not need the get part of this interface. In those cases, get method will
+	// return E_NOTIMPL.
+	// 
+	interface INERO_SCSI_DEVICE_INFO : IUnknown
+	{
+	// This method allows the client to specify a particular recorder to be the default initial
+	// selection. The default is no selection and the same effect is accomplished if pDeviceInfo
+	// is NULL or if it is non-NULL but match could not be found (probably bogus NERO_SCSI_DEVICE_INFO).
+	// 
+		[propput] HRESULT NERO_SCSI_DEVICE_INFO ([in] const LPNERO_SCSI_DEVICE_INFO pDeviceInfo);
+
+	// This method should be invoked after the dialog has been displayed and dismissed to retrieve the
+	// user's selection. if pDeviceInfo is NULL, the method is a no-op. If it is non-NULL, it is
+	// assumed that it points to at least sizeof(NERO_SCSI_DEVICE_INFO) big buffer which will be filled
+	// with the user's current selection.
+	// 
+		[propget] HRESULT NERO_SCSI_DEVICE_INFO ([out, retval] LPNERO_SCSI_DEVICE_INFO * ppDeviceInfo);
+	}
+
+	[
+		object,
+		uuid(3bd2799a-b364-405a-a63b-104d7fbfeb8a),
+		pointer_default(unique),
+		local
+	]
+	// This interface is normally only implemented by the client when
+	// the client wants to be notified of the combobox selection change.
+	// 
+	interface IRecorderComboboxCallbacks : IUnknown
+	{
+		HRESULT OnFilterRecorder ([in] LPCNERO_SCSI_DEVICE_INFO pDeviceInfo, [out, retval] BOOL * pbAccept);
+		HRESULT OnFilterEnd ();
+
+		HRESULT OnContentRefreshed ();
+		HRESULT OnCurSelInUseStatusChange ([in] BOOL bInUse);
+	};
+
+	[
+		object,
+		uuid(c76f66ef-b4d7-496b-9ab7-409a965d9c43),
+		pointer_default(unique),
+		local
+	]
+	// After creating the RecorderCombobox object and creating the actual
+	// child window through IChildWindow interface, the following interface
+	// is used to set the working parameters.
+	// 
+	interface IRecorderCombobox : IUnknown
+	{
+	// If the client is interested in receiving events from this combobox
+	// it should implement IRecorderComboboxCallbacks interface and pass
+	// the pointer.
+	// 
+		[propput] HRESULT Callbacks ([in] IRecorderComboboxCallbacks * pCallbacks);
+	};
+
+	[
+		object,
+		uuid(de6f71ce-1faf-405c-8e8e-0a32dc023b59),
+		pointer_default(unique),
+		local
+	]
+	interface IRecorderCombobox2 : IRecorderCombobox
+	{ 
+	// Force a refresh on the combobox.
+		HRESULT Refresh ([in] BOOL bRescan);
+
+	// prepend a custom entry to the combo box
+		HRESULT PrependCustomEntry ([in] HICON hIcon, [in] BSTR bstrText, [in] const void * pUserData);
+	// append a custom entry to the combo box 
+		HRESULT AppendCustomEntry  ([in] HICON hIcon, [in] BSTR bstrText, [in] const void * pUserData);
+		HRESULT RemoveCustomEntry  ([in] const void * pUserData, [out, retval] BOOL * pbSuccess);
+
+	// set the current selection to the entry specified by the pUserData
+		[propput] HRESULT CustomEntry([in] const void * pUserData);
+
+	// get the current selection to the entry specified by the pUserData
+		[propget] HRESULT CustomEntry([out, retval] const void ** pUserData);
+	};
+
+	[
+		object,
+		uuid(40a779dc-9ddc-4d02-bf07-717f419c00aa),
+		pointer_default(unique),
+		local
+	]
+	interface IRecorderCombobox3 : IRecorderCombobox2
+	{
+		[propput] HRESULT DriveByName ([in] BSTR bstrName);
+		[propput] HRESULT DriveByLetter ([in] BSTR bstrLetter);
+	}
+
+	[
+		object,
+		uuid(29c0c344-4c3c-4d4c-bd49-622ccfbd2c2e),
+		pointer_default(unique),
+		local
+	]
+	// BurnSettings object is accessed through this interface. It is
+	// used solely to store burn settings information. The object is normally
+	// created by the client.
+	// 
+	interface IBurnSettings : IUnknown
+	{
+	// Get and set the burn flags.
+	// 
+		[propget] HRESULT BurnFlags([out, retval] DWORD * pdwBurnFlags);
+		[propput] HRESULT BurnFlags([in] DWORD dwBurnFlags);
+
+	// Get and set the burn speed.
+	// 
+		[propget] HRESULT Speed([out, retval] DWORD * pdwSpeed);
+		[propput] HRESULT Speed([in] DWORD dwSpeed);
+	};
+
+	typedef [v1_enum] enum _tagBURN_SETTINGS_GUI_FLAGS
+	{
+		BSGF_DETERMINE_MAXIMUM_SPEED			= 1L<< 0,
+		BSGF_SIMULATION							= 1L<< 1,
+		BSGF_WRITE								= 1L<< 2,
+		BSGF_FINALIZE_CD						= 1L<< 3,
+		BSGF_WRITE_SPEED						= 1L<< 4,
+		BSGF_WRITE_METHOD						= 1L<< 5,
+		BSGF_BURN_PROOF							= 1L<< 6,
+		BSGF_PROGRESS							= 1L<< 7,
+		BSGF_VERIFY_WRITTEN_DATA				= 1L<< 8,
+	}
+	BURN_SETTINGS_GUI_FLAGS;
+
+	[
+		object,
+		uuid(0e17506d-ef14-4f3f-92bc-d3ae0739d079),
+		pointer_default(unique),
+		local
+	]
+	interface IBurnSettingsDlg : IUnknown
+	{
+	// Set the working parameters for this settings window. Flags are yet to
+	// be defined. IBurnSettings interface points to the object
+	// created by the client.
+	// 
+		[propput] HRESULT BurnSettings ([in] IBurnSettings * pBurnSettings);
+		[propput] HRESULT GUIFlags ([in] DWORD dwFlags);
+		[propput] HRESULT MediaType ([in] NERO_MEDIA_TYPE mediaType);
+	};
+
+	[
+		object,
+		uuid(01e72686-14ec-4a44-be83-6c1cf9bfa2c0),
+		pointer_default(unique),
+		local
+	]
+	// This interface is used solely for the purpose of giving the client a
+	// chance to handle the callback notifications from the NeroAPI engine.
+	// If the user wants them then the user should implement this interface
+	// and pass its pointer where appropriate (see IBurnProgressDlg interface
+	// below).
+	// 
+	interface IBurnCallbacks : IUnknown
+	{
+		HRESULT OnDoneBurn([in] NEROAPI_BURN_ERROR burnError);
+
+		HRESULT Progress([in] DWORD dwProgressInPercent, [out, retval] BOOL * pbRetVal);
+		HRESULT SubtaskProgress([in] DWORD dwProgressInPercent, [out, retval] BOOL * pbRetVal);
+		HRESULT AddLogLine([in] NERO_TEXT_TYPE type, [in] BSTR bstrLogLine);
+		HRESULT SetPhase([in] BSTR bstrPhase);
+		HRESULT SetMajorPhase([in] NERO_MAJOR_PHASE majorPhase);
+		HRESULT Aborted ([out, retval] BOOL * pbRetVal);
+		HRESULT DisableAbort ([in] BOOL bAbortEnabled);
+	}
+
+	typedef [v1_enum] enum _tagBURN_PROGRESS_GUI_FLAGS
+	{
+		BPGF_TOTAL_TIME							= 1L<< 0,
+		BPGF_CURRENT_ACTION						= 1L<< 1,
+		BPGF_USED_BUFFER						= 1L<< 2,
+		BPGF_CANCEL_BUTTON						= 1L<< 3,
+		BPGF_CLOSE_DISCARD_BUTTON				= 1L<< 4,
+
+		BPGF_PRINT_BUTTON						= 1L<< 6,
+		BPGF_SAVE_BUTTON						= 1L<< 7,
+	}
+	BURN_PROGRESS_GUI_FLAGS;
+
+	typedef [v1_enum] enum _tagBURN_PROGRESS_CUSTOM_CONTROL_POSITION
+	{
+		BPCCP_BOTTOM_RIGHT_CORNER,
+	}
+	BURN_PROGRESS_CUSTOM_CONTROL_POSITION;
+
+	[
+		object,
+		uuid(ee2ae31b-c11d-40ea-a75b-884837328387),
+		pointer_default(unique),
+		local
+	]
+	interface IBurnProgressDlgCallbacks : IUnknown
+	{
+		HRESULT OnCancel ([out, retval] BOOL * pbAllowCancel);
+		HRESULT OnDiscard ();
+		HRESULT OnClose ();
+	}
+
+	[
+		object,
+		uuid(f9da148d-0052-4b6f-bb4f-c35e1fd4c5a3),
+		pointer_default(unique),
+		local
+	]
+	// After creating the BurnProgressDlg object and creating the actual
+	// child window through IChildWindow interface, the following interface
+	// is used to 1) set working parameters to the object with SetParameters
+	// method and 2) to initiate the burn process itself through one of the
+	// two variants of burn methods.
+	// 
+	interface IBurnProgressDlg : IUnknown
+	{
+	// Flags are yet to be defined.
+	// 
+		[propput] HRESULT GUIFlags ([in] DWORD dwFlags);
+
+		[propput] HRESULT CompilationName ([in] BSTR bstrCompilationName);
+		[propput] HRESULT CompilationType ([in] BSTR bstrCompilationType);
+		[propput] HRESULT CompilationSize ([in] BSTR bstrCompilationSize);
+		[propput] HRESULT CompilationTime ([in] BSTR bstrCompilationTime);
+
+	// Methods used for burning. IBurnCallbacks interface pointer can be NULL. If
+	// non-NULL, it is assumed that the client wants to be notified during the burn
+	// process about the major developments.
+	// 
+    	HRESULT Burn([in] const LPNERO_SCSI_DEVICE_INFO pDeviceInfo, [in] NERO_CD_FORMAT cdFormat, [in] const void * pWriteCD, [in] IBurnSettings * pBurnSettings, [in] IBurnCallbacks * pBurnCallbacks);
+    	HRESULT Burn2([in] const LPNERO_SCSI_DEVICE_INFO pDeviceInfo, [in] NERO_CD_FORMAT cdFormat, [in] const void * pWriteCD, [in] DWORD dwBurnFlags, [in] DWORD dwSpeed, [in] IBurnCallbacks * pBurnCallbacks);
+
+	// This method is used to cancel the burn process.
+	// 
+		HRESULT Cancel ();
+		HRESULT CanCloseParent ([out, retval] BOOL * pbCanClose);
+
+		HRESULT AllocateProgressBar ([in] DWORD dwPreProgress, [in] DWORD dwPostProgress);
+		HRESULT SetProgress([in] DWORD dwProgressInPercent);
+		HRESULT AddLogLine([in] NERO_TEXT_TYPE type, [in] BSTR bstrLogLine);
+		HRESULT SetPhase([in] BSTR bstrPhase);
+	};
+
+	[
+		object,
+		uuid(2053e9d5-8460-4e52-aba2-832202624365),
+		pointer_default(unique),
+		local
+	]
+	interface IBurnProgressDlg2 : IBurnProgressDlg
+	{
+		[propput] HRESULT WizardMode ([in] BOOL bWizardMode);
+	};
+
+	[
+		object,
+		uuid(fda257a8-46ca-452e-9f3c-05798d3382c0),
+		pointer_default(unique),
+		local
+	]
+	interface IExternalChildWindow : IUnknown
+	{
+		HRESULT Create ([in] HWND hWndParent, [out, retval] HWND * phWnd);
+		[propget] HRESULT MinSize ([out, retval] SIZE * pSize);
+		[propget] HRESULT MaxSize ([out, retval] SIZE * pSize);
+	};
+
+	[
+		object,
+		uuid(4aa37a65-74c2-4da1-b98b-3803c6b9c592),
+		pointer_default(unique),
+		local
+	]
+	interface IBurnProgressDlg3 : IBurnProgressDlg2
+	{
+		HRESULT AddCustomControl ([in] BURN_PROGRESS_CUSTOM_CONTROL_POSITION bpccpWhere, [in] IExternalChildWindow * pControl);
+	};
+
+	[
+		object,
+		uuid(3ef6e092-cb60-4edb-bad2-dbcf097c452a),
+		pointer_default(unique),
+		local
+	]
+	interface IBurnProgressDlgEx : IUnknown
+	{
+		[propput] HRESULT IBurnProgressDlgCallbacks ([in] IBurnProgressDlgCallbacks * pCallbacks);
+	}
+
+	[
+		object,
+		uuid(d0509114-6204-41f6-a6da-8fd32eabc82f),
+		pointer_default(unique),
+		local
+	]
+	// All objects that display modal dialogs inherit from this interface. It provides
+	// the simple mechanism of invoking a modal dialog, specifying the parent window
+	// and getting back the result in terms of IDOK, IDCANCEL, etc.
+	// 
+	interface IModalDialog : IUnknown
+	{
+		HRESULT DoModal ([in] HWND hWndParent, [out, retval] int * piRetVal);
+	}
+
+	[
+		object,
+		uuid(30603428-c6bb-45c1-8b35-a02cda5c7086),
+		pointer_default(unique),
+		local
+	]
+	interface INEROAPI_CDRW_ERASE_MODE : IUnknown
+	{
+	// This method allows the client to change the default initial selection for the erase mode.
+	// 
+		[propput] HRESULT NEROAPI_CDRW_ERASE_MODE ([in] NEROAPI_CDRW_ERASE_MODE eraseMode);
+
+	// After the dialog has been dismissed, the client can get the selected erase mode with this method.
+	// 
+		[propget] HRESULT NEROAPI_CDRW_ERASE_MODE ([out, retval] NEROAPI_CDRW_ERASE_MODE * pEraseMode);
+	}
+
+	[
+		object,
+		uuid(9a45a9f6-fe69-4fe8-9862-751693dc87df),
+		pointer_default(unique),
+		local
+	]
+	interface IEraseDiscDlg : IUnknown
+	{
+	// This method allows the client to specify the device handle of the recorder.
+	// 
+		[propput] HRESULT NERO_DEVICEHANDLE ([in] NERO_DEVICEHANDLE aDeviceHandle);
+
+	// Get the result of the erase operation. Two variants, integer and string error.
+	// 
+		[propget] HRESULT ErasingResult ([out, retval] int * piErasingResult);
+		[propget] HRESULT ErasingResultString ([out, retval] BSTR * pbstrErasingResult);
+	}
+
+	[
+		object,
+		uuid(b28dc5d4-9593-4179-aaaa-df3c8f28db72),
+		pointer_default(unique),
+		local
+	]
+	interface IEraseDiscDlg2 : IEraseDiscDlg
+	{
+		[propput] HRESULT ErasingFlags ([in] DWORD dwFlags);
+	}
+
+	[
+		object,
+		uuid(62b3f282-ad7a-42f7-bdb1-b27772bdb61d),
+		pointer_default(unique),
+		local
+	]
+	interface IEraseDiscCallbacks : IUnknown
+	{
+		HRESULT OnEraseDone ([in] IEraseDiscDlg * pEraseDiscDlg);
+	};
+
+	[
+		object,
+		uuid(79b3261b-b57f-493e-a7bd-3325b5f58350),
+		pointer_default(unique),
+		local
+	]
+	interface IEraseDiscDlg3 : IEraseDiscDlg2
+	{
+		[propput] HRESULT Callbacks ([in] IEraseDiscCallbacks * pCallbacks);
+	}
+
+	[
+		object,
+		uuid(d658288d-1d49-4eb9-869e-10e5ddd40d16),
+		pointer_default(unique),
+		local
+	]
+	interface IEraseDiscDlg4 : IEraseDiscDlg3
+	{
+		[propput] HRESULT NeverShowDialogBox ([in] BOOL bDontShow);
+	}
+
+	[
+		object,
+		uuid(cd72cad8-d41a-40b2-9943-01f30b1507cc),
+		pointer_default(unique),
+		local
+	]
+	interface IEraseSettingsDlg : IUnknown
+	{
+		[propput] HRESULT ModelessErase ([in] BOOL bModelessErase);
+		[propput] HRESULT Callbacks ([in] IEraseDiscCallbacks * pCallbacks);
+	}
+
+	[
+		object,
+		uuid(0040D3ED-84A2-4e56-9539-646BDC57DE4A),
+		pointer_default(unique),
+		local
+	]
+	interface IEraseSettingsDlg2 : IEraseSettingsDlg
+	{
+		[propget] HRESULT ModelessDlgHWND ([out, retval] HWND* phModelessDlgHWND);
+	}
+
+	[
+		object,
+		uuid(0f5ebcfd-2d94-4896-8169-088870dfdbaf),
+		pointer_default(unique),
+		local
+	]
+	interface IInitSettings : IUnknown
+	{
+	// The client should pass NeroAPI module handle through this property. If no
+	// or NULL handle is passed, NeroCBUI will try to get the handle of the already
+	// loaded NeroAPI dll.
+	// 
+		[propput] HRESULT HMODULE ([in] HMODULE hNeroAPIModule);
+
+	// The way to set the language code.
+	// 
+		[propput] HRESULT LanguageCode ([in] const signed char * psLanguageCode);
+	}
+
+	[
+		object,
+		uuid(4baf9833-70bb-4523-8349-5209b5644587),
+		pointer_default(unique),
+		local
+	]
+	interface IInitSettings2 : IInitSettings
+	{
+		[propput] HRESULT AppTitle ([in] const signed char * psAppTitle);
+	}
+
+	[
+		object,
+		uuid(9964816b-df5f-44aa-9b87-f0de3f4c57fc),
+		pointer_default(unique),
+		local
+	]
+	interface IInitSettings3 : IInitSettings2
+	{
+		[propput] HRESULT CompatibilityMgr ([in] IUnknown * pMgr);
+	}
+
+	[
+		object,
+		uuid(5db904aa-9c92-494e-897c-5aaa5337cf2d),
+		pointer_default(unique),
+		local
+	]
+	interface IInformation : IUnknown
+	{
+		[propget] HRESULT Version ([out] WORD * pwMajHi, [out] WORD * pwMajLo, [out] WORD * pwMinHi, [out] WORD * pwMinLo);
+		[propget] HRESULT InstallFolder ([out, retval] BSTR * pbstrFolder);
+	}
+
+	[
+		object,
+		uuid(f714bdc1-aec8-41de-83d2-db9c9437fdb2),
+		pointer_default(unique),
+		local
+	]
+	interface IChildWindow : IUnknown
+	{
+		HRESULT Subclass ([in] HWND hWnd, [out, retval] BOOL * pbRetVal);
+	}
+
+	[
+		object,
+		uuid(2302b658-de28-4233-96bd-3bb5fb7b747e),
+		pointer_default(unique),
+		local
+	]
+	interface IImageInfoDlg: IUnknown
+	{
+		[propput] HRESULT ImageFilename ([in] BSTR bstrFilename);
+	};
+
+	[
+		object,
+		uuid(35e68486-0c10-41c5-a52a-55d8c0ba61f2),
+		pointer_default(unique),
+		local
+	]
+	interface IChooseSessionDlg: IUnknown
+	{
+		[propget] HRESULT TrackNumber ([out, retval] DWORD * pdwVal);
+	};
+
+	[
+		object,
+		uuid(efbe7cff-6878-4dce-b40d-e21c5d7698b6),
+		pointer_default(unique),
+		local
+	]
+	interface ISpeedComboboxCallbacks : IUnknown
+	{
+		HRESULT OnContentRefreshed ();
+	};
+
+	[
+		object,
+		uuid(4855a95f-969f-49cd-8f5a-ca04e2aa7a62),
+		pointer_default(unique)
+	]
+	interface ISpeedCombobox : IUnknown
+	{
+		[propput] HRESULT Callbacks ([in] ISpeedComboboxCallbacks * pCallbacks);
+		[propput] HRESULT MediaType ([in] NERO_MEDIA_TYPE mediaType);
+
+		[propget] HRESULT Speed([out, retval] DWORD * pdwSpeed);
+		[propget] HRESULT SpeedInKBs ([out, retval] DWORD * pdwSpeedInKBs);
+
+		[propput] HRESULT HideWhenEmpty ([in] BOOL bHide);
+	};
+
+	[
+		object,
+		uuid(6c373d24-7575-4507-972c-1814914570c9),
+		pointer_default(unique)
+	]
+	interface ISpeedCombobox2 : ISpeedCombobox
+	{
+		[propput] HRESULT SpeedInKbps ([in] DWORD dwSpeedInKbps);
+		[propput] HRESULT SpeedInX ([in] DWORD dwSpeedInX);
+	};
+
+	[
+		object,
+		uuid(ed8b6cb0-5ab6-4db4-9d61-5dcf28f73d05),
+		pointer_default(unique),
+		local
+	]
+	interface IWaitForMediaDlg : IUnknown
+	{
+		HRESULT WaitForMedia ([in] HWND hWndParent, [in] NERO_DEVICEHANDLE aDeviceHandle, [in] NERO_MEDIA_SET nms, [in] DWORD dwBurnFlags, [in] void * pCDStamp, [out, retval] BOOL * pbAbort);
+	}
+
+
+	[
+		object,
+		uuid(911fb1f9-6576-4947-bf24-476babe78016),
+		pointer_default(unique),
+		local
+	]
+	interface IUserDlgHandler : IUnknown
+	{
+		[propput] HRESULT ParentHWND ([in] HWND hWndParent);
+		HRESULT HandleUserDlg ([in] NeroUserDlgInOut type, [in] void *data, [out, retval] NeroUserDlgInOut * pRetVal);
+		[propget] HRESULT Aborted ([out, retval] BOOL * pbAborted);
+		[propput] HRESULT Aborted ([in] BOOL bAborted);
+	}
+
+// MFC SPECIFIC STUFF !!!
+// 
+cpp_quote("#ifdef __AFX_H__")
+cpp_quote("typedef AFX_OLDPROPSHEETPAGE * LPAFX_OLDPROPSHEETPAGE;")
+cpp_quote("#else")
+cpp_quote("typedef long LPAFX_OLDPROPSHEETPAGE;")
+cpp_quote("#endif")
+
+cpp_quote("#if 0")
+	DECLARE_NEROCBUI_STRUCT(AFX_OLDPROPSHEETPAGE);
+cpp_quote("#endif")
+
+	[
+		object,
+		uuid(25398f04-eb36-4cd3-921e-af1aac1a3e61),
+		pointer_default(unique),
+		local
+	]
+	interface IMfcPropertyPage : IUnknown
+	{
+		[propget] HRESULT AFX_OLDPROPSHEETPAGE ([out, retval] LPAFX_OLDPROPSHEETPAGE * ppPSP);
+	}
+
+
+// PRIVATE INTERFACES !!!
+// 
+	[
+		object,
+		uuid(a8a66560-7a62-444d-b5e3-629dd8865c80),
+		pointer_default(unique),
+		hidden
+	]
+	interface IPrivateDeviceInfos : IUnknown
+	{
+		HRESULT Private_NewDeviceInfos ([in] LPNERO_SCSI_DEVICE_INFOS pDeviceInfos);
+		HRESULT Private_DeviceInfoInUseChange ([in] LPNERO_SCSI_DEVICE_INFO pDeviceInfo, [in] BOOL bInUse);
+		HRESULT Private_DeviceInfoDiscChange ([in] LPNERO_SCSI_DEVICE_INFO pDeviceInfo, [in] BOOL bInserted);
+
+		HRESULT Private_DisplayWaitCursor ([in] BOOL bDisplayIt);
+	}
+
+	[
+		object,
+		uuid(671fd79b-c0af-4bb3-9738-e229871732f9),
+		pointer_default(unique),
+		local
+	]
+	interface IPrivateImageInfoDlg: IUnknown
+	{
+		[propget] HRESULT Private_ImageFilename ([out, retval] BSTR * pbstrFilename);
+	};

@@ -77,6 +77,6 @@ Version 0.30a
 [*] User Dialog responses now handle most of the options
 [-] PCM Audio files importiong routines now are gracefully closing the files
 
-Version 0.30a
+Version 0.40a
 ---------------
 [+] added support to Nero SDK 1.03 and Nero SDK 1.04
