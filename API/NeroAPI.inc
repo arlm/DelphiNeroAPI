@@ -7,5 +7,5 @@
 
 
 { enable NERO_6 if you want to link against the Nero 6 API. }
-{.$DEFINE NERO_6}
+{$DEFINE NERO_6}
 

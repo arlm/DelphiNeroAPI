@@ -40,6 +40,7 @@ contains
   NeroIsoTrack in 'NeroIsoTrack.pas',
   NeroPacketWriting in 'NeroPacketWriting.pas',
   FileSystemBlockAccessExtensions in 'FileSystemBlockAccessExtensions.pas',
-  dnapiComponents in 'dnapiComponents.pas';
+  dnapiComponents in 'dnapiComponents.pas',
+  NeroCBUI in 'NeroCBUI.pas';
 
 end.

@@ -54,6 +54,9 @@
 |* 07/03/2004: Modified
 |*    Andreas Hausladen
 |*    Nero 6 (NeroAPI SDK v1.04)
+|* 07/03/2004: Modified
+|*    Erik van Pienbroek
+|*    corrected NERO_ISO_ITEM.fileName and NERO_ISO_ITEM.sourceFilePath length
 |*
 ******************************************************************************}
 
@@ -916,7 +919,7 @@ type
   PNERO_ISO_ITEM = ^NERO_ISO_ITEM;
   tag_NERO_ISO_ITEM = record
     {$IFDEF NERO_6}
-    fileName: array[0..256 - 1] of Char;    // Deprecated, use longFileName instead
+    fileName: array[0..252 - 1] of Char;    // Deprecated, use longFileName instead
     longFileName: PChar;                    // File name on the burnt CD
                                             // (will be freed in NeroFreeIsoItem if this item is a reference)
     {$ELSE}
@@ -927,7 +930,7 @@ type
                                             // when recording RockRidge, you can set the name of a directory to be used for
                                             // retrieving rockridge informations here
     {$IFDEF NERO_6}
-    sourceFilePath: array[0..256 - 1] of Char;  // Deprecated, use longSourceFilePath instead
+    sourceFilePath: array[0..252 - 1] of Char;  // Deprecated, use longSourceFilePath instead
     longSourceFilePath: PChar;                  // Path to the file, including file name (ignored for a directory)
     {$ELSE}
     sourceFilePath: array[0..256 - 1] of Char;  // Path to the file, including file name (ignored for a directory)
