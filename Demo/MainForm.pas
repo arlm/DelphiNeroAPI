@@ -39,6 +39,9 @@
 |* 26/06/2003: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    memory error corrected on NeroDeviceInfos, added Device List
+|* 02/07/2003: Modified
+|*    Alexandre Rocha Lima e Marcondes
+|*    added Media detecting (NeroCDInfo)
 |*
 ******************************************************************************}
 
@@ -55,7 +58,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, NeroAPI, NeroUserDialog, ComCtrls, StdCtrls, AppEvnts;
+  Dialogs, NeroAPI, NeroUserDialog, ComCtrls, StdCtrls, AppEvnts, ExtCtrls,
+  JvImage;
 
 type
   TFMainForm = class(TForm)

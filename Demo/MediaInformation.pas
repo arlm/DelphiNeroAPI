@@ -33,6 +33,9 @@
 |*
 |* CREATOR: Alexandre Rocha Lima e Marcondes
 |*
+|* 02/07/2003: Modified
+|*    Alexandre Rocha Lima e Marcondes
+|*    added Audio Track Extraction to WAV Files (NeroDAE)
 ******************************************************************************}
 
 {******************************************************************************
@@ -48,7 +51,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ComCtrls;
+  Dialogs, StdCtrls, ComCtrls, Menus, NeroAPI, ImgList;
 
 type
   TFMediaInfo = class(TForm)
@@ -60,28 +63,43 @@ type
     lbTitle: TLabel;
     btnClose: TButton;
     tvTracks: TTreeView;
+    pbProgress: TProgressBar;
+    btnCancel: TButton;
+    pmTracks: TPopupMenu;
+    miExtractTracktoFile: TMenuItem;
+    ilTracks: TImageList;
+    sdWAV: TSaveDialog;
     procedure FormShow(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
+    procedure btnCancelClick(Sender: TObject);
+    procedure tvTracksContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
+    procedure miExtractTracktoFileClick(Sender: TObject);
+    procedure tvTracksCollapsing(Sender: TObject; Node: TTreeNode;
+      var AllowCollapse: Boolean);
+    procedure tvTracksExpanded(Sender: TObject; Node: TTreeNode);
   private
     { Private declarations }
+  protected
   public
-    { Public declarations }
   end;
+
+  function TrackReadProgressCallback(pUserData: Pointer;
+    dwProgressInPercent: DWORD): BOOL;
 
 var
   FMediaInfo: TFMediaInfo;
 
 implementation
 
-uses MainForm, NeroAPI;
+uses MainForm, StrUtils;
 
 {$R *.dfm}
 
 procedure TFMediaInfo.FormShow(Sender: TObject);
 var
   TrackCount: Integer;
-  TrackDescription: String;
-  Session: TTreeNode;
+  Session, Node: TTreeNode;
 begin
   if Assigned(FMainForm.NeroDeviceHandle) then
   begin
@@ -117,30 +135,45 @@ begin
       tvTracks.Items.Clear;
       for TrackCount := 0 to FMainForm.NeroCDInfo.ncdiNumTracks - 1 do
       begin
-        if (not Assigned(Session)) or (Session.Text <> 'session #' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiSessionNumber)) then
-          Session := tvTracks.items.AddChild(nil, 'session #' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiSessionNumber));
+        if (not Assigned(Session)) or (Session.Text <> 'Session #' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiSessionNumber)) then
+          Session := tvTracks.items.AddChild(nil, 'Session #' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiSessionNumber));
 
-        TrackDescription := 'Track #' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackNumber);
+        Node := tvTracks.Items.AddChild(Session, 'Track #' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackNumber));
 
         case (FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackType) of
-          NTT_AUDIO: TrackDescription := TrackDescription + ' [Audio Track]';
-          NTT_DATA: TrackDescription := TrackDescription + ' [Data Track]';
-          NTT_UNKNOWN: TrackDescription := TrackDescription + ' [Unknown Track]';
+          NTT_DATA:
+          begin
+            Node.Text := Node.Text + ' [Data Track]';
+            Node.ImageIndex := 3;
+          end;
+          NTT_AUDIO:
+          begin
+            Node.Text := Node.Text + ' [Audio Track]';
+            Node.ImageIndex := 4;
+          end;
+          NTT_UNKNOWN:
+          begin
+            Node.Text := Node.Text + ' [Unknown Track]';
+            Node.ImageIndex := 5;
+          end;
         end;
 
-        TrackDescription := TrackDescription + ' (start block : ' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackStartBlk) +
+        Node.Text := Node.Text + ' (start block : ' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackStartBlk) +
           ' end block : '  + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackLengthInBlks + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTrackStartBlk) +
           ' )';
 
         if FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiISRC <> '' then
-          TrackDescription := TrackDescription + ' ISRC : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiISRC;
+          Node.Text := Node.Text + ' ISRC : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiISRC;
         if FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiArtist <> '' then
-          TrackDescription := TrackDescription + ' Artist : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiArtist;
+          Node.Text := Node.Text + ' Artist : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiArtist;
         if FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTitle <> '' then
-          TrackDescription := TrackDescription + ' Title : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTitle;
+          Node.Text := Node.Text + ' Title : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[TrackCount].ntiTitle;
 
-        tvTracks.Items.AddChild(Session, TrackDescription);
+
       end;
+      btnCancel.Tag := 0;
+      pbProgress.Visible := False;
+      btnCancel.Visible := False;
     end;
   end;
 end;
@@ -148,6 +181,97 @@ end;
 procedure TFMediaInfo.btnCloseClick(Sender: TObject);
 begin
   Close;
+end;
+
+procedure TFMediaInfo.btnCancelClick(Sender: TObject);
+begin
+  btnCancel.Tag  := 666;
+end;
+
+function TrackReadProgressCallback(pUserData: Pointer;
+  dwProgressInPercent: DWORD): BOOL;
+begin
+	FMediaInfo.Caption := 'Track extraction in progress (' + IntToStr(dwProgressInPercent) + '%)';
+  FMediaInfo.pbProgress.StepBy(dwProgressInPercent);
+  Application.ProcessMessages;
+
+	Result := (FMediaInfo.btnCancel.Tag = 666);
+end;
+
+procedure TFMediaInfo.tvTracksContextPopup(Sender: TObject;
+  MousePos: TPoint; var Handled: Boolean);
+begin
+  miExtractTracktoFile.Enabled := (LeftStr(tvTracks.GetNodeAt(MousePos.X, MousePos.Y).Text, 7) <> 'session');
+end;
+
+procedure TFMediaInfo.miExtractTracktoFileClick(Sender: TObject);
+var
+  NeroCallBack: PNeroCallBack;
+  Exchange: PNeroDataExchange;
+  Track: Integer;
+  Buffer: String;
+begin
+  if tvTracks.Selected.ImageIndex = 4 then
+  begin
+    NeroCallBack := AllocMem(SizeOf(TNeroCallBack));
+    NeroCallback.ncCallbackFunction := @TrackReadProgressCallback;
+    NeroCallBack.ncUserData := FMainForm.NeroSettings;
+
+    Buffer := LeftStr(tvTracks.Selected.Text, 9);
+    Buffer := RightStr(Buffer, Length(Buffer) - LastDelimiter('#', Buffer));
+    Track := Cardinal(StrToInt(Trim(Buffer)));
+
+    Exchange := AllocMem(SizeOf(TNeroDataExchange));
+    Exchange.ndeType := NERO_ET_FILE;
+
+    sdWAV.Title := 'Extract Track #' + IntToStr(FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackNumber);
+    if FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiISRC <> '' then
+      sdWAV.Title := sdWAV.Title + ' ISRC : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiISRC;
+    if FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiArtist <> '' then
+      sdWAV.Title := sdWAV.Title + ' Artist : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiArtist;
+    if FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTitle <> '' then
+      sdWAV.Title := sdWAV.Title + ' Title : ' + FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTitle;
+
+    if not sdWAV.Execute then
+    begin
+      NeroFreeMem(NeroCallBack);
+      NeroFreeMem(Exchange);
+      exit;
+    end;
+
+    if FileExists(sdWAV.FileName) then
+      DeleteFile(sdWAV.FileName);
+
+    StrCopy(Exchange.ndeData.ndeFileName, PChar(sdWAV.FileName));
+    Exchange.ndeData.ndeFileName[Length(sdWAV.FileName)] := #0;
+
+    btnClose.Visible := False;
+    btnCancel.Visible := True;
+    pbProgress.Visible := True;
+    pbProgress.Position := 0;
+    pbProgress.Max := FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackLengthInBlks;
+
+    NeroDAE(FMainForm.NeroDeviceHandle, FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackStartBlk,
+      FMainForm.NeroCDInfo.ncdiTrackInfos[Track].ntiTrackLengthInBlks, Exchange,
+      FMainForm.NeroDeviceInfos.nsdisDevInfos[FMainForm.cbDevices.itemIndex].nsdiReadSpeeds.nsiSupportedSpeedsKBs[FMainForm.NeroDeviceInfos.nsdisDevInfos[FMainForm.cbDevices.itemIndex].nsdiReadSpeeds.nsiNumSupportedSpeeds - 1],
+      NeroCallBack);
+
+    NeroFreeMem(NeroCallBack);
+    NeroFreeMem(Exchange);
+  end;
+end;
+
+procedure TFMediaInfo.tvTracksCollapsing(Sender: TObject; Node: TTreeNode;
+  var AllowCollapse: Boolean);
+begin
+  if (LeftStr(Node.Text, 7) = 'Session') then
+    Node.ImageIndex := 1;
+end;
+
+procedure TFMediaInfo.tvTracksExpanded(Sender: TObject; Node: TTreeNode);
+begin
+  if (LeftStr(Node.Text, 7) = 'Session') then
+    Node.ImageIndex := 2;
 end;
 
 end.
