@@ -50,6 +50,9 @@
 |* 02/02/2004: Modified
 |*    Alexandre Rocha Lima e Marcondes
 |*    added Image writing
+|* 18/02/2004: Modified
+|*    Alexandre Rocha Lima e Marcondes
+|*    added ISO CD writing (Thanks to WebRider from CDFreaks.com)
 |*
 ******************************************************************************}
 
@@ -66,8 +69,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, NeroAPI, NeroUserDialog, ComCtrls, StdCtrls, AppEvnts, ExtCtrls,
-  JvImage, ShellAPI, ShellCtrls;
+  Dialogs, NeroAPI, NeroUserDialog, NeroIsoTrack, ComCtrls, StdCtrls, AppEvnts,
+  ExtCtrls, ShellAPI, ShellCtrls;
 
 type
   TFMainForm = class(TForm)
@@ -131,6 +134,7 @@ type
     lbImageName: TLabel;
     edImageName: TEdit;
     btnBurnImage: TButton;
+    btnBurnISOCD: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure ApplicationEventsShowHint(var HintStr: String;
@@ -151,11 +155,17 @@ type
     procedure rgTypeClick(Sender: TObject);
     procedure stvVCDTempClick(Sender: TObject);
     procedure btnBurnImageClick(Sender: TObject);
+    procedure btnBurnISOCDClick(Sender: TObject);
   private
     { Private declarations }
   protected
     procedure WMDropFiles(var msg : TWMDropFiles); message WM_DROPFILES;
+    procedure FreeIsoItem(var item: PNeroIsoItem);
+    procedure AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
   public
+    NeroIsoTrack: CNeroIsoTrack;
+    RootIsoItem: PNeroIsoItem;
+
     NeroSettings: PNeroSettings;
     NeroDeviceHandle: NERO_DEVICEHANDLE;
     NeroProgress: NERO_PROGRESS;
@@ -189,7 +199,7 @@ var
 
 implementation
 
-uses DeviceDetails, Registry, MediaInformation;
+uses DeviceDetails, Registry, MediaInformation, DateUtils;
 
 {$R *.dfm}
 
@@ -298,6 +308,9 @@ var
   DeviceCount: Integer;
   Registry: TRegistry;
 begin
+  NeroIsoTrack := nil;
+  RootIsoItem := nil;
+
   NeroDeviceHandle := nil;
   NeroDeviceInfos := nil;
   NeroCDInfo := nil;
@@ -446,6 +459,12 @@ begin
 
   if Assigned(NeroSettings) then
     ReallocMem(NeroSettings, 0);
+
+  if Assigned(NeroIsoTrack) then
+    NeroFreeIsoTrack(NeroIsoTrack);
+
+  if Assigned(RootIsoItem) then
+    FreeIsoItem(RootIsoItem);
 
 	NeroClearErrors;
 	NeroDone;
@@ -665,6 +684,18 @@ begin
           end;
           1:
           begin
+            if Assigned(NeroWriteCD) then
+              ReallocMem(NeroWriteCD, SizeOf(NeroWriteCD))
+            else
+              NeroWriteCD :=AllocMem(SizeOf(NERO_WRITE_CD));
+
+            if not Assigned(RootIsoItem) then
+            begin
+              RootIsoItem := NeroCreateIsoItem();
+              RootIsoItem.fileName := '';
+            end;
+
+            AddFileToRootIsoItem(RootIsoItem, WhichFiles.Strings[i]);
           end;
           2:
           begin
@@ -798,6 +829,15 @@ begin
           end;
         end;
       end;
+
+      case pcWrite.TabIndex of
+        1:
+        begin
+          NeroIsoTrack := NeroCreateIsoTrackEx(RootIsoItem, PCHAR('FirstTrack'), 0);
+          NeroWriteCD.nwcdIsoTrack := NeroIsoTrack;
+        end;
+      end;
+
       Screen.Cursor := crDefault;
     end;
   finally
@@ -831,11 +871,47 @@ begin
         if Assigned(NeroWriteFreestyleCD) then
           ReallocMem(NeroWriteFreestyleCD, 0);
 
-       if Assigned(NeroWriteVideoCD) then
+        if Assigned(NeroWriteVideoCD) then
           ReallocMem(NeroWriteVideoCD, 0);
+
+        if Assigned(NeroIsoTrack) then
+          NeroFreeIsoTrack(NeroIsoTrack);
+
+        if Assigned(RootIsoItem) then
+          FreeIsoItem(RootIsoItem);
       end;
       1:
       begin
+        if Assigned(NeroWriteCD) then
+          ZeroMemory(NeroWriteCD, SizeOf(NeroWriteCD))
+        else
+          NeroWriteCD := PNeroWriteCD(AllocMem(SizeOf(NERO_WRITE_CD)));
+
+        if Assigned(NeroWriteVideoCD) then
+          ReallocMem(NeroWriteVideoCD, 0);
+
+        if Assigned(NeroWriteFreestyleCD) then
+          ReallocMem(NeroWriteFreestyleCD, 0);
+
+        if Assigned(NeroWriteImage) then
+          ReallocMem(NeroWriteImage, 0);
+
+        if Assigned(NeroIsoTrack) then
+          NeroFreeIsoTrack(NeroIsoTrack);
+
+        if Assigned(RootIsoItem) then
+          FreeIsoItem(RootIsoItem);
+
+        if Assigned(NeroCDInfo) then
+        begin
+          if NeroCDInfo.ncdiMediumType = NMT_UNKNOWN then
+            NeroWriteCD.nwcdMediaType := MEDIA_DVD_ANY
+          else
+            NeroWriteCD.nwcdMediaType := MEDIA_CD;
+        end
+        else
+            NeroWriteCD.nwcdMediaType := MEDIA_CD;
+
       end;
       2:
       begin
@@ -858,6 +934,12 @@ begin
 
         if Assigned(NeroWriteImage) then
           ReallocMem(NeroWriteImage, 0);
+
+        if Assigned(NeroIsoTrack) then
+          NeroFreeIsoTrack(NeroIsoTrack);
+
+        if Assigned(RootIsoItem) then
+          FreeIsoItem(RootIsoItem);
 
         if Assigned(NeroCDInfo) then
         begin
@@ -892,6 +974,12 @@ begin
 
         if Assigned(NeroWriteImage) then
           ReallocMem(NeroWriteImage, 0);
+
+        if Assigned(NeroIsoTrack) then
+          NeroFreeIsoTrack(NeroIsoTrack);
+
+        if Assigned(RootIsoItem) then
+          FreeIsoItem(RootIsoItem);
 
         NeroWriteVideoCD.nwvcdSVCD := False;
         NeroWriteVideoCD.nwvcdNumItems := 0;
@@ -1043,5 +1131,164 @@ begin
   pcWrite.TabIndex := pcWrite.PageCount - 1;
 end;
 
+
+procedure TFMainForm.btnBurnISOCDClick(Sender: TObject);
+var
+  Flags: Cardinal;
+begin
+  if cbxSimulateBurn.Checked then
+    Flags := NBF_SIMULATE
+  else
+    Flags := NBF_WRITE;
+
+  Flags := Flags + NBF_DISABLE_ABORT + NBF_DETECT_NON_EMPTY_CDRW +
+    NBF_SPEED_IN_KBS + NBF_CD_TEXT;
+
+  if cbxCloseSession.Checked then
+    Flags := Flags + NBF_CLOSE_SESSION;
+
+  if cbxTestSpeed.Checked then
+    Flags := Flags + NBF_SPEED_TEST;
+
+  if cbxBufferUnderrun.Checked then
+    Flags := Flags + NBF_BUF_UNDERRUN_PROT;
+
+  if cbxVerifyData.Checked then
+    Flags := Flags + NBF_VERIFY;
+
+  if not cbxEjectCD.Checked then
+    Flags := Flags + NBF_DISABLE_EJECT;
+
+  case cbWritingMethod.ItemIndex of
+    0: // TAO
+    begin
+      //TAO is the default, do nothing
+    end;
+    1: //DAO
+    begin
+      Flags := Flags + NBF_DAO;
+    end;
+  end;
+
+  NeroBurn(NeroDeviceHandle, NERO_ISO_AUDIO_CD, NeroWriteCD, Flags,
+    NeroDeviceInfos.nsdisDevInfos[cbDevices.ItemIndex].nsdiWriteSpeeds.nsiSupportedSpeedsKBs[cbWriteSpeeds.ItemIndex],
+    @NeroProgress);
+
+  if Assigned(NeroWriteCD) then
+    ReallocMem(NeroWriteCD, 0);
+
+  if Assigned(NeroIsoTrack) then
+    NeroFreeIsoTrack(NeroIsoTrack);
+
+  if Assigned(RootIsoItem) then
+    FreeIsoItem(RootIsoItem);
+
+  if cbxEjectCD.Checked then
+  begin
+    btnLoad.Enabled := True;
+    btnRefreshClick(Self);
+  end;
+
+  edImageName.Clear;
+
+  pcWrite.TabIndex := pcWrite.PageCount - 1;
+end;
+
+procedure TFMainForm.FreeIsoItem(var item: PNeroIsoItem);
+begin
+  if Assigned(item) then
+  begin
+    if Assigned(item.nextItem) then
+    begin
+      FreeIsoItem(item.nextItem);
+      item.nextItem := nil;
+    end;
+
+    if item.isDirectory then
+      if Assigned(item.subDirFirstItem) then
+      begin
+        FreeIsoItem(item.subDirFirstItem);
+        item.subDirFirstItem := nil;
+      end;
+
+    if (not Assigned(item.nextItem)) and
+      (not Assigned(item.subDirFirstItem)) then
+    begin
+      if item.isReference then
+        NeroFreeMem(item)
+      else
+        NeroFreeIsoItem(item);
+      item := nil;
+    end;
+  end;
+end;
+
+procedure TFMainForm.AddFileToRootIsoItem(var RootItem: PNeroIsoItem; FileName: String);
+var
+  FileTime: TDateTime;
+  tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, tm_msec: WORD;
+  TempItem, SubDirItem: PNeroIsoItem;
+  sr: TSearchRec;
+begin
+  TempItem := RootItem;
+
+  if not (RootItem.fileName = '') then
+  begin
+    while Assigned(TempItem.nextItem) do
+      TempItem := TempItem.nextItem;
+
+    TempItem.nextItem := NeroCreateIsoItem();
+    TempItem := TempItem.nextItem;
+  end;
+
+  StrPCopy(TempItem.fileName, ExtractFileName(FileName));
+  TempItem.fileName[SizeOf(TempItem.fileName) - 1] := #00;
+
+  StrPCopy(TempItem.sourceFilePath, FileName);
+  TempItem.fileName[SizeOf(TempItem.sourceFilePath) - 1] := #00;
+
+  FileTime := FileDateToDateTime(FileAge(FileName));
+  DecodeDateTime(FileTime, tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, tm_msec);
+
+  TempItem.entryTime.tm_year := tm_year;
+  TempItem.entryTime.tm_mon := tm_mon;
+  TempItem.entryTime.tm_wday := DayOfTheWeek(FileTime);
+  TempItem.entryTime.tm_mday := DayOfTheMonth(FileTime);
+  TempItem.entryTime.tm_yday := DayOfTheYear(FileTime);
+  TempItem.entryTime.tm_isdst := WORD(False);
+  TempItem.entryTime.tm_hour := tm_hour;
+  TempItem.entryTime.tm_min := tm_min;
+  TempItem.entryTime.tm_sec := tm_min;
+
+  TempItem.isReference := False;
+  TempItem.isDirectory := DirectoryExists(FileName);
+  TempItem.importinfo := nil;
+  TempItem.userData := nil;
+  TempItem.subDirFirstItem := nil;
+  SubDirItem := nil;
+
+  if TempItem.isDirectory then
+    if FindFirst(IncludeTrailingPathDelimiter(FileName) + '*.*', faAnyFile + faHidden + faArchive + faReadOnly + faSysFile + faDirectory, sr) = 0 then
+    begin
+      repeat
+        if Assigned(SubDirItem) then
+        begin
+          SubDirItem.nextItem := NeroCreateIsoItem();
+          SubDirItem.fileName := '';
+          SubDirItem := SubDirItem.nextItem;
+        end
+        else
+        begin
+          SubDirItem := NeroCreateIsoItem();
+          SubDirItem.fileName := '';
+          TempItem.subDirFirstItem := SubDirItem;
+        end;
+
+        AddFileToRootIsoItem(SubDirItem, sr.Name);
+      until FindNext(sr) <> 0;
+
+      FindClose(sr);
+    end;
+end;
 
 end.

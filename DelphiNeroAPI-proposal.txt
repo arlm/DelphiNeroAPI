@@ -1,0 +1,13 @@
+	Ahead Software has released an SDK (Software Development Kit) called Nero SDK, in order to
+give access to developers to Nero's Embedded API. Nero Burning ROM is one of the most popular CD/DVD 
+burning softwares for Windows and this SDK gives access to teh API, enabling developers to to add 
+their powerful CD/DVD-writing functions to one's own applications. For example, you can record on 
+CD/DVD graphics files right from one's graphics application. This API also enables the developers to 
+add new audio formats to Nero, Nero Express and NeroMIX.
+	Ahead Software is distributing Nero API version 1.02 for C/C++ developers. The project intends
+to translate the API headers and maybe create a wrapper to access the API from Delphi and thus enable 
+Delphi developers to burn CD/DVD directly from their own software.
+	The project will be compiled on Delphi 7, the platform it will run into is at least: Pentium
+90 processor, 16 MB RAM, 12 MB free hard disk space, CD-R, or CD-RW, DVD-R/RW or DVD+RW drive and 
+Windows 95, 98, ME, NT 4.0, 2000 or XP versions. In order to fullfill the objective the project will 
+need Ahead Nero's libraries or Nero Burning ROM software installed on the machine.

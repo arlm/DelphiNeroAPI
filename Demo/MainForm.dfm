@@ -1,6 +1,6 @@
 object FMainForm: TFMainForm
-  Left = 387
-  Top = 644
+  Left = 619
+  Top = 272
   Width = 555
   Height = 452
   Caption = 'Delphi Nero API 1.02'
@@ -206,7 +206,7 @@ object FMainForm: TFMainForm
     Top = 200
     Width = 539
     Height = 201
-    ActivePage = tsAudio
+    ActivePage = tsISO
     HotTrack = True
     TabOrder = 3
     OnChange = pcWriteChange
@@ -240,6 +240,15 @@ object FMainForm: TFMainForm
     end
     object tsISO: TTabSheet
       Caption = 'ISO (CD-ROM)'
+      object btnBurnISOCD: TButton
+        Left = 448
+        Top = 144
+        Width = 75
+        Height = 25
+        Caption = 'Burn ISO-CD'
+        TabOrder = 0
+        OnClick = btnBurnISOCDClick
+      end
     end
     object tsISOUDF: TTabSheet
       Caption = 'ISO / UDF (CD-ROM)'
@@ -338,7 +347,7 @@ object FMainForm: TFMainForm
         Top = 0
         Width = 267
         Height = 173
-        ActivePage = pcdVCDOptions
+        ActivePage = tsVCDIsoTrack
         TabOrder = 1
         object pcdVCDOptions: TTabSheet
           Caption = 'Options'

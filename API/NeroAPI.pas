@@ -48,6 +48,9 @@
 |* 02/02/2004: Modifyied
 |*    Alexandre Rocha Lima e Marcondes
 |*    added PNERO_WRITE_IMAGE and PNeroWriteImage types
+|* 18/02/2004: Modifyied
+|*    Alexandre Rocha Lima e Marcondes
+|*    Identation
 |*
 ******************************************************************************}
 
@@ -252,9 +255,9 @@ var
 type
   NEROAPI_SCSI_DEVTYPE = (
     NEA_SCSI_DEVTYPE_UNKNOWN,
-    NEA_SCSI_DEVTYPE_WORM,              { can write }
-    NEA_SCSI_DEVTYPE_CDROM,             { can only read }
-    NEA_SCSI_DEVTYPE_UNSUPPORTED_WORM   { can write but is not supported by NeroAPI }
+    NEA_SCSI_DEVTYPE_WORM,              // can write
+    NEA_SCSI_DEVTYPE_CDROM,             // can only read
+    NEA_SCSI_DEVTYPE_UNSUPPORTED_WORM   // can write but is not supported by NeroAPI
   );
   TNeroApiSCSIDevType = NEROAPI_SCSI_DEVTYPE;
 
@@ -272,23 +275,23 @@ type
 
 {$WARNINGS OFF}
   tag_NERO_MEDIA_TYPE = (
-    MEDIA_NONE          = 0,                            // No media present (NeroAPI>=5.5.9.4)
-    MEDIA_CD            = $00001,					    // CD-R/RW
-    MEDIA_DDCD          = $00002,					    // DDCD-R/RW
-    MEDIA_DVD_M         = $00004,					    // DVD-R/RW
-    MEDIA_DVD_P         = $00008,					    // DVD+RW
+    MEDIA_NONE          = $00000,           // No media present (NeroAPI>=5.5.9.4)
+    MEDIA_CD            = $00001,					  // CD-R/RW
+    MEDIA_DDCD          = $00002,					  // DDCD-R/RW
+    MEDIA_DVD_M         = $00004,					  // DVD-R/RW
+    MEDIA_DVD_P         = $00008,					  // DVD+RW
     MEDIA_DVD_ANY       = MEDIA_DVD_M or MEDIA_DVD_P,   // Any DVD-Recorder
-    MEDIA_DVD_RAM       = $00010,					    // DVD-RAM
-    MEDIA_ML            = $00020,					    // ML (Multi Level disc)
-    MEDIA_MRW           = $00040,					    // Mt. Rainier
+    MEDIA_DVD_RAM       = $00010,					  // DVD-RAM
+    MEDIA_ML            = $00020,					  // ML (Multi Level disc)
+    MEDIA_MRW           = $00040,					  // Mt. Rainier
 
     //NeroAPI>=5.5.9.4:
-    MEDIA_NO_CDR        = $00080,				        // Exclude CD-R
-    MEDIA_NO_CDRW       = $00100,					    // Exclude CD-RW
+    MEDIA_NO_CDR        = $00080,				    // Exclude CD-R
+    MEDIA_NO_CDRW       = $00100,					  // Exclude CD-RW
     MEDIA_CDRW          = MEDIA_CD or MEDIA_NO_CDR, 	// CD-RW
     MEDIA_CDR           = MEDIA_CD or MEDIA_NO_CDRW,	// CD-R
-    MEDIA_DVD_ROM       = $00200,					    // DVD-ROM (non writable)
-    MEDIA_CDROM         = $00400,                       // CD-ROM (non writable)
+    MEDIA_DVD_ROM       = $00200,					  // DVD-ROM (non writable)
+    MEDIA_CDROM         = $00400,           // CD-ROM (non writable)
 
     //NeroAPI>=5.5.9.10
     MEDIA_NO_DVD_M_RW   = $00800,						// Exclude DVD-RW
@@ -664,18 +667,17 @@ type
   PNERO_ISO_ITEM = ^NERO_ISO_ITEM;
   tag_NERO_ISO_ITEM = record
     fileName: array[0..256 - 1] of Char;    // File name on the burnt CD
-    isDirectory: BOOL;						// Is this item a directory ?
-    isReference: BOOL;						// Is this item a reference to a file/directory of a previous session
-      // when recording RockRidge, you can set the name of a directory to be used for
-    // retrieving rockridge informations here
+    isDirectory: BOOL;						          // Is this item a directory ?
+    isReference: BOOL;					          	// Is this item a reference to a file/directory of a previous session
+                                            // when recording RockRidge, you can set the name of a directory to be used for
+                                            // retrieving rockridge informations here
     sourceFilePath: array[0..256 - 1] of Char;  // Path to the file, including file name (ignored for a directory)
     subDirFirstItem: PNERO_ISO_ITEM;        // Point on the first item of the sub directory if the item is a directory
                                             // Can be NULL if the directory is empty
                                             // (ignored for a file)
     nextItem: PNERO_ISO_ITEM;               // Next item in the current directory
     userData: Pointer;                      // Can be used to store additional informations
-
-    // Used to reference a file from a previous session
+                                            // Used to reference a file from a previous session
     dataStartSec: Longint;
     dataLength: Int64;
     entryTime: tm;
@@ -689,8 +691,7 @@ type
 // NeroCreateIsoItem: Allocate an instance from the NERO_ISO_ITEM structure
 //    The itemSize member of the structure will be automatically be filled by this
 //    function
-// #define NeroCreateIsoItem()	NeroCreateIsoItemOfSize(sizeof(NERO_ISO_ITEM))
-function {macro} NeroCreateIsoItem(): PNERO_ISO_ITEM; cdecl;
+function NeroCreateIsoItem(): PNERO_ISO_ITEM; cdecl;
 
 var
   NeroCreateIsoItemOfSize: function(size: size_t): PNERO_ISO_ITEM; cdecl;
@@ -715,7 +716,7 @@ var
 // for the burn options with NeroCITEArgs::dwBurnOptions. root should also be NULL
 // in this case.
   NeroCreateIsoTrackEx: function(root: PNERO_ISO_ITEM;  // First item of the root directory
-                                 name: PChar;     // Name of the CD
+                                 name: PChar;           // Name of the CD
                                  flags: DWORD           // See constants below
                                  ): CNeroIsoTrack; cdecl;
 type
